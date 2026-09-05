@@ -1,0 +1,5 @@
+[
+  {"key":"fish-tank","source_type":"ORIGINAL_PROCEDURAL","author":"Aquaponics Platform Team","license":"PROJECT_ORIGINAL","source_url":null,"modified":false,"file_or_component":"ScadaProcessSymbol.tsx"},
+  {"key":"water-pump","source_type":"ORIGINAL_PROCEDURAL","author":"Aquaponics Platform Team","license":"PROJECT_ORIGINAL","source_url":null,"modified":false,"file_or_component":"ScadaProcessSymbol.tsx"},
+  {"key":"water-pipe","source_type":"ORIGINAL_PROCEDURAL","author":"Aquaponics Platform Team","license":"PROJECT_ORIGINAL","source_url":null,"modified":false,"file_or_component":"ScadaScene.tsx"}
+]

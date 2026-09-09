@@ -14,11 +14,15 @@ async def require_project_access(
     db: AsyncSession, project_id: int, user: User, *, manage: bool = False
 ) -> Project:
     global_scope = await has_permission(db, user, "aquaponics_systems.manage_all" if manage else "aquaponics_systems.read_all")
+    scoped_read = global_scope or await has_permission(db, user, "aquaponics_systems.read", project_id)
     query = select(Project).where(Project.id == project_id, Project.is_deleted.is_(False))
     if not global_scope:
-        query = query.where(Project.status == ProjectStatus.ACTIVE, or_(Project.owner_user_id == user.id, Project.members.any(user_id=user.id)))
+        query = query.where(
+            Project.status == ProjectStatus.ACTIVE,
+            or_(Project.owner_user_id == user.id, Project.members.any(user_id=user.id)),
+        )
     project = await db.scalar(query)
-    if project is None:
+    if project is None or not scoped_read:
         raise HTTPException(status_code=404, detail="Không tìm thấy dự án")
     return project
 

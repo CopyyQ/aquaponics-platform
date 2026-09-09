@@ -23,7 +23,7 @@ from app.models.operational_alert import OperationalIncident
 from app.models.threshold_alert_config import ThresholdAlertConfig
 from app.models.user import User
 from app.services.access_service import require_project_access
-from app.services.threshold_alert_config_service import apply_threshold_alert_config_update, ensure_threshold_delivery_defaults
+from app.services.threshold_alert_config_service import apply_threshold_alert_config_update
 from app.services.operational_incident_service import enqueue_incident_notification, reevaluate_latest_sensor_threshold
 from app.services.project_device_config_service import export_project_device_config
 from app.services.permission_service import has_permission
@@ -186,9 +186,7 @@ def _sensor_threshold_from_defaults(sensor_id: int, *, model: SensorModel, mappi
         lower_threshold=lower, upper_threshold=upper,
         below_risk_level=below_risk, above_risk_level=above_risk,
         below_message=below_message, above_message=above_message,
-        delay_seconds=0,
     )
-    ensure_threshold_delivery_defaults(config)
     return config
 
 
@@ -288,8 +286,8 @@ async def create_device(system_id: int, payload: DeviceInput, db: AsyncSession =
             sensor = Sensor(
                 device_id=item.id,
                 sensor_model_id=mapping.sensor_model_id,
-                code=mapping.slot_code,
-                name=mapping.display_name or mapping.slot_code,
+                code=mapping.code,
+                name=mapping.display_name or mapping.code,
                 installation_location=mapping.default_location,
                 is_enabled=True,
             )
@@ -298,10 +296,11 @@ async def create_device(system_id: int, payload: DeviceInput, db: AsyncSession =
             threshold_config = _sensor_threshold_from_defaults(sensor.id, model=mapping.sensor_model, mapping=mapping)
             if threshold_config is not None:
                 db.add(threshold_config)
-        for mapping in template.actuator_mappings:
+        for sequence_number, mapping in enumerate(template.actuator_mappings, start=1):
             db.add(Actuator(
                 device_id=item.id,
                 actuator_model_id=mapping.actuator_model_id,
+                sequence_number=sequence_number,
                 code=mapping.code,
                 name=mapping.default_name or mapping.code,
                 location=mapping.default_location,
@@ -448,7 +447,6 @@ async def create_sensor_threshold(system_id: int, device_id: int, sensor_id: int
     if await db.scalar(select(ThresholdAlertConfig.id).where(ThresholdAlertConfig.sensor_id == sensor_id)):
         raise HTTPException(status_code=409, detail="Threshold của Sensor đã tồn tại")
     item = ThresholdAlertConfig(sensor_id=sensor_id, actuator_id=None, metric_type="SENSOR_VALUE", **payload.model_dump())
-    ensure_threshold_delivery_defaults(item)
     db.add(item)
     await db.flush()
     await reevaluate_latest_sensor_threshold(db, device=device, sensor=sensor)
@@ -552,7 +550,6 @@ async def create_actuator_threshold(system_id: int, device_id: int, actuator_id:
     if await db.scalar(select(ThresholdAlertConfig.id).where(ThresholdAlertConfig.actuator_id == actuator_id, ThresholdAlertConfig.metric_type == metric)):
         raise HTTPException(status_code=409, detail="Threshold của Actuator đã tồn tại")
     item = ThresholdAlertConfig(actuator_id=actuator_id, sensor_id=None, metric_type=metric, **payload.model_dump())
-    ensure_threshold_delivery_defaults(item)
     db.add(item); await db.commit(); await db.refresh(item)
     return item
 

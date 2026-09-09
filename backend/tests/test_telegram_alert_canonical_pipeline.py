@@ -8,7 +8,11 @@ from app.db.session import AsyncSessionLocal
 from app.models.actuator import Actuator
 from app.models.actuator_model import ActuatorModel
 from app.models.device import Device
-from app.models.operational_alert import NotificationDelivery, NotificationOutbox, OperationalIncident
+from app.models.operational_alert import (
+    NotificationDelivery,
+    NotificationOutbox,
+    OperationalIncident,
+)
 from app.models.project import Project
 from app.models.project_settings import (
     ProjectNotificationRecipient,
@@ -85,10 +89,12 @@ async def _open_ph_incident(db, *, device: Device, code_prefix: str, value: floa
         sensor_id=sensor.id,
         metric_type="SENSOR_VALUE",
         enabled=True,
-        lower_threshold=6.0,
-        upper_threshold=7.5,
+        lower_threshold=7.0,
+        upper_threshold=9.0,
         below_risk_level="LOW",
         above_risk_level="HIGH",
+        below_message="pH bất thường, hãy kiểm tra môi trường nước",
+        above_message="pH bất thường, hãy kiểm tra môi trường nước",
         delay_seconds=0,
     ))
     incident = await evaluate_sensor_threshold_incident(
@@ -106,7 +112,7 @@ async def _open_ph_incident(db, *, device: Device, code_prefix: str, value: floa
 
 
 @pytest.mark.asyncio
-async def test_ph_10_8_patch_to_7_5_opens_and_sends_once_without_new_reading() -> None:
+async def test_ph_10_8_patch_to_9_opens_and_sends_once_without_new_reading() -> None:
     project, device = await _runtime()
     now = datetime.now(UTC)
     suffix = uuid4().hex[:8].upper()
@@ -136,17 +142,25 @@ async def test_ph_10_8_patch_to_7_5_opens_and_sends_once_without_new_reading() -
 
         # This is the PATCH service sequence: mutate canonical config, flush,
         # then evaluate the latest persisted reading without injecting telemetry.
-        apply_threshold_alert_config_update(config, {"upper_threshold": 7.5, "above_risk_level": None})
+        apply_threshold_alert_config_update(config, {
+            "lower_threshold": 7.0,
+            "upper_threshold": 9.0,
+            "above_risk_level": "HIGH",
+            "below_message": "pH bất thường, hãy kiểm tra môi trường nước",
+            "above_message": "pH bất thường, hãy kiểm tra môi trường nước",
+        })
         await db.flush()
         incident = await reevaluate_latest_sensor_threshold(db, device=await db.get(Device, device.id), sensor=sensor, observed_at=now)
         await db.commit()
 
-        assert config.upper_threshold == 7.5
+        assert config.upper_threshold == 9.0
         assert config.above_risk_level == "HIGH"
         assert incident is not None and incident.status == "OPEN"
         assert incident.business_risk_level_snapshot == "HIGH"
         assert incident.trigger_snapshot["threshold_direction"] == "ABOVE"
         assert incident.trigger_snapshot["condition_key"] == "SENSOR_PH_HIGH"
+        assert incident.trigger_snapshot["message"] == "pH bất thường, hãy kiểm tra môi trường nước"
+        assert incident.rule_id is None
         assert await db.scalar(select(func.count(NotificationOutbox.id)).where(
             NotificationOutbox.incident_id == incident.id,
             NotificationOutbox.event_type == "OPEN",
@@ -171,7 +185,7 @@ async def test_ph_10_8_patch_to_7_5_opens_and_sends_once_without_new_reading() -
         notifier = SuccessfulNotifier()
         await process_notification_outbox(db, notifier=notifier)
         assert len(notifier.calls) == 1
-        assert "pH vượt ngưỡng trên" in notifier.calls[0][1]
+        assert "pH bất thường, hãy kiểm tra môi trường nước" in notifier.calls[0][1]
         delivery = await db.scalar(select(NotificationDelivery).where(
             NotificationDelivery.incident_id == incident.id,
         ))
@@ -196,7 +210,7 @@ async def test_ph_10_8_patch_to_7_5_opens_and_sends_once_without_new_reading() -
         # Recovery closes the active generation; relapse creates a new one.
         await evaluate_sensor_threshold_incident(
             db, device=await db.get(Device, device.id), sensor=sensor, sensor_model=model,
-            value=7.0, quality="VALID", recorded_at=now + timedelta(minutes=5),
+            value=8.0, quality="VALID", recorded_at=now + timedelta(minutes=5),
             received_at=now + timedelta(minutes=5),
         )
         await db.flush()
@@ -210,7 +224,7 @@ async def test_ph_10_8_patch_to_7_5_opens_and_sends_once_without_new_reading() -
         assert relapse is not None and relapse.id != incident.id and relapse.status == "OPEN"
         await evaluate_sensor_threshold_incident(
             db, device=await db.get(Device, device.id), sensor=sensor, sensor_model=model,
-            value=7.0, quality="VALID", recorded_at=now + timedelta(minutes=7),
+            value=8.0, quality="VALID", recorded_at=now + timedelta(minutes=7),
             received_at=now + timedelta(minutes=7),
         )
         await db.commit()
@@ -227,7 +241,18 @@ async def test_disabled_open_reconciles_once_when_telegram_is_enabled() -> None:
         assert model is not None
         sensor = Sensor(device_id=device.id, sensor_model_id=model.id, code=f"PH-SYNC-{suffix}", name="pH sync", is_enabled=True)
         db.add(sensor); await db.flush()
-        db.add(ThresholdAlertConfig(sensor_id=sensor.id, metric_type="SENSOR_VALUE", enabled=True, upper_threshold=7.5, above_risk_level="HIGH", delay_seconds=0))
+        db.add(ThresholdAlertConfig(
+            sensor_id=sensor.id,
+            metric_type="SENSOR_VALUE",
+            enabled=True,
+            lower_threshold=7.0,
+            upper_threshold=9.0,
+            below_risk_level="LOW",
+            above_risk_level="HIGH",
+            below_message="pH bất thường, hãy kiểm tra môi trường nước",
+            above_message="pH bất thường, hãy kiểm tra môi trường nước",
+            delay_seconds=0,
+        ))
         incident = await evaluate_sensor_threshold_incident(
             db, device=await db.get(Device, device.id), sensor=sensor, sensor_model=model,
             value=10.8, quality="VALID", recorded_at=now, received_at=now,
@@ -332,6 +357,10 @@ async def test_actuator_composite_rules_are_mutually_exclusive_and_off_is_normal
             recorded_at=now + timedelta(seconds=1), received_at=now + timedelta(seconds=1),
         )
         assert no_load is not None and no_load.trigger_snapshot["condition_key"] == "ACTUATOR_ON_NO_LOAD"
+        assert await db.scalar(select(func.count(NotificationOutbox.id)).where(
+            NotificationOutbox.incident_id == no_load.id,
+            NotificationOutbox.event_type == "OPEN",
+        )) == 1
 
         actuator.voltage_v, actuator.current_a = 0.0, 0.0
         no_power = await evaluate_actuator_composite_incident(
@@ -339,7 +368,11 @@ async def test_actuator_composite_rules_are_mutually_exclusive_and_off_is_normal
             recorded_at=now + timedelta(seconds=2), received_at=now + timedelta(seconds=2),
         )
         await db.commit()
-        assert no_power is not None and no_power.trigger_snapshot["condition_key"] == "ACTUATOR_NO_POWER"
+        assert no_power is not None and no_power.trigger_snapshot["condition_key"] == "ACTUATOR_ON_NO_POWER"
+        assert await db.scalar(select(func.count(NotificationOutbox.id)).where(
+            NotificationOutbox.incident_id == no_power.id,
+            NotificationOutbox.event_type == "OPEN",
+        )) == 1
         assert no_load.status == "NORMALIZED"
         assert await db.scalar(select(func.count(OperationalIncident.id)).where(
             OperationalIncident.actuator_id == actuator.id,
@@ -364,16 +397,87 @@ async def test_ph_below_uses_directional_low_risk() -> None:
             db,
             device=await db.get(Device, device.id),
             code_prefix="PH-BELOW",
-            value=5.5,
+            value=6.5,
         )
         await db.commit()
         assert incident.status == "OPEN"
         assert incident.business_risk_level_snapshot == "LOW"
         assert incident.trigger_snapshot["threshold_direction"] == "BELOW"
         assert incident.trigger_snapshot["condition_key"] == "SENSOR_PH_LOW"
+        assert incident.trigger_snapshot["message"] == "pH bất thường, hãy kiểm tra môi trường nước"
         incident.status = "NORMALIZED"
         incident.normalized_at = datetime.now(UTC)
         await db.commit()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("model_code", "lower", "upper", "value", "direction"),
+    [
+        ("PH", 7.0, 9.0, 8.0, None),
+        ("WATER_LEVEL", 60.0, None, 40.0, "BELOW"),
+        ("TDS", 300.0, None, 200.0, "BELOW"),
+        ("TEMP", None, 35.0, 40.0, "ABOVE"),
+    ],
+)
+async def test_simple_sensor_thresholds_have_one_canonical_incident_path(
+    model_code: str,
+    lower: float | None,
+    upper: float | None,
+    value: float,
+    direction: str | None,
+) -> None:
+    project, device = await _runtime()
+    async with AsyncSessionLocal() as db:
+        await _reset_project_alert_test_state(db, project.id)
+        model = await db.scalar(select(SensorModel).where(SensorModel.code == model_code))
+        assert model is not None
+        sensor = Sensor(
+            device_id=device.id,
+            sensor_model_id=model.id,
+            code=f"CANON-{model_code}-{uuid4().hex[:8].upper()}",
+            name=f"Canonical {model_code}",
+            is_enabled=True,
+        )
+        db.add(sensor)
+        await db.flush()
+        db.add(ThresholdAlertConfig(
+            sensor_id=sensor.id,
+            metric_type="SENSOR_VALUE",
+            enabled=True,
+            lower_threshold=lower,
+            upper_threshold=upper,
+            below_risk_level="HIGH" if lower is not None else None,
+            above_risk_level="HIGH" if upper is not None else None,
+            delay_seconds=0,
+        ))
+        incident = await evaluate_sensor_threshold_incident(
+            db,
+            device=await db.get(Device, device.id),
+            sensor=sensor,
+            sensor_model=model,
+            value=value,
+            quality="VALID",
+            recorded_at=datetime.now(UTC),
+            received_at=datetime.now(UTC),
+        )
+        await db.flush()
+        if direction is None:
+            assert incident is None
+            assert await db.scalar(select(func.count(OperationalIncident.id)).where(
+                OperationalIncident.sensor_id == sensor.id,
+            )) == 0
+            return
+        assert incident is not None
+        assert incident.rule_id is None
+        assert incident.trigger_snapshot["threshold_direction"] == direction
+        assert await db.scalar(select(func.count(OperationalIncident.id)).where(
+            OperationalIncident.sensor_id == sensor.id,
+        )) == 1
+        assert await db.scalar(select(func.count(NotificationOutbox.id)).where(
+            NotificationOutbox.incident_id == incident.id,
+            NotificationOutbox.event_type == "OPEN",
+        )) == 1
 
 
 @pytest.mark.asyncio

@@ -11,7 +11,7 @@ from app.models.actuator_model import ActuatorModel
 from app.models.sensor_model import SensorModel
 from app.models.telemetry import TelemetryAggregate, TelemetryReading
 from app.models.user import User
-from app.models.permission import Permission, Role, RolePermission
+from app.models.permission import Permission, Role, RoleAssignment, RolePermission, UserPermissionOverride
 from app.models.scada_dashboard import ScadaDashboard
 from app.models.project_settings import ProjectNotificationRecipient, ProjectNotificationRiskPolicy, ProjectNotificationSettings, ProjectPublicSettings
 from app.models.operational_alert import AlertRule, AlertRuleRevision, AlertRuleProfile, AlertRuleActuatorModelProfile, AlertRuleSensorModelProfile, AlertRuleProjectOverride, AlertRuleActuatorOverride, AlertRuleSensorOverride, OperationalIncident, NotificationOutbox, NotificationDelivery
@@ -53,4 +53,9 @@ __all__ = [
     "NotificationOutbox",
     "NotificationDelivery",
     "ThresholdAlertConfig",
+    "Permission",
+    "Role",
+    "RolePermission",
+    "RoleAssignment",
+    "UserPermissionOverride",
 ]

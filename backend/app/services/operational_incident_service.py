@@ -26,11 +26,22 @@ from app.models.sensor_model import SensorModel
 from app.models.telemetry import TelemetryReading
 from app.services.alert_evaluators import EVALUATOR_REGISTRY, validate_condition_config
 from app.services.measurement_quality import classify_measurement_quality
-from app.services.notification_message_catalog import catalog_snapshot, sensor_condition_key
-from app.services.threshold_alert_config_service import evaluate_threshold, get_actuator_threshold_alert_config, get_sensor_threshold_alert_config
+from app.services.notification_message_catalog import (
+    actuator_catalog_snapshot,
+    catalog_snapshot,
+    sensor_condition_key,
+)
+from app.services.threshold_alert_config_service import (
+    evaluate_threshold,
+    get_actuator_threshold_alert_config,
+    get_sensor_threshold_alert_config,
+)
 
 ACTIVE_INCIDENT_STATUSES = ("PENDING", "OPEN", "ACKNOWLEDGED")
 BUSINESS_RISK_ORDER = {"LOW": 0, "LOW_MEDIUM": 1, "MEDIUM": 2, "HIGH": 3, "VERY_HIGH": 4, "EXTREME": 5}
+SIMPLE_SENSOR_THRESHOLD_EVALUATORS = {
+    "THRESHOLD", "THRESHOLD_BANDS", "RANGE_BANDS", "THRESHOLD_DURATION",
+}
 
 
 async def evaluate_sensor_threshold_incident(
@@ -113,6 +124,8 @@ async def evaluate_sensor_threshold_incident(
         "metric_type": "SENSOR_VALUE",
         "threshold_direction": direction,
         "message": message,
+        "consequence": evaluation.consequence,
+        "recommended_actions": evaluation.recommended_actions,
         "project_code": project.code,
         "project_name": project.name,
         "device_name": device.name,
@@ -219,7 +232,7 @@ async def evaluate_actuator_composite_incident(
     ):
         current_is_low = actuator.current_a < model.minimum_running_current_a
         if model.zero_voltage_max_v is not None and actuator.voltage_v <= model.zero_voltage_max_v and current_is_low:
-            condition_key = "ACTUATOR_NO_POWER"
+            condition_key = "ACTUATOR_ON_NO_POWER"
         elif (
             model.nominal_voltage_v is not None and model.voltage_tolerance_v is not None
             and abs(actuator.voltage_v - model.nominal_voltage_v) <= model.voltage_tolerance_v
@@ -236,8 +249,8 @@ async def evaluate_actuator_composite_incident(
                 await _enqueue(db, other, "RECOVERED", other.trigger_snapshot)
     if condition_key is None or model is None:
         return active[0] if active else None
-    content = catalog_snapshot(condition_key)
-    risk = "EXTREME" if condition_key == "ACTUATOR_NO_POWER" else "VERY_HIGH"
+    content = actuator_catalog_snapshot(condition_key, model.code)
+    risk = "EXTREME" if condition_key == "ACTUATOR_ON_NO_POWER" else "VERY_HIGH"
     snapshot = {
         **content,
         "incident_type": "ACTUATOR_COMPOSITE",
@@ -466,6 +479,13 @@ async def _transition_sensor_incident(
     observed_at: datetime,
     snapshot: dict[str, Any],
 ) -> OperationalIncident | None:
+    # Simple Sensor lower/upper meaning belongs exclusively to
+    # ThresholdAlertConfig. Keep advanced rule evaluators available, but make
+    # a future accidental caller unable to create a second semantic Incident.
+    if rule.evaluator_type in SIMPLE_SENSOR_THRESHOLD_EVALUATORS:
+        canonical_config = await get_sensor_threshold_alert_config(db, sensor.id)
+        if canonical_config is not None:
+            return None
     context_key = f"sensor:{sensor.id}"
     incident = await db.scalar(select(OperationalIncident).where(OperationalIncident.rule_id == rule.id, OperationalIncident.context_key == context_key, OperationalIncident.status.in_(ACTIVE_INCIDENT_STATUSES)).with_for_update())
     if not active:

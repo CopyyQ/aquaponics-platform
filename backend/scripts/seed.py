@@ -9,11 +9,10 @@ from app.core.config import settings
 from app.core.database import AsyncSessionLocal
 from app.core.enums import UserRole, UserStatus
 from app.core.security import hash_password
-from app.models.sensor import SensorModel
 from app.models.actuator_model import ActuatorModel
-from app.models.operational_alert import AlertRule, AlertRuleProfile, AlertRuleSensorModelProfile
-from app.models.user import User
 from app.models.permission import Permission, Role, RolePermission
+from app.models.sensor import SensorModel
+from app.models.user import User
 
 SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
     {
@@ -23,8 +22,6 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "description": "Mẫu cấu hình Cảm biến pH",
         "value_type": "NUMBER",
         "chart_type": "LINE",
-        "default_lower_threshold": 6.0,
-        "default_upper_threshold": 7.5,
     },
     {
         "code": "TEMP",
@@ -33,8 +30,6 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "description": "Mẫu cấu hình Cảm biến nhiệt độ nước",
         "value_type": "NUMBER",
         "chart_type": "LINE",
-        "default_lower_threshold": 18.0,
-        "default_upper_threshold": 35.0,
     },
     {
         "code": "DO",
@@ -43,8 +38,6 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "description": "Mẫu cấu hình Cảm biến oxy hòa tan",
         "value_type": "NUMBER",
         "chart_type": "LINE",
-        "default_lower_threshold": 5.0,
-        "default_upper_threshold": 12.0,
     },
     {
         "code": "EC",
@@ -53,8 +46,6 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "description": "Mẫu cấu hình Cảm biến độ dẫn điện",
         "value_type": "NUMBER",
         "chart_type": "LINE",
-        "default_lower_threshold": 0.8,
-        "default_upper_threshold": 2.5,
     },
     {
         "code": "WATER_LEVEL",
@@ -63,8 +54,6 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "description": "Mẫu cấu hình Cảm biến mực nước",
         "value_type": "NUMBER",
         "chart_type": "LINE",
-        "default_lower_threshold": 60.0,
-        "default_upper_threshold": None,
     },
     {
         "code": "AIR_HUMIDITY",
@@ -73,8 +62,6 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "description": "Đo độ ẩm tương đối của không khí tại khu vực lắp đặt.",
         "value_type": "NUMBER",
         "chart_type": "LINE",
-        "default_lower_threshold": None,
-        "default_upper_threshold": None,
     },
     {
         "code": "TDS",
@@ -83,8 +70,6 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "description": "Đo tổng chất rắn hòa tan trong nước.",
         "value_type": "NUMBER",
         "chart_type": "LINE",
-        "default_lower_threshold": 100.0,
-        "default_upper_threshold": None,
     },
     {
         "code": "AIR_TEMPERATURE",
@@ -93,8 +78,6 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "description": "Đo nhiệt độ không khí tại khu vực lắp đặt.",
         "value_type": "NUMBER",
         "chart_type": "LINE",
-        "default_lower_threshold": None,
-        "default_upper_threshold": None,
     },
     {
         "code": "AIR_PRESSURE",
@@ -103,8 +86,6 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "description": "Đo áp suất khí quyển tại khu vực lắp đặt.",
         "value_type": "NUMBER",
         "chart_type": "LINE",
-        "default_lower_threshold": None,
-        "default_upper_threshold": None,
     },
     {
         "code": "ILLUMINANCE",
@@ -113,15 +94,13 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "description": "Đo độ rọi ánh sáng tại khu vực lắp đặt.",
         "value_type": "NUMBER",
         "chart_type": "LINE",
-        "default_lower_threshold": None,
-        "default_upper_threshold": None,
     },
-    {"code": "OUTPUT_VOLTAGE_V", "name": "Điện áp đầu ra", "unit": "V", "description": "Điện áp đo trực tiếp tại Device.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE", "default_lower_threshold": None, "default_upper_threshold": None},
-    {"code": "INPUT_VOLTAGE_V", "name": "Điện áp đầu vào", "unit": "V", "description": "Điện áp đo trực tiếp tại Device.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE", "default_lower_threshold": None, "default_upper_threshold": None},
-    {"code": "LOAD_CURRENT_A", "name": "Dòng điện tải", "unit": "A", "description": "Dòng điện đo trực tiếp tại Device.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE", "default_lower_threshold": None, "default_upper_threshold": None},
-    {"code": "INPUT_CURRENT_A", "name": "Dòng điện đầu vào", "unit": "A", "description": "Dòng điện đo trực tiếp tại Device.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE", "default_lower_threshold": None, "default_upper_threshold": None},
-    {"code": "POWER_W", "name": "Công suất", "unit": "W", "description": "Công suất được phần cứng đo trực tiếp.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE", "default_lower_threshold": None, "default_upper_threshold": None},
-    {"code": "ENERGY_TOTAL_WH", "name": "Điện năng tích lũy", "unit": "Wh", "description": "Bộ đếm điện năng tích lũy có xử lý reset theo đoạn.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "COUNTER", "default_lower_threshold": None, "default_upper_threshold": None},
+    {"code": "OUTPUT_VOLTAGE_V", "name": "Điện áp đầu ra", "unit": "V", "description": "Điện áp đo trực tiếp tại Device.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE"},
+    {"code": "INPUT_VOLTAGE_V", "name": "Điện áp đầu vào", "unit": "V", "description": "Điện áp đo trực tiếp tại Device.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE"},
+    {"code": "LOAD_CURRENT_A", "name": "Dòng điện tải", "unit": "A", "description": "Dòng điện đo trực tiếp tại Device.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE"},
+    {"code": "INPUT_CURRENT_A", "name": "Dòng điện đầu vào", "unit": "A", "description": "Dòng điện đo trực tiếp tại Device.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE"},
+    {"code": "POWER_W", "name": "Công suất", "unit": "W", "description": "Công suất được phần cứng đo trực tiếp.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE"},
+    {"code": "ENERGY_TOTAL_WH", "name": "Điện năng tích lũy", "unit": "Wh", "description": "Bộ đếm điện năng tích lũy có xử lý reset theo đoạn.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "COUNTER"},
 )
 
 ENVIRONMENTAL_SENSOR_MODEL_CODES = frozenset(
@@ -153,21 +132,17 @@ ACTUATOR_ELECTRICAL_DEFAULTS = {
     for code in ("FISH_TANK_PUMP", "IRRIGATION_PUMP", "MIST_SYSTEM", "GROW_LIGHT", "AIR_PUMP")
 }
 
-CANONICAL_ALERT_SENSOR_PROFILES = (
-    ("FISH_TANK_DO_LOW", "DO"),
-    ("WATER_PH_OUT_OF_RANGE", "PH"),
-    ("TDS_LOW", "TDS"),
-    ("AIR_TEMPERATURE_HIGH", "AIR_TEMPERATURE"),
-)
-
-
 def _canonical_permissions() -> tuple[tuple[str, str, str], ...]:
-    """Read the 0050 RBAC catalog from the migration that introduced it."""
+    """Read the original catalog plus forward structural RBAC permissions."""
     path = Path(__file__).resolve().parents[1] / "alembic/versions/0047_permission_rbac.py"
     spec = importlib.util.spec_from_file_location("permission_rbac_0047", path)
     if spec is None or spec.loader is None: raise RuntimeError("Cannot load canonical permission catalog")
     module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
-    return module.PERMISSIONS
+    structural_path = Path(__file__).resolve().parents[1] / "alembic/versions/0057_scoped_role_assignments.py"
+    structural_spec = importlib.util.spec_from_file_location("scoped_rbac_0057", structural_path)
+    if structural_spec is None or structural_spec.loader is None: raise RuntimeError("Cannot load scoped RBAC catalog")
+    structural = importlib.util.module_from_spec(structural_spec); structural_spec.loader.exec_module(structural)
+    return module.PERMISSIONS + tuple((code, *code.split(".", 1)) for code in structural.ADMIN_PERMISSIONS)
 
 
 async def seed_rbac(db: AsyncSession) -> None:
@@ -181,9 +156,17 @@ async def seed_rbac(db: AsyncSession) -> None:
             permissions[code] = Permission(code=code, resource=resource, action=action); db.add(permissions[code])
     await db.flush()
     existing = {(row.role_id, row.permission_id) for row in (await db.scalars(select(RolePermission))).all()}
+    read_actions = {"read", "telemetry.read", "thresholds.read", "commands.read", "readings.read", "history.read", "export"}
+    owner_writes = {"aquaponics_systems.manage_members", "sensors.thresholds.create", "sensors.thresholds.update",
+                    "sensors.thresholds.delete", "notifications.settings.update", "notifications.recipients.create",
+                    "notifications.recipients.update", "notifications.recipients.delete"}
+    technician_writes = {"actuators.commands.create", "incidents.acknowledge", "incidents.resolve"}
     for role_code, role in roles.items():
         for permission in permissions.values():
-            allowed = role_code == "ADMIN" or (role_code == "VIEWER" and permission.resource != "users" and permission.action in {"read", "telemetry.read", "thresholds.read", "commands.read", "readings.read", "history.read", "export"}) or (role_code in {"OWNER", "TECHNICIAN"} and permission.resource != "users" and permission.action not in {"read_all", "manage_all"})
+            readable = permission.resource not in {"users", "permissions", "roles", "role_assignments", "user_permissions"} and permission.action in read_actions
+            allowed = role_code == "ADMIN" or (role_code in {"OWNER", "TECHNICIAN", "VIEWER"} and readable) \
+                or (role_code == "OWNER" and permission.code in owner_writes) \
+                or (role_code == "TECHNICIAN" and permission.code in technician_writes)
             if allowed and (role.id, permission.id) not in existing: db.add(RolePermission(role_id=role.id, permission_id=permission.id))
     await db.flush()
 
@@ -250,36 +233,6 @@ async def seed_actuator_models(db: AsyncSession) -> int:
     db.add_all(missing)
     await db.flush()
     return len(missing)
-
-
-async def seed_canonical_alert_profiles(db: AsyncSession) -> int:
-    created = 0
-    for rule_code, model_code in CANONICAL_ALERT_SENSOR_PROFILES:
-        rule = await db.scalar(select(AlertRule).where(AlertRule.code == rule_code))
-        model = await db.scalar(select(SensorModel).where(SensorModel.code == model_code))
-        if rule is None or model is None:
-            continue
-        profile_code = f"{rule_code}_CANONICAL"
-        profile = await db.scalar(select(AlertRuleProfile).where(AlertRuleProfile.code == profile_code))
-        if profile is None:
-            profile = AlertRuleProfile(
-                rule_id=rule.id,
-                code=profile_code,
-                name=f"Áp dụng cho SensorModel {model_code}",
-                config={},
-                is_enabled=True,
-            )
-            db.add(profile)
-            await db.flush()
-            created += 1
-        else:
-            profile.rule_id = rule.id
-            profile.is_enabled = True
-        link = await db.get(AlertRuleSensorModelProfile, (profile.id, model.id))
-        if link is None:
-            db.add(AlertRuleSensorModelProfile(profile_id=profile.id, sensor_model_id=model.id))
-    await db.flush()
-    return created
 
 
 async def seed() -> None:

@@ -25,6 +25,7 @@ from app.services.project_activity_service import ACTION_LABELS, list_project_ac
 from app.services.scada_runtime_service import (ScadaDraftNotFoundError, ScadaLayoutValidationError,
     get_scada_runtime, publish_scada_draft, save_scada_draft)
 from app.services.notification_outbox_service import next_notification_generation, reconcile_active_incident_notifications
+from app.services.project_role_service import remove_project_role_assignments, sync_project_role_assignment
 
 router = APIRouter(prefix="/aquaponics-systems")
 
@@ -117,7 +118,10 @@ async def add_member(system_id: int, payload: AquaponicsSystemMemberCreate, db: 
     await require_project_access(db, system_id, actor, manage=True)
     if await db.get(User, payload.user_id) is None: raise HTTPException(422, "User không tồn tại")
     row = ProjectMember(project_id=system_id, user_id=payload.user_id, role=payload.role, created_by=actor.id)
-    db.add(row); await db.commit()
+    db.add(row)
+    await sync_project_role_assignment(db, user_id=payload.user_id, system_id=system_id,
+                                       role_code=payload.role, created_by=actor.id)
+    await db.commit()
     row = await db.scalar(select(ProjectMember).options(selectinload(ProjectMember.user)).where(ProjectMember.id == row.id))
     return _member_read(row)
 
@@ -127,7 +131,10 @@ async def update_member(system_id: int, user_id: int, payload: AquaponicsSystemM
     await require_project_access(db, system_id, actor, manage=True)
     row = await db.scalar(select(ProjectMember).options(selectinload(ProjectMember.user)).where(ProjectMember.project_id == system_id, ProjectMember.user_id == user_id))
     if row is None: raise HTTPException(404, "Không tìm thấy thành viên")
-    row.role = payload.role; await db.commit(); return _member_read(row)
+    row.role = payload.role
+    await sync_project_role_assignment(db, user_id=user_id, system_id=system_id,
+                                       role_code=payload.role, created_by=actor.id)
+    await db.commit(); return _member_read(row)
 
 
 @router.delete("/{system_id}/members/{user_id}", status_code=204, tags=["Members"])
@@ -135,6 +142,7 @@ async def remove_member(system_id: int, user_id: int, db: AsyncSession = Depends
     await require_project_access(db, system_id, actor, manage=True)
     row = await db.scalar(select(ProjectMember).where(ProjectMember.project_id == system_id, ProjectMember.user_id == user_id))
     if row is None: raise HTTPException(404, "Không tìm thấy thành viên")
+    await remove_project_role_assignments(db, user_id=user_id, system_id=system_id)
     await db.delete(row); await db.commit()
 
 

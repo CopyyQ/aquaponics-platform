@@ -45,7 +45,7 @@ class DeviceTemplateUpdate(BaseModel):
 
 class TemplateSensorInput(BaseModel):
     sensor_model_id: int
-    slot_code: str = Field(pattern=r"^[A-Z0-9_-]+$", min_length=2, max_length=80)
+    code: str = Field(pattern=r"^[A-Z0-9_-]+$", min_length=2, max_length=80)
     display_name: str | None = Field(default=None, max_length=255)
     default_location: str | None = Field(default=None, max_length=255)
     default_lower_threshold: float | None = None
@@ -66,7 +66,7 @@ class TemplateSensorInput(BaseModel):
 
 
 class TemplateSensorUpdate(BaseModel):
-    slot_code: str | None = Field(default=None, pattern=r"^[A-Z0-9_-]+$", min_length=2, max_length=80)
+    code: str | None = Field(default=None, pattern=r"^[A-Z0-9_-]+$", min_length=2, max_length=80)
     display_name: str | None = Field(default=None, max_length=255)
     default_location: str | None = Field(default=None, max_length=255)
     default_lower_threshold: float | None = None
@@ -94,7 +94,7 @@ class TemplateSensorRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     sensor_model_id: int
-    slot_code: str
+    code: str
     display_name: str | None
     default_location: str | None
     default_lower_threshold: float | None

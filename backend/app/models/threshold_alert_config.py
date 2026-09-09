@@ -1,6 +1,19 @@
 from __future__ import annotations
 
-from sqlalchemy import BigInteger, Boolean, CheckConstraint, Float, ForeignKey, Identity, Index, Integer, String, Text, UniqueConstraint, text
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    CheckConstraint,
+    Float,
+    ForeignKey,
+    Identity,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    text,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin
@@ -34,6 +47,10 @@ class ThresholdAlertConfig(Base, TimestampMixin):
     above_risk_level: Mapped[str | None] = mapped_column(String(30))
     below_message: Mapped[str | None] = mapped_column(Text)
     above_message: Mapped[str | None] = mapped_column(Text)
+    below_consequence: Mapped[str | None] = mapped_column(Text)
+    above_consequence: Mapped[str | None] = mapped_column(Text)
+    below_recommended_actions: Mapped[str | None] = mapped_column(Text)
+    above_recommended_actions: Mapped[str | None] = mapped_column(Text)
     delay_seconds: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
 
     sensor = relationship("Sensor", back_populates="threshold_alert_config")

@@ -46,7 +46,7 @@ class DeviceTemplate(Base, TimestampMixin, SoftDeleteMixin):
 class DeviceTemplateSensor(Base, TimestampMixin):
     __tablename__ = "device_template_sensors"
     __table_args__ = (
-        UniqueConstraint("device_template_id", "slot_code", name="uq_device_template_sensor_slot"),
+        UniqueConstraint("device_template_id", "code", name="uq_device_template_sensor_code"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
@@ -56,7 +56,7 @@ class DeviceTemplateSensor(Base, TimestampMixin):
     sensor_model_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("sensor_models.id", ondelete="RESTRICT"), nullable=False, index=True
     )
-    slot_code: Mapped[str] = mapped_column(String(80), nullable=True)
+    code: Mapped[str] = mapped_column(String(80), nullable=False)
     display_name: Mapped[str | None] = mapped_column(String(255))
     default_location: Mapped[str | None] = mapped_column(String(255))
     default_lower_threshold: Mapped[float | None] = mapped_column(Float)

@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import (
     HTTPAuthorizationCredentials,
     HTTPBearer,
@@ -152,10 +152,13 @@ get_authenticated_user = get_current_active_user
 
 def require_permission(permission_code: str):
     async def dependency(
+        request: Request,
         user: User = Depends(get_current_operational_user),
         db: AsyncSession = Depends(get_db),
     ) -> User:
-        if not await has_permission(db, user, permission_code):
+        raw_system_id = request.path_params.get("system_id")
+        system_id = int(raw_system_id) if raw_system_id is not None else None
+        if not await has_permission(db, user, permission_code, system_id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail={

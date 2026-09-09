@@ -229,7 +229,7 @@ async def activate_system(
 @router.get("/roles", response_model=list[RoleRead], tags=["Roles"])
 async def list_roles(
     db: AsyncSession = Depends(get_db),
-    _: User = Depends(require_permission("users.read")),
+    _: User = Depends(require_permission("roles.read")),
 ) -> list[RoleRead]:
     rows = (await db.scalars(select(Role).where(Role.enabled.is_(True)).order_by(Role.name))).all()
     return [RoleRead(id=r.id, code=r.code, name=r.name, description=r.description, is_system=r.is_system, enabled=r.enabled) for r in rows]

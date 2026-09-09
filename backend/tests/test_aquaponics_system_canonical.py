@@ -11,6 +11,7 @@ from app.main import app
 from app.models.actuator import Actuator
 from app.models.actuator_model import ActuatorModel
 from app.models.device import Device
+from app.models.device_template import DeviceTemplate, DeviceTemplateActuator, DeviceTemplateSensor
 from app.models.project import Project
 from app.models.sensor import Sensor
 from app.models.sensor_model import SensorModel
@@ -55,4 +56,76 @@ async def test_aquaponics_system_device_can_own_sensors_and_actuators() -> None:
                 await db.execute(delete(Device).where(Device.id == device_id))
             if system_id:
                 await db.execute(delete(Project).where(Project.id == system_id))
+            await db.commit()
+
+
+@pytest.mark.asyncio
+async def test_device_template_mapping_and_provisioning_use_code_only() -> None:
+    suffix = uuid4().hex[:10].upper()
+    async with AsyncSessionLocal() as db:
+        admin = await db.scalar(select(User).where(User.system_role == UserRole.ADMIN))
+        sensor_model = await db.scalar(select(SensorModel).where(SensorModel.is_active.is_(True)))
+        actuator_model = await db.scalar(select(ActuatorModel).where(ActuatorModel.is_active.is_(True)))
+        assert admin and sensor_model and actuator_model
+        token = create_access_token(str(admin.id), {"role": "ADMIN", "token_version": admin.token_version})
+        headers = {"Authorization": f"Bearer {token}"}
+
+    system_id = device_id = template_id = 0
+    try:
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            template = await client.post(
+                "/api/v1/device-templates",
+                headers=headers,
+                json={"code": f"TPL-{suffix}", "name": "Template code regression"},
+            )
+            assert template.status_code == 201, template.text
+            template_id = template.json()["id"]
+            sensor_mapping = await client.post(
+                f"/api/v1/device-templates/{template_id}/sensors",
+                headers=headers,
+                json={"sensor_model_id": sensor_model.id, "code": sensor_model.code, "sort_order": 0, "is_required": False},
+            )
+            assert sensor_mapping.status_code == 201, sensor_mapping.text
+            assert sensor_mapping.json()["code"] == sensor_model.code
+            assert "slot" + "_code" not in sensor_mapping.json()
+            actuator_mapping = await client.post(
+                f"/api/v1/device-templates/{template_id}/actuators",
+                headers=headers,
+                json={"actuator_model_id": actuator_model.id, "code": actuator_model.code, "sort_order": 0, "is_required": False},
+            )
+            assert actuator_mapping.status_code == 201, actuator_mapping.text
+            assert actuator_mapping.json()["code"] == actuator_model.code
+            assert "slot" + "_code" not in actuator_mapping.json()
+            template_detail = await client.get(f"/api/v1/device-templates/{template_id}", headers=headers)
+            assert template_detail.status_code == 200, template_detail.text
+            assert "slot" + "_code" not in str(template_detail.json())
+
+            system = await client.post(
+                "/api/v1/aquaponics-systems",
+                headers=headers,
+                json={"code": f"AQUA-{suffix}", "name": "Hệ thống template regression"},
+            )
+            assert system.status_code == 201, system.text
+            system_id = system.json()["id"]
+            device = await client.post(
+                f"/api/v1/aquaponics-systems/{system_id}/devices",
+                headers=headers,
+                json={"code": f"DEVICE-{suffix}", "name": "Device template regression", "device_template_id": template_id},
+            )
+            assert device.status_code == 201, device.text
+            device_id = device.json()["id"]
+            assert [item["code"] for item in device.json()["sensors"]] == [sensor_model.code]
+            assert [item["code"] for item in device.json()["actuators"]] == [actuator_model.code]
+    finally:
+        async with AsyncSessionLocal() as db:
+            if device_id:
+                await db.execute(delete(Actuator).where(Actuator.device_id == device_id))
+                await db.execute(delete(Sensor).where(Sensor.device_id == device_id))
+                await db.execute(delete(Device).where(Device.id == device_id))
+            if system_id:
+                await db.execute(delete(Project).where(Project.id == system_id))
+            if template_id:
+                await db.execute(delete(DeviceTemplateSensor).where(DeviceTemplateSensor.device_template_id == template_id))
+                await db.execute(delete(DeviceTemplateActuator).where(DeviceTemplateActuator.device_template_id == template_id))
+                await db.execute(delete(DeviceTemplate).where(DeviceTemplate.id == template_id))
             await db.commit()

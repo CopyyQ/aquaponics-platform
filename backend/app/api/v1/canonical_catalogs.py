@@ -36,7 +36,7 @@ class DeviceTemplateUpdate(BaseModel):
 class TemplateSensorSlotCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     sensor_model_id: int = Field(gt=0)
-    slot_code: str = Field(min_length=2, max_length=80)
+    code: str = Field(min_length=2, max_length=80)
     sort_order: int = 0
     is_required: bool = False
 
@@ -44,7 +44,7 @@ class TemplateSensorSlotCreate(BaseModel):
 class TemplateSensorSlotUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     sensor_model_id: int | None = Field(default=None, gt=0)
-    slot_code: str | None = Field(default=None, min_length=2, max_length=80)
+    code: str | None = Field(default=None, min_length=2, max_length=80)
     sort_order: int | None = None
     is_required: bool | None = None
 
@@ -53,7 +53,6 @@ class TemplateSensorSlotRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     template_id: int
-    slot_code: str
     code: str
     sensor_model_id: int
     sensor_model_name: str
@@ -64,7 +63,7 @@ class TemplateSensorSlotRead(BaseModel):
 class TemplateActuatorSlotCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     actuator_model_id: int = Field(gt=0)
-    slot_code: str = Field(pattern=r"^[A-Z0-9_-]+$", min_length=2, max_length=80)
+    code: str = Field(pattern=r"^[A-Z0-9_-]+$", min_length=2, max_length=80)
     sort_order: int = 0
     is_required: bool = False
 
@@ -72,7 +71,7 @@ class TemplateActuatorSlotCreate(BaseModel):
 class TemplateActuatorSlotUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     actuator_model_id: int | None = Field(default=None, gt=0)
-    slot_code: str | None = Field(default=None, pattern=r"^[A-Z0-9_-]+$", min_length=2, max_length=80)
+    code: str | None = Field(default=None, pattern=r"^[A-Z0-9_-]+$", min_length=2, max_length=80)
     sort_order: int | None = None
     is_required: bool | None = None
 
@@ -80,7 +79,6 @@ class TemplateActuatorSlotUpdate(BaseModel):
 class TemplateActuatorSlotRead(BaseModel):
     id: int
     template_id: int
-    slot_code: str
     code: str
     actuator_model_id: int
     actuator_model_name: str
@@ -148,13 +146,13 @@ class UserRead(BaseModel):
 
 
 def _sensor_slot(row: DeviceTemplateSensor) -> TemplateSensorSlotRead:
-    return TemplateSensorSlotRead(id=row.id, template_id=row.device_template_id, slot_code=row.slot_code,
-        code=row.sensor_model.code, sensor_model_id=row.sensor_model_id, sensor_model_name=row.sensor_model.name,
+    return TemplateSensorSlotRead(id=row.id, template_id=row.device_template_id, code=row.code,
+        sensor_model_id=row.sensor_model_id, sensor_model_name=row.sensor_model.name,
         sort_order=row.sort_order, is_required=row.is_required)
 
 
 def _actuator_slot(row: DeviceTemplateActuator) -> TemplateActuatorSlotRead:
-    return TemplateActuatorSlotRead(id=row.id, template_id=row.device_template_id, slot_code=row.code, code=row.code,
+    return TemplateActuatorSlotRead(id=row.id, template_id=row.device_template_id, code=row.code,
         actuator_model_id=row.actuator_model_id, actuator_model_name=row.actuator_model.name,
         sort_order=row.sort_order, is_required=row.is_required)
 
@@ -271,8 +269,7 @@ async def list_template_actuators(template_id: int, db: AsyncSession = Depends(g
 async def add_template_actuator(template_id: int, payload: TemplateActuatorSlotCreate, db: AsyncSession = Depends(get_db), _: User = Depends(require_permission("device_templates.update"))) -> TemplateActuatorSlotRead:
     await _template(db, template_id)
     if await db.get(ActuatorModel, payload.actuator_model_id) is None: raise HTTPException(422, "ActuatorModel không tồn tại")
-    values = payload.model_dump(); values["code"] = values.pop("slot_code")
-    row = DeviceTemplateActuator(device_template_id=template_id, **values); db.add(row); await db.commit()
+    row = DeviceTemplateActuator(device_template_id=template_id, **payload.model_dump()); db.add(row); await db.commit()
     return _actuator_slot(await _actuator_mapping(db, template_id, row.id))
 
 
@@ -285,7 +282,7 @@ async def get_template_actuator(template_id: int, mapping_id: int, db: AsyncSess
 async def update_template_actuator(template_id: int, mapping_id: int, payload: TemplateActuatorSlotUpdate, db: AsyncSession = Depends(get_db), _: User = Depends(require_permission("device_templates.update"))) -> TemplateActuatorSlotRead:
     row = await _actuator_mapping(db, template_id, mapping_id)
     for key, value in payload.model_dump(exclude_unset=True).items():
-        setattr(row, "code" if key == "slot_code" else key, value)
+        setattr(row, key, value)
     await db.commit(); return _actuator_slot(await _actuator_mapping(db, template_id, mapping_id))
 
 

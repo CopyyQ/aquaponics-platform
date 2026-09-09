@@ -60,6 +60,13 @@ def test_template_slot_detail_gets_and_separate_inputs_exist() -> None:
     schemas = _openapi()["components"]["schemas"]
     assert "actuator_model_id" not in schemas["TemplateSensorSlotCreate"]["properties"]
     assert "sensor_model_id" not in schemas["TemplateActuatorSlotCreate"]["properties"]
+    for name in (
+        "TemplateSensorSlotCreate", "TemplateSensorSlotUpdate", "TemplateSensorSlotRead",
+        "TemplateActuatorSlotCreate", "TemplateActuatorSlotUpdate", "TemplateActuatorSlotRead",
+    ):
+        properties = schemas[name]["properties"]
+        assert "code" in properties
+        assert "slot" + "_code" not in properties
 
 
 def test_runtime_resource_responses_are_typed() -> None:

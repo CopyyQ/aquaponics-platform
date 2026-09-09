@@ -50,6 +50,15 @@ def main() -> int:
             reason = violation(source_layer, module, path)
             if reason:
                 errors.append(f"{path.relative_to(APP_ROOT.parent)}:{line}: {module}: {reason}")
+    telemetry_path = APP_ROOT / "services" / "telemetry_service.py"
+    telemetry_tree = ast.parse(telemetry_path.read_text(encoding="utf-8"), filename=str(telemetry_path))
+    for node in ast.walk(telemetry_tree):
+        if isinstance(node, ast.Name) and node.id == "evaluate_operational_rules_for_sensor":
+            errors.append(
+                "app/services/telemetry_service.py: Sensor telemetry may only invoke "
+                "the canonical ThresholdAlertConfig evaluator"
+            )
+            break
     if errors:
         print("\n".join(errors))
         return 1

@@ -36,6 +36,19 @@ COMMAND_LABELS = {"ACKNOWLEDGED": "Đã xác nhận", "FAILED": "Thất bại", 
 OPERATOR_LABELS = {"LT": "<", "LTE": "≤", "GT": ">", "GTE": "≥", "EQ": "=", "OUTSIDE": "ngoài"}
 
 
+def _event_heading(event: str, risk: str, *, canonical: bool) -> str:
+    label = RISK_LABELS.get(risk, risk)
+    heading = {
+        "OPEN": f"🔴 CẢNH BÁO MỚI — MỨC ĐỘ {label}",
+        "ACTIVE_SYNC": f"🟠 ĐỒNG BỘ CẢNH BÁO ĐANG HOẠT ĐỘNG — MỨC ĐỘ {label}",
+        "ESCALATED": f"🔴 CẢNH BÁO ĐÃ TĂNG MỨC ĐỘ — {label}",
+        "REMINDER": f"⏰ NHẮC LẠI CẢNH BÁO — MỨC ĐỘ {label}",
+        "RECOVERED": "✅ ĐÃ TRỞ VỀ BÌNH THƯỜNG",
+        "RESOLVED": "✅ CẢNH BÁO ĐÃ ĐƯỢC XỬ LÝ",
+    }.get(event, f"🔴 CẢNH BÁO — MỨC ĐỘ {label}")
+    return f"{heading} — HỆ THỐNG AQUAPONICS" if canonical else heading
+
+
 def _number(value: object, digits: int = 3) -> str:
     if not isinstance(value, (float, int)):
         return "—"
@@ -72,9 +85,10 @@ def _duration(value: object) -> str:
 def format_operational_message(payload: dict) -> str:
     if payload.get("resource_type") and payload.get("metric_type"):
         return format_canonical_operational_message(payload)
+    event = str(payload.get("event_type") or "OPEN")
     risk = str(payload.get("business_risk_level") or "MEDIUM")
     lines = [
-        f"🔴 CẢNH BÁO {RISK_LABELS.get(risk, risk)}",
+        _event_heading(event, risk, canonical=False),
         "",
         f"Hệ thống Aquaponics: {payload.get('project_name', '—')}",
         f"Thiết bị: {payload.get('device_name', '—')}",
@@ -104,7 +118,7 @@ def format_canonical_operational_message(payload: dict) -> str:
     direction = str(payload.get("threshold_direction") or "")
     resource = str(payload.get("resource_name") or "Thiết bị")
     metric = str(payload.get("metric_type") or "").replace("_", " ")
-    heading = "✅ CẢNH BÁO ĐÃ ĐƯỢC XỬ LÝ" if event == "RESOLVED" else "✅ SỰ CỐ ĐÃ PHỤC HỒI" if event == "RECOVERED" else f"🔴 CẢNH BÁO {RISK_LABELS.get(risk, risk)} — HỆ THỐNG AQUAPONICS"
+    heading = _event_heading(event, risk, canonical=True)
     lines = [heading, "", f"MỨC ĐỘ: {RISK_LABELS.get(risk, risk)}", f"HỆ THỐNG: {payload.get('project_name', '—')}", f"THIẾT BỊ: {payload.get('device_name', '—')}", f"NGUỒN: {resource}"]
     if payload.get("title"):
         lines.extend(["", "SỰ CỐ:", str(payload["title"])])
@@ -127,7 +141,9 @@ def format_canonical_operational_message(payload: dict) -> str:
     if payload.get("consequence"):
         lines.extend(["", "Ảnh hưởng:", str(payload["consequence"])])
     actions = payload.get("recommended_actions")
-    if isinstance(actions, list) and actions:
+    if isinstance(actions, str) and actions.strip():
+        lines.extend(["", "Khuyến nghị xử lý:", actions.strip()])
+    elif isinstance(actions, list) and actions:
         lines.extend(["", "Khuyến nghị xử lý:"])
         lines.extend(f"• {item}" for item in actions)
     elif payload.get("recommended_action"):
@@ -263,6 +279,9 @@ async def reconcile_active_incident_notifications(
                         "notification_generation": generation,
                         "target_recipient_id": recipient.id if recipient is not None else None,
                         "business_risk_level": incident.business_risk_level_snapshot,
+                        "started_at": incident.started_at.isoformat(),
+                        "opened_at": incident.opened_at.isoformat() if incident.opened_at else None,
+                        "duration_seconds": max(0, int((datetime.now(UTC) - incident.started_at).total_seconds())),
                     },
                     status="PENDING",
                     available_at=datetime.now(UTC),
@@ -299,31 +318,22 @@ async def enqueue_operational_event(
 
 
 def _payload_at_delivery(outbox: NotificationOutbox, incident: OperationalIncident, now: datetime) -> dict:
-    event_at = incident.resolved_at if outbox.event_type == "RESOLVED" else incident.normalized_at if outbox.event_type == "RECOVERED" else now
-    canonical_keys = {
-        "rule_name", "condition_key", "title", "message", "consequence",
-        "recommended_action", "recommended_actions", "catalog_version",
-        "project_name", "project_code", "device_name", "device_code",
-        "sensor_name", "sensor_code", "actuator_name", "actuator_code",
-        "resource_type", "resource_name", "metric_type", "threshold_direction",
-        "operator", "threshold", "lower", "upper", "unit", "value",
-        "voltage_v", "current_a", "desired_state", "reported_state", "recorded_at",
-    }
-    canonical = {
-        key: value
-        for key, value in (incident.trigger_snapshot or {}).items()
-        if key in canonical_keys and value is not None
-    }
-    return {
-        **outbox.payload_snapshot,
-        **canonical,
-        "incident_id": incident.id,
-        "event_type": outbox.event_type,
-        "business_risk_level": incident.business_risk_level_snapshot,
-        "started_at": incident.started_at.isoformat(),
-        "opened_at": incident.opened_at.isoformat() if incident.opened_at else None,
-        "duration_seconds": max(0, int(((event_at or now) - incident.started_at).total_seconds())),
-    }
+    """Return the immutable event snapshot plus delivery identity metadata.
+
+    New outboxes snapshot all presentation fields when enqueued. The setdefault
+    values retain compatibility for historical rows without allowing a later
+    Incident trigger snapshot to rewrite an older event's content.
+    """
+    payload = dict(outbox.payload_snapshot or {})
+    payload["incident_id"] = incident.id
+    payload["event_type"] = outbox.event_type
+    payload.setdefault("business_risk_level", incident.business_risk_level_snapshot)
+    payload.setdefault("started_at", incident.started_at.isoformat())
+    payload.setdefault("opened_at", incident.opened_at.isoformat() if incident.opened_at else None)
+    if "duration_seconds" not in payload:
+        snapshot_at = outbox.created_at or outbox.available_at or incident.started_at
+        payload["duration_seconds"] = max(0, int((snapshot_at - incident.started_at).total_seconds()))
+    return payload
 
 
 def _delivery_identity(outbox: NotificationOutbox, incident: OperationalIncident | None) -> str:
@@ -563,7 +573,7 @@ async def enqueue_due_reminders(db: AsyncSession, *, now: datetime | None = None
             continue
         result = await db.execute(
             insert(NotificationOutbox)
-            .values(incident_id=incident.id, project_id=incident.project_id, event_type="REMINDER", idempotency_key=f"incident:{incident.id}:REMINDER:{sequence}", payload_snapshot={**incident.trigger_snapshot, "incident_id": incident.id, "event_type": "REMINDER", "reminder_sequence": sequence, "technical_severity": incident.technical_severity, "business_risk_level": incident.business_risk_level_snapshot, "started_at": incident.started_at.isoformat(), "opened_at": incident.opened_at.isoformat()}, status="PENDING", available_at=now, attempt_count=0)
+            .values(incident_id=incident.id, project_id=incident.project_id, event_type="REMINDER", idempotency_key=f"incident:{incident.id}:REMINDER:{sequence}", payload_snapshot={**incident.trigger_snapshot, "incident_id": incident.id, "event_type": "REMINDER", "reminder_sequence": sequence, "technical_severity": incident.technical_severity, "business_risk_level": incident.business_risk_level_snapshot, "started_at": incident.started_at.isoformat(), "opened_at": incident.opened_at.isoformat(), "duration_seconds": max(0, int((now - incident.started_at).total_seconds()))}, status="PENDING", available_at=now, attempt_count=0)
             .on_conflict_do_nothing(index_elements=["idempotency_key"])
             .returning(NotificationOutbox.id)
         )

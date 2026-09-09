@@ -16,10 +16,11 @@ if TYPE_CHECKING:
 
 
 class Project(Base, TimestampMixin, SoftDeleteMixin):
-    __tablename__ = "projects"
+    """Internal compatibility model for the canonical Aquaponics System."""
+    __tablename__ = "aquaponics_systems"
     __table_args__ = (
-        Index("ix_projects_status", "status"),
-        Index("ix_projects_disabled_by_user_id", "disabled_by_user_id"),
+        Index("ix_aquaponics_systems_status", "status"),
+        Index("ix_aquaponics_systems_disabled_by_user_id", "disabled_by_user_id"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)

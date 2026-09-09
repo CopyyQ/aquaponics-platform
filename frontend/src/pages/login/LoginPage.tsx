@@ -54,7 +54,8 @@ export function LoginPage() {
     return <Navigate to={getHomePath(role)} replace />
   }
 
-  const openHome = () => {
+  const openHome = async () => {
+    await useAuthStore.getState().hydrate()
     const currentRole = useAuthStore.getState().user?.system_role
 
     navigate(getHomePath(currentRole), {

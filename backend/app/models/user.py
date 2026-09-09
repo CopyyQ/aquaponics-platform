@@ -21,6 +21,8 @@ class User(Base, TimestampMixin, SoftDeleteMixin):
     system_role: Mapped[UserRole] = mapped_column(
         Enum(UserRole, name="user_system_role"), default=UserRole.VIEWER
     )
+    role_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("roles.id", ondelete="RESTRICT"), index=True)
+    role = relationship("Role")
     status: Mapped[UserStatus] = mapped_column(
         Enum(UserStatus, name="user_status"), default=UserStatus.ACTIVE
     )

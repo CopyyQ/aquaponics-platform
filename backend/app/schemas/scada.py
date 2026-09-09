@@ -49,7 +49,6 @@ class ScadaInventoryDevice(BaseModel):
     name: str
     device_template_id: int | None
     template_code: str | None
-    device_kind: str
     enabled: bool
     connectivity: str
     last_seen_at: datetime | None
@@ -78,7 +77,6 @@ class ScadaInventory(BaseModel):
     devices: list[ScadaInventoryDevice]
     sensors: list[ScadaInventorySensor]
     actuators: list[ScadaInventoryActuator]
-    energy_monitors: list[ScadaInventoryDevice]
 
 
 class ScadaRuntimeDevice(BaseModel):
@@ -110,8 +108,10 @@ class ScadaRuntimeActuator(BaseModel):
 
 class ScadaRuntimeAlert(BaseModel):
     id: int
-    sensor_id: int
-    device_id: int
+    resource_type: Literal["SENSOR", "ACTUATOR"]
+    sensor_id: int | None
+    actuator_id: int | None
+    device_id: int | None
     severity: str
     status: str
     title: str
@@ -124,20 +124,6 @@ class ScadaRuntimeState(BaseModel):
     sensors: list[ScadaRuntimeSensor]
     actuators: list[ScadaRuntimeActuator]
     alerts: list[ScadaRuntimeAlert]
-
-
-class ScadaEnergyMonitorRuntime(BaseModel):
-    device_id: int
-    current_power: float | None
-    output_voltage: float | None
-    input_voltage: float | None
-    load_current: float | None
-    input_current: float | None
-    energy_total: float | None
-    valid_measurements: int
-    expected_measurements: int
-    latest_received_at: datetime | None
-    issue_severity: str | None
 
 
 class ScadaIssue(BaseModel):
@@ -186,21 +172,25 @@ class ScadaSummary(BaseModel):
     commands_failed: int
     commands_timeout: int
     disabled_actuators: int
-    active_energy_monitors: int
-    connected_energy_monitors: int
     open_alerts: int
     critical_alerts: int
     warning_alerts: int
     unplaced_entities: int
 
 
+class ScadaAquaponicsSystem(BaseModel):
+    id: int
+    code: str
+    name: str
+    status: str
+
+
 class ScadaRuntimeResponse(BaseModel):
-    project: dict[str, object]
+    aquaponics_system: ScadaAquaponicsSystem
     dashboard: ScadaDashboardInfo
     layout: ScadaLayout
     inventory: ScadaInventory
     runtime: ScadaRuntimeState
-    energy_monitor_runtime: list[ScadaEnergyMonitorRuntime]
     summary: ScadaSummary
     issues: list[ScadaIssue]
     unplaced_entities: list[ScadaUnplacedEntity]

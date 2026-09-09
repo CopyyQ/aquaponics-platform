@@ -159,7 +159,7 @@ class ActuatorOperationalConclusionRead(BaseModel):
     explanation: str
 
 
-class ActuatorActiveIncidentRead(BaseModel):
+class ActuatorActiveAlertRead(BaseModel):
     id: int
     technical_severity: Literal["WARNING", "CRITICAL"]
     business_risk_level: str
@@ -189,7 +189,7 @@ class ProjectOverviewActuatorRead(BaseModel):
     latest_command: ActuatorLatestCommandRead | None
     electrical: ActuatorElectricalRead
     operational_conclusion: ActuatorOperationalConclusionRead
-    active_incident: ActuatorActiveIncidentRead | None
+    active_incident: ActuatorActiveAlertRead | None
 
 
 class ActuatorInventoryRead(BaseModel):

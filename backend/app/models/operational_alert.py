@@ -14,7 +14,7 @@ class AlertRule(Base, TimestampMixin):
     __tablename__ = "alert_rules"
     __table_args__ = (
         CheckConstraint("target_type IN ('SENSOR','ACTUATOR')", name="alert_rule_target_type_allowed"),
-        CheckConstraint("evaluator_type IN ('THRESHOLD','THRESHOLD_BANDS','RANGE_BANDS','DIGITAL_STATE','THRESHOLD_DURATION','ACTUATOR_FEEDBACK','SCHEDULE_FEEDBACK','BASELINE_DEVIATION','WINDOW_DURATION','TREND')", name="alert_rule_evaluator_type_allowed"),
+        CheckConstraint("evaluator_type IN ('THRESHOLD','THRESHOLD_BANDS','RANGE_BANDS','DIGITAL_STATE','THRESHOLD_DURATION','BASELINE_DEVIATION','WINDOW_DURATION','TREND')", name="alert_rule_evaluator_type_allowed"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
@@ -108,10 +108,10 @@ class AlertRuleSensorModel(Base):
 
 class AlertRuleProjectOverride(Base, TimestampMixin):
     __tablename__ = "alert_rule_project_overrides"
-    __table_args__ = (UniqueConstraint("rule_id", "project_id", name="uq_alert_rule_project_overrides_rule_scope"),)
+    __table_args__ = (UniqueConstraint("rule_id", "aquaponics_system_id", name="uq_alert_rule_system_overrides_rule_scope"),)
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
     rule_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("alert_rules.id", ondelete="CASCADE"))
-    project_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("projects.id", ondelete="CASCADE"), index=True)
+    project_id: Mapped[int] = mapped_column("aquaponics_system_id", BigInteger, ForeignKey("aquaponics_systems.id", ondelete="CASCADE"), index=True)
     config: Mapped[dict[str, Any]] = mapped_column(JSONB)
     is_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"))
 
@@ -136,44 +136,19 @@ class AlertRuleSensorOverride(Base, TimestampMixin):
     is_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"))
 
 
-class ActuatorFeedbackBinding(Base, TimestampMixin):
-    __tablename__ = "actuator_feedback_bindings"
-    __table_args__ = (
-        UniqueConstraint("actuator_id", "feedback_role", name="uq_actuator_feedback_role"),
-        CheckConstraint("feedback_role IN ('SUPPLY_VOLTAGE','RUNNING_CURRENT')", name="actuator_feedback_role_allowed"),
-        CheckConstraint("data_type IN ('FLOAT')", name="data_type_allowed"),
-        CheckConstraint("lower_threshold IS NULL OR upper_threshold IS NULL OR lower_threshold < upper_threshold", name="feedback_binding_threshold_order"),
-    )
-
-    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
-    actuator_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("actuators.id", ondelete="CASCADE"), index=True)
-    sensor_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("sensors.id", ondelete="RESTRICT"), index=True)
-    feedback_role: Mapped[str] = mapped_column(String(40), default="RUNNING_CURRENT")
-    model_feedback_id: Mapped[int | None] = mapped_column(
-        BigInteger, ForeignKey("actuator_model_feedback_definitions.id", ondelete="SET NULL"), index=True
-    )
-    value_key: Mapped[str] = mapped_column(String(80), default="current_a", server_default="current_a")
-    unit: Mapped[str] = mapped_column(String(50), default="A", server_default="A")
-    data_type: Mapped[str] = mapped_column(String(30), default="FLOAT", server_default="FLOAT")
-    lower_threshold: Mapped[float | None] = mapped_column(Float)
-    upper_threshold: Mapped[float | None] = mapped_column(Float)
-    is_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"))
-    created_by: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("users.id", ondelete="SET NULL"))
-    updated_by: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("users.id", ondelete="SET NULL"))
-
-
 class OperationalIncident(Base, TimestampMixin):
     __tablename__ = "operational_incidents"
     __table_args__ = (
-        Index("ix_operational_incidents_project_status", "project_id", "status"),
+        Index("ix_operational_incidents_aquaponics_system_status", "aquaponics_system_id", "status"),
         Index("ix_operational_incidents_rule_status", "rule_id", "status"),
-        Index("uq_active_operational_incident", "rule_id", "context_key", unique=True, postgresql_where=text("status IN ('PENDING','OPEN','ACKNOWLEDGED','NORMALIZED')")),
+        Index("uq_active_operational_incident", "rule_id", "context_key", unique=True, postgresql_where=text("status IN ('PENDING','OPEN','ACKNOWLEDGED')")),
+        Index("uq_active_operational_incident_project_context", "aquaponics_system_id", "context_key", unique=True, postgresql_where=text("status IN ('PENDING','OPEN','ACKNOWLEDGED')")),
         CheckConstraint("status IN ('PENDING','OPEN','ACKNOWLEDGED','NORMALIZED','RESOLVED')", name="operational_incident_status_allowed"),
         CheckConstraint("technical_severity IN ('WARNING','CRITICAL')", name="operational_incident_severity_allowed"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
-    project_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("projects.id", ondelete="RESTRICT"))
+    project_id: Mapped[int] = mapped_column("aquaponics_system_id", BigInteger, ForeignKey("aquaponics_systems.id", ondelete="RESTRICT"))
     # NULL identifies the canonical Sensor-threshold path. AlertRule remains a
     # compatibility/advanced actuator mechanism during the phased migration.
     rule_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("alert_rules.id", ondelete="RESTRICT"))
@@ -203,7 +178,15 @@ class NotificationOutbox(Base):
     __table_args__ = (Index("ix_notification_outbox_status_available", "status", "available_at"),)
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
-    incident_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("operational_incidents.id", ondelete="CASCADE"))
+    # Incidents remain the source for threshold alerts.  Other operational
+    # events (currently project activity) use the same durable outbox without
+    # manufacturing a fake incident.
+    incident_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("operational_incidents.id", ondelete="CASCADE"))
+    project_id: Mapped[int | None] = mapped_column("aquaponics_system_id", BigInteger, ForeignKey("aquaponics_systems.id", ondelete="CASCADE"), index=True)
+    source_type: Mapped[str] = mapped_column(String(30), default="INCIDENT", server_default="INCIDENT")
+    target_recipient_id: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("project_notification_recipients.id", ondelete="SET NULL"), index=True
+    )
     event_type: Mapped[str] = mapped_column(String(30))
     idempotency_key: Mapped[str] = mapped_column(String(200), unique=True)
     payload_snapshot: Mapped[dict[str, Any]] = mapped_column(JSONB)
@@ -222,7 +205,7 @@ class NotificationDelivery(Base, TimestampMixin):
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
     outbox_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("notification_outbox.id", ondelete="CASCADE"))
-    incident_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("operational_incidents.id", ondelete="CASCADE"))
+    incident_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("operational_incidents.id", ondelete="CASCADE"))
     channel: Mapped[str] = mapped_column(String(30))
     recipient_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("project_notification_recipients.id", ondelete="SET NULL"))
     recipient_reference: Mapped[str] = mapped_column(String(120))
@@ -234,4 +217,6 @@ class NotificationDelivery(Base, TimestampMixin):
     sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     failed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     error_category: Mapped[str | None] = mapped_column(String(60))
+    provider_status_code: Mapped[int | None] = mapped_column(Integer)
+    error_message: Mapped[str | None] = mapped_column(Text)
     provider_message_id: Mapped[str | None] = mapped_column(String(120))

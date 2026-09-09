@@ -1,6 +1,7 @@
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,8 +13,14 @@ from app.schemas.auth import ChangePasswordRequest, LoginRequest, TokenResponse
 from app.schemas.common import MessageResponse
 from app.schemas.user import UserRead, UserSelfUpdate
 from app.services.audit_service import write_audit
+from app.services.permission_service import get_effective_permissions
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+
+class SessionRead(BaseModel):
+    user: UserRead
+    permissions: list[str]
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -38,9 +45,9 @@ async def login(payload: LoginRequest, db: AsyncSession = Depends(get_db)) -> To
     )
 
 
-@router.get("/me", response_model=UserRead)
-async def me(user: User = Depends(get_authenticated_user)) -> User:
-    return user
+@router.get("/session", response_model=SessionRead)
+async def session(user: User = Depends(get_authenticated_user), db: AsyncSession = Depends(get_db)) -> SessionRead:
+    return SessionRead(user=UserRead.model_validate(user), permissions=sorted(await get_effective_permissions(db, user)))
 
 
 @router.patch("/me", response_model=UserRead)

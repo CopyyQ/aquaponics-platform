@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-import math
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.enums import DeviceKind, DeviceStatus
+from app.core.enums import DeviceStatus, DeviceType
 from app.models.actuator import Actuator, ActuatorCommand
-from app.models.alert import SensorAlert
+from app.models.operational_alert import OperationalIncident
 from app.models.device import Device
 from app.models.project import Project
 from app.models.scada_dashboard import ScadaDashboard
@@ -27,7 +26,6 @@ from app.schemas.scada import (
     ScadaBinding,
     ScadaConnection,
     ScadaDashboardInfo,
-    ScadaEnergyMonitorRuntime,
     ScadaInventory,
     ScadaInventoryActuator,
     ScadaInventoryDevice,
@@ -45,10 +43,7 @@ from app.schemas.scada import (
     ScadaSymbol,
     ScadaUnplacedEntity,
 )
-from app.services.energy_monitor_service import (
-    ENERGY_SENSOR_SPEC_BY_MODEL,
-    ENERGY_SENSOR_SPECS,
-)
+from app.services.measurement_quality import classify_measurement_quality
 from app.services.project_activity_service import dispatch_project_activity, record_project_activity
 
 
@@ -78,14 +73,6 @@ def _is_live_sensor(sensor: Sensor, device: Device) -> bool:
         and sensor.is_enabled
         and not sensor.is_deleted
         and sensor.deleted_at is None
-    )
-
-
-def _is_noncanonical_energy_sensor(sensor: Sensor, device: Device) -> bool:
-    return bool(
-        device.device_template
-        and device.device_template.device_kind == DeviceKind.ENERGY_MONITOR.value
-        and sensor.sensor_model.code not in ENERGY_SENSOR_SPEC_BY_MODEL
     )
 
 
@@ -162,22 +149,13 @@ def _default_layout(devices: list[Device]) -> ScadaLayout:
         ScadaConnection(id="pipe-filter-grow", type="WATER_PIPE", source_symbol_id="infra-bio-filter", target_symbol_id="infra-grow-bed", flow_direction="SOURCE_TO_TARGET"),
         ScadaConnection(id="pipe-grow-sump", type="WATER_PIPE", source_symbol_id="infra-grow-bed", target_symbol_id="infra-sump-tank", flow_direction="SOURCE_TO_TARGET"),
     ]
-    controller_index = energy_index = actuator_index = 0
+    controller_index = actuator_index = 0
     for device in devices:
         if not _is_live_device(device):
             continue
-        is_energy = bool(
-            device.device_template
-            and device.device_template.device_kind == DeviceKind.ENERGY_MONITOR.value
-        )
-        if is_energy:
-            position = (4.5 + energy_index * 3.2, 0, 2.8)
-            symbol_type = "ENERGY_MONITOR"
-            energy_index += 1
-        else:
-            position = (-6.5 + controller_index * 3.2, 0, 2.8)
-            symbol_type = "CONTROLLER_DEVICE"
-            controller_index += 1
+        position = (-6.5 + controller_index * 3.2, 0, 2.8)
+        symbol_type = "CONTROLLER_DEVICE"
+        controller_index += 1
         symbols.append(
             ScadaSymbol(
                 id=f"device-{device.id}",
@@ -226,21 +204,9 @@ def _sensor_runtime(
     if received_at.tzinfo is None:
         received_at = received_at.replace(tzinfo=timezone.utc)
     freshness = "FRESH" if now - received_at <= STALE_AFTER else "STALE"
-    if not math.isfinite(reading.value):
-        quality = "INVALID"
-        reason = "Giá trị không phải số hữu hạn."
-    elif (
-        sensor.lower_threshold is not None
-        and reading.value < sensor.lower_threshold
-    ) or (
-        sensor.upper_threshold is not None
-        and reading.value > sensor.upper_threshold
-    ):
-        quality = "OUT_OF_RANGE"
-        reason = "Giá trị nằm ngoài ngưỡng cấu hình."
-    else:
-        quality = "VALID"
-        reason = None
+    # Engineering quality is independent from operational Alert thresholds.
+    # Threshold state comes from threshold_alert_configs/OperationalIncident.
+    quality, reason, _, _ = classify_measurement_quality(sensor.sensor_model.code, reading.value)
     return ScadaRuntimeSensor(
         id=sensor.id,
         value=reading.value,
@@ -299,12 +265,7 @@ def _validate_layout(layout: ScadaLayout, devices: list[Device]) -> list[str]:
 
 async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeResponse:
     devices = await project_scada_devices(db, project.id)
-    all_sensors = [
-        sensor
-        for device in devices
-        for sensor in device.sensors
-        if not _is_noncanonical_energy_sensor(sensor, device)
-    ]
+    all_sensors = [sensor for device in devices for sensor in device.sensors]
     all_actuators = [actuator for device in devices for actuator in device.actuators]
     readings = await latest_sensor_readings(db, [sensor.id for sensor in all_sensors])
     commands = await latest_actuator_commands(db, [actuator.id for actuator in all_actuators])
@@ -333,8 +294,6 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
     runtime_devices: list[ScadaRuntimeDevice] = []
     runtime_sensors: list[ScadaRuntimeSensor] = []
     runtime_actuators: list[ScadaRuntimeActuator] = []
-    energy_monitors: list[ScadaInventoryDevice] = []
-    energy_runtime: list[ScadaEnergyMonitorRuntime] = []
     issues: list[ScadaIssue] = []
 
     active_devices = [device for device in devices if _is_live_device(device)]
@@ -351,10 +310,11 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
         if _is_live_actuator(actuator, device)
     ]
     active_sensor_ids = {sensor.id for sensor in active_sensors}
-    active_alerts = [alert for alert in alerts if alert.sensor_id in active_sensor_ids]
-    alerts_by_sensor: dict[int, list[SensorAlert]] = defaultdict(list)
+    active_actuator_ids = {actuator.id for actuator in active_actuators}
+    active_alerts = [alert for alert in alerts if alert.sensor_id in active_sensor_ids or alert.actuator_id in active_actuator_ids]
+    alerts_by_sensor: dict[int, list[OperationalIncident]] = defaultdict(list)
     for alert in active_alerts:
-        alerts_by_sensor[alert.sensor_id].append(alert)
+        if alert.sensor_id is not None: alerts_by_sensor[alert.sensor_id].append(alert)
 
     for device in devices:
         template = device.device_template
@@ -364,7 +324,6 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
             name=device.name,
             device_template_id=device.device_template_id,
             template_code=template.code if template else None,
-            device_kind=template.device_kind if template else DeviceKind.GENERIC.value,
             enabled=_is_live_device(device),
             connectivity=_connectivity(device) if _is_live_device(device) else "DISABLED",
             last_seen_at=device.last_seen_at,
@@ -377,8 +336,6 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
                 last_seen_at=device.last_seen_at,
             )
         )
-        if item.device_kind == DeviceKind.ENERGY_MONITOR.value:
-            energy_monitors.append(item)
         if not _is_live_device(device):
             issues.append(
                 ScadaIssue(
@@ -411,8 +368,6 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
             )
 
         for sensor in device.sensors:
-            if _is_noncanonical_energy_sensor(sensor, device):
-                continue
             enabled = _is_live_sensor(sensor, device)
             inventory_sensors.append(
                 ScadaInventorySensor(
@@ -431,13 +386,13 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
                 continue
             sensor_alerts = alerts_by_sensor.get(sensor.id, [])
             if sensor_alerts:
-                alert = min(sensor_alerts, key=lambda item: SEVERITY_ORDER.get(_value(item.severity), 9))
-                severity = _value(alert.severity)
+                alert = min(sensor_alerts, key=lambda item: SEVERITY_ORDER.get(item.technical_severity, 9))
+                severity = alert.technical_severity
                 issues.append(
                     ScadaIssue(
                         id=f"sensor-{sensor.id}-alert",
                         severity=severity if severity in SEVERITY_ORDER else "WARNING",
-                        title=alert.message,
+                        title=str((alert.trigger_snapshot or {}).get("message") or "Cảnh báo Sensor"),
                         root_cause=sensor.name,
                         affected_entities=[device.name, sensor.name],
                         current_state=(
@@ -535,57 +490,18 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
                     )
                 )
 
-    for energy in energy_monitors:
-        sensor_items = [
-            item
-            for item in inventory_sensors
-            if item.device_id == energy.id
-            and item.enabled
-            and item.sensor_model_code in ENERGY_SENSOR_SPEC_BY_MODEL
-        ]
-        states = {state.id: state for state in runtime_sensors}
-        power = next((states[item.id].value for item in sensor_items if item.sensor_model_code == "POWER_W"), None)
-        output_voltage = next((states[item.id].value for item in sensor_items if item.sensor_model_code == "OUTPUT_VOLTAGE_V"), None)
-        input_voltage = next((states[item.id].value for item in sensor_items if item.sensor_model_code == "INPUT_VOLTAGE_V"), None)
-        load_current = next((states[item.id].value for item in sensor_items if item.sensor_model_code == "LOAD_CURRENT_A"), None)
-        input_current = next((states[item.id].value for item in sensor_items if item.sensor_model_code == "INPUT_CURRENT_A"), None)
-        energy_total = next((states[item.id].value for item in sensor_items if item.sensor_model_code == "ENERGY_TOTAL_WH"), None)
-        valid = [states[item.id] for item in sensor_items if states[item.id].freshness == "FRESH" and states[item.id].quality == "VALID"]
-        latest_received = max((states[item.id].received_at for item in sensor_items if states[item.id].received_at), default=None)
-        issue_severity = None
-        if energy.connectivity == "OFFLINE":
-            issue_severity = "HIGH"
-        elif energy.connectivity == "WAITING_CONNECTION" or len(valid) < len(ENERGY_SENSOR_SPECS):
-            issue_severity = "WARNING"
-        energy_runtime.append(
-            ScadaEnergyMonitorRuntime(
-                device_id=energy.id,
-                current_power=power,
-                output_voltage=output_voltage,
-                input_voltage=input_voltage,
-                load_current=load_current,
-                input_current=input_current,
-                energy_total=energy_total,
-                valid_measurements=len(valid),
-                expected_measurements=len(ENERGY_SENSOR_SPECS),
-                latest_received_at=latest_received,
-                issue_severity=issue_severity,
-            )
-        )
-
     bindings = _layout_bindings(layout)
     unplaced: list[ScadaUnplacedEntity] = []
     for device in active_devices:
         if device.id not in bindings["DEVICE"]:
             template = device.device_template
-            is_energy = bool(template and template.device_kind == DeviceKind.ENERGY_MONITOR.value)
             unplaced.append(
                 ScadaUnplacedEntity(
                     entity_type="DEVICE",
                     entity_id=device.id,
                     name=device.name,
                     code=device.code,
-                    suggested_symbol_type="ENERGY_MONITOR" if is_energy else "CONTROLLER_DEVICE",
+                    suggested_symbol_type="CONTROLLER_DEVICE",
                     reason="Device active chưa có symbol trong layout.",
                 )
             )
@@ -634,12 +550,14 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
     alert_runtime = [
         ScadaRuntimeAlert(
             id=alert.id,
+            resource_type=(alert.trigger_snapshot or {}).get("resource_type") or ("ACTUATOR" if alert.actuator_id else "SENSOR"),
             sensor_id=alert.sensor_id,
-            device_id=sensor_by_id[alert.sensor_id].device_id,
-            severity=_value(alert.severity),
-            status=_value(alert.status),
-            title=alert.message,
-            value=alert.trigger_value,
+            actuator_id=alert.actuator_id,
+            device_id=alert.device_id,
+            severity=alert.technical_severity,
+            status=alert.status,
+            title=str((alert.trigger_snapshot or {}).get("message") or (alert.trigger_snapshot or {}).get("rule_name") or "Cảnh báo vận hành"),
+            value=(alert.trigger_snapshot or {}).get("value"),
             timestamp=alert.started_at,
         )
         for alert in active_alerts
@@ -667,22 +585,19 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
         commands_failed=sum(state.command_status == "FAILED" for state in active_actuator_states),
         commands_timeout=sum(state.command_status == "TIMEOUT" for state in active_actuator_states),
         disabled_actuators=len(all_actuators) - len(active_actuators),
-        active_energy_monitors=sum(item.enabled for item in energy_monitors),
-        connected_energy_monitors=sum(item.enabled and item.connectivity == "ONLINE" for item in energy_monitors),
         open_alerts=len(active_alerts),
         critical_alerts=sum(alert.severity == "CRITICAL" for alert in alert_runtime),
         warning_alerts=sum(alert.severity == "WARNING" for alert in alert_runtime),
         unplaced_entities=len(unplaced),
     )
     return ScadaRuntimeResponse(
-        project={"id": project.id, "name": project.name, "code": project.code},
+        aquaponics_system={"id": project.id, "name": project.name, "code": project.code, "status": project.status},
         dashboard=dashboard_info,
         layout=layout,
         inventory=ScadaInventory(
             devices=inventory_devices,
             sensors=inventory_sensors,
             actuators=inventory_actuators,
-            energy_monitors=energy_monitors,
         ),
         runtime=ScadaRuntimeState(
             devices=runtime_devices,
@@ -690,7 +605,6 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
             actuators=runtime_actuators,
             alerts=alert_runtime,
         ),
-        energy_monitor_runtime=energy_runtime,
         summary=summary,
         issues=issues,
         unplaced_entities=unplaced,

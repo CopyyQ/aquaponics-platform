@@ -16,12 +16,12 @@ if TYPE_CHECKING:
 class ProjectMember(Base):
     __tablename__ = "project_members"
     __table_args__ = (
-        UniqueConstraint("project_id", "user_id", name="uq_project_members_project_user"),
+        UniqueConstraint("aquaponics_system_id", "user_id", name="uq_aquaponics_system_members_system_user"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
     project_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True
+        "aquaponics_system_id", BigInteger, ForeignKey("aquaponics_systems.id", ondelete="CASCADE"), nullable=False, index=True
     )
     user_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True

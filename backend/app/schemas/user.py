@@ -13,11 +13,11 @@ class UserBase(BaseModel):
     email: EmailStr
     phone_number: str = Field(min_length=8, max_length=30)
     address: str = ""
-    system_role: UserRole = UserRole.VIEWER
 
 
 class UserCreate(UserBase):
     temporary_password: str = Field(min_length=8, max_length=128)
+    role_id: int | None = None
 
 
 USERNAME_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
@@ -93,6 +93,7 @@ class UserRead(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    role_id: int | None
     status: UserStatus
     must_change_password: bool
     last_login_at: datetime | None

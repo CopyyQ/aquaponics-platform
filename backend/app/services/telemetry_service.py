@@ -17,7 +17,6 @@ from app.schemas.telemetry import (
 from app.services.alert_service import normalize_active_alert
 from app.services.measurement_quality import classify_measurement_quality
 from app.services.operational_incident_service import (
-    evaluate_operational_rules_for_sensor,
     evaluate_sensor_threshold_incident,
 )
 from app.services.project_notification_service import (
@@ -104,16 +103,6 @@ async def ingest_telemetry(
             recorded_at=reading.recorded_at,
             received_at=now,
         )
-        await evaluate_operational_rules_for_sensor(
-            db,
-            sensor=sensor,
-            value=reading.value,
-            quality=quality,
-            recorded_at=reading.recorded_at,
-            received_at=now,
-            model_code=model.code,
-        )
-
     if accepted + duplicates > 0:
         device.status = DeviceStatus.ONLINE
         device.last_seen_at = now

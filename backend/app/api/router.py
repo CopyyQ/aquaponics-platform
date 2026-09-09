@@ -1,39 +1,11 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
-from app.api.deps import require_roles
-from app.core.enums import UserRole
-from app.api.v1 import actuator_models, actuators, admin_alert_rules, admin_alerts, admin_monitoring, admin_notifications, admin_user_lifecycle, admin_user_passwords, admin_users, alerts, audit_logs, auth, device_templates, devices, overview, platform_overview, project_activities, project_device_config, project_lifecycle, project_members, project_monitoring, project_notifications, project_scada, projects, public_monitoring, sensor_models, sensors, telemetry, user_monitoring, users
+from app.api.v1 import aquaponics_systems, auth, canonical_catalogs, canonical_operations, canonical_extensions, sensor_models
 
 api_router = APIRouter()
 api_router.include_router(auth.router)
-api_router.include_router(admin_users.router)
-api_router.include_router(admin_user_lifecycle.router)
-api_router.include_router(admin_user_passwords.router)
-api_router.include_router(device_templates.router)
-api_router.include_router(admin_monitoring.router)
-api_router.include_router(admin_alerts.router)
-api_router.include_router(admin_notifications.router)
-api_router.include_router(admin_alert_rules.router)
-api_router.include_router(overview.router)
-api_router.include_router(platform_overview.router)
-api_router.include_router(user_monitoring.router)
-api_router.include_router(users.router)
-api_router.include_router(projects.router)
-api_router.include_router(project_device_config.router)
-api_router.include_router(project_lifecycle.router)
-api_router.include_router(project_activities.router)
-api_router.include_router(project_members.router)
-api_router.include_router(project_monitoring.router)
-api_router.include_router(project_notifications.router)
-api_router.include_router(public_monitoring.router)
-api_router.include_router(project_scada.router)
-api_router.include_router(devices.router)
-api_router.include_router(devices.router, prefix="/admin", tags=["Admin devices"], dependencies=[Depends(require_roles(UserRole.ADMIN))])
+api_router.include_router(canonical_operations.router)
+api_router.include_router(canonical_extensions.router)
+api_router.include_router(aquaponics_systems.router)
 api_router.include_router(sensor_models.router)
-api_router.include_router(sensor_models.router, prefix="/admin")
-api_router.include_router(sensors.router)
-api_router.include_router(actuators.router)
-api_router.include_router(actuator_models.router)
-api_router.include_router(telemetry.router)
-api_router.include_router(alerts.router)
-api_router.include_router(audit_logs.router)
+api_router.include_router(canonical_catalogs.router)

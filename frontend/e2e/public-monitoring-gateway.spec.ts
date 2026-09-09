@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test"
 
+test.skip(true, "Separate environment-gated public-monitoring deployment; not part of the canonical authenticated router/OpenAPI.")
+
 test("public gateway chỉ phục vụ Monitoring read-only và range 12h", async ({ page, request }) => {
   const browserRequests: string[] = []
   page.on("request", (item) => browserRequests.push(item.url()))

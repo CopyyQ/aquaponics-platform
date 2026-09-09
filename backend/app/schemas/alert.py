@@ -1,22 +1,27 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, Field, field_validator
 
-from app.core.enums import AlertSeverity, AlertStatus, AlertType
+from app.core.enums import AlertDirection, AlertLifecycleStatus, AlertResourceType, AlertSeverity
 
 
 class AlertRead(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
     id: int
-    sensor_id: int
-    alert_type: AlertType
+    resource_type: AlertResourceType
+    device_id: int | None
+    sensor_id: int | None
+    actuator_id: int | None
+    metric: str
+    direction: AlertDirection | None
+    alert_type: str
     severity: AlertSeverity
-    status: AlertStatus
+    risk_level: str
+    status: AlertLifecycleStatus
     message: str
-    trigger_value: float | None
+    actual_value: float | None
+    threshold_value: float | None
     started_at: datetime
-    last_triggered_at: datetime | None
+    last_triggered_at: datetime
     occurrence_count: int
     acknowledged_at: datetime | None
     acknowledged_by: int | None

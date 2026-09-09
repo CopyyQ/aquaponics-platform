@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from app.core.enums import DeviceType
 
 
 class DeviceTemplateBase(BaseModel):
@@ -8,7 +9,7 @@ class DeviceTemplateBase(BaseModel):
     name: str = Field(min_length=2, max_length=255)
     description: str | None = None
     notes: str | None = None
-    device_kind: str = Field(default="GENERIC", pattern="^(GENERIC|ENERGY_MONITOR)$")
+    device_type: DeviceType
     nominal_output_voltage_v: float | None = Field(default=None, gt=0)
     is_active: bool = True
 
@@ -32,7 +33,7 @@ class DeviceTemplateUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=2, max_length=255)
     description: str | None = None
     notes: str | None = None
-    device_kind: str | None = Field(default=None, pattern="^(GENERIC|ENERGY_MONITOR)$")
+    device_type: DeviceType | None = None
     nominal_output_voltage_v: float | None = Field(default=None, gt=0)
     is_active: bool | None = None
 
@@ -44,14 +45,16 @@ class DeviceTemplateUpdate(BaseModel):
 
 class TemplateSensorInput(BaseModel):
     sensor_model_id: int
+    slot_code: str = Field(pattern=r"^[A-Z0-9_-]+$", min_length=2, max_length=80)
     display_name: str | None = Field(default=None, max_length=255)
     default_location: str | None = Field(default=None, max_length=255)
     default_lower_threshold: float | None = None
     default_upper_threshold: float | None = None
-    default_warning_enabled: bool | None = None
+    default_alerts_enabled: bool | None = None
     default_below_threshold_message: str | None = Field(default=None, max_length=2000)
     default_above_threshold_message: str | None = Field(default=None, max_length=2000)
-    default_alert_risk_level: str | None = Field(default=None, pattern="^(EXTREME|VERY_HIGH|HIGH|MEDIUM|LOW_MEDIUM|LOW)$")
+    default_below_risk_level: str | None = Field(default=None, pattern="^(EXTREME|VERY_HIGH|HIGH|MEDIUM|LOW_MEDIUM|LOW)$")
+    default_above_risk_level: str | None = Field(default=None, pattern="^(EXTREME|VERY_HIGH|HIGH|MEDIUM|LOW_MEDIUM|LOW)$")
     sort_order: int = Field(default=0, ge=0)
     is_required: bool = False
 
@@ -63,14 +66,16 @@ class TemplateSensorInput(BaseModel):
 
 
 class TemplateSensorUpdate(BaseModel):
+    slot_code: str | None = Field(default=None, pattern=r"^[A-Z0-9_-]+$", min_length=2, max_length=80)
     display_name: str | None = Field(default=None, max_length=255)
     default_location: str | None = Field(default=None, max_length=255)
     default_lower_threshold: float | None = None
     default_upper_threshold: float | None = None
-    default_warning_enabled: bool | None = None
+    default_alerts_enabled: bool | None = None
     default_below_threshold_message: str | None = Field(default=None, max_length=2000)
     default_above_threshold_message: str | None = Field(default=None, max_length=2000)
-    default_alert_risk_level: str | None = Field(default=None, pattern="^(EXTREME|VERY_HIGH|HIGH|MEDIUM|LOW_MEDIUM|LOW)$")
+    default_below_risk_level: str | None = Field(default=None, pattern="^(EXTREME|VERY_HIGH|HIGH|MEDIUM|LOW_MEDIUM|LOW)$")
+    default_above_risk_level: str | None = Field(default=None, pattern="^(EXTREME|VERY_HIGH|HIGH|MEDIUM|LOW_MEDIUM|LOW)$")
     sort_order: int | None = Field(default=None, ge=0)
     is_required: bool | None = None
 
@@ -89,14 +94,16 @@ class TemplateSensorRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     sensor_model_id: int
+    slot_code: str
     display_name: str | None
     default_location: str | None
     default_lower_threshold: float | None
     default_upper_threshold: float | None
-    default_warning_enabled: bool | None
+    default_alerts_enabled: bool | None
     default_below_threshold_message: str | None
     default_above_threshold_message: str | None
-    default_alert_risk_level: str | None
+    default_below_risk_level: str | None
+    default_above_risk_level: str | None
     sort_order: int
     is_required: bool
     model_code: str

@@ -101,7 +101,12 @@ async def test_120_abnormal_samples_create_one_incident_and_one_open_outbox() ->
         assert incident.occurrence_count == 120
         assert int(await db.scalar(select(func.count(OperationalIncident.id)).where(OperationalIncident.rule_id == rule.id)) or 0) == 1
         assert int(await db.scalar(select(func.count(NotificationOutbox.id)).where(NotificationOutbox.incident_id == incident.id, NotificationOutbox.event_type == "OPEN")) or 0) == 1
-        settings = ProjectNotificationSettings(project_id=project.id, telegram_enabled=True, notify_alert_opened=True)
+        settings = await db.scalar(select(ProjectNotificationSettings).where(ProjectNotificationSettings.project_id == project.id))
+        if settings is None:
+            settings = ProjectNotificationSettings(project_id=project.id)
+        settings.enabled = True
+        settings.telegram_enabled = True
+        settings.notify_alert_opened = True
         policy = ProjectNotificationRiskPolicy(project_id=project.id, risk_level="VERY_HIGH", telegram_enabled=True, notify_on_open=True, notify_on_escalation=True, notify_on_recovery=True, notify_on_resolved=True, reminder_enabled=False, initial_reminder_seconds=900, repeat_interval_seconds=1800, max_reminders=0, stop_reminders_on_ack=True)
         recipient = ProjectNotificationRecipient(project_id=project.id, name="Kiểm thử", telegram_chat_id=f"chat-{suffix}", enabled=True)
         db.add_all([settings, policy, recipient])

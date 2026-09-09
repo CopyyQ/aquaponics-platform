@@ -12,9 +12,10 @@ from app.models.alert import SensorAlert
 from app.models.operational_alert import AlertRule, OperationalIncident
 from app.models.project_member import ProjectMember
 from app.models.sensor import Sensor
+from app.models.threshold_alert_config import ThresholdAlertConfig
 from app.models.device import Device
 from app.services.measurement_quality import classify_measurement_quality
-from app.services.sensor_threshold_config import evaluate_sensor_threshold, resolve_sensor_threshold_config
+from app.services.threshold_alert_config_service import evaluate_threshold
 from app.queries.monitoring_queries import (
     device_actuator_history_rows,
     latest_project_actuator_electrical_rows,
@@ -22,21 +23,23 @@ from app.queries.monitoring_queries import (
     latest_project_sensor_rows,
     project_sensor_metadata_rows,
     project_series_rows,
-    device_power_series_rows,
 )
-
-POWER_BUCKETS = {
-    MonitoringRange.ONE_HOUR: timedelta(minutes=1),
-    MonitoringRange.SIX_HOURS: timedelta(minutes=5),
-    MonitoringRange.TWELVE_HOURS: timedelta(minutes=10),
-    MonitoringRange.TWENTY_FOUR_HOURS: timedelta(minutes=15),
-    MonitoringRange.ONE_MONTH: timedelta(hours=1),
-}
 
 # Engineering validity is deliberately separate from configurable operational
 # thresholds. These are conservative catalog fallbacks until a model-specific
 def _quality(model_code: str, value: float | None) -> tuple[str, str | None, float | None, float | None]:
     return classify_measurement_quality(model_code, value)
+
+
+async def _sensor_threshold_map(db: AsyncSession, rows: list[tuple]) -> dict[int, ThresholdAlertConfig]:
+    sensor_ids = {sensor.id for _, sensor, model, *_ in rows if sensor is not None and model is not None}
+    if not sensor_ids:
+        return {}
+    configs = list((await db.scalars(select(ThresholdAlertConfig).where(
+        ThresholdAlertConfig.sensor_id.in_(sensor_ids),
+        ThresholdAlertConfig.metric_type == "SENSOR_VALUE",
+    ))).all())
+    return {config.sensor_id: config for config in configs if config.sensor_id is not None}
 
 
 def _actuator_sync(desired: bool | None, reported: bool | None, command: str | None) -> str:
@@ -94,7 +97,7 @@ MONITORING_RANGE_CONFIG = {
     MonitoringRange.SIX_HOURS: MonitoringRangeConfig(timedelta(hours=6), "5m"),
     MonitoringRange.TWELVE_HOURS: MonitoringRangeConfig(timedelta(hours=12), "10m"),
     MonitoringRange.TWENTY_FOUR_HOURS: MonitoringRangeConfig(timedelta(hours=24), "15m"),
-    MonitoringRange.ONE_MONTH: MonitoringRangeConfig(timedelta(days=30), "1d"),
+    MonitoringRange.THIRTY_DAYS: MonitoringRangeConfig(timedelta(days=30), "1d"),
 }
 
 
@@ -108,6 +111,7 @@ async def get_project_monitoring_summary(
     now = datetime.now(timezone.utc)
     stale_seconds = settings.device_offline_seconds
     rows = await latest_project_sensor_rows(db, project_id)
+    threshold_by_sensor = await _sensor_threshold_map(db, rows)
     alert_rows = (
         await db.execute(
             select(SensorAlert, Sensor, Device)
@@ -166,8 +170,8 @@ async def get_project_monitoring_summary(
         })
         if sensor is None or model is None:
             continue
-        threshold_config = resolve_sensor_threshold_config(sensor, model)
-        threshold_evaluation = evaluate_sensor_threshold(float(value) if value is not None else None, threshold_config)
+        threshold_config = threshold_by_sensor.get(sensor.id)
+        threshold_evaluation = evaluate_threshold(float(value) if value is not None else None, threshold_config)
         device_item["sensor_count"] += 1
         has_latest = value is not None and recorded_at is not None
         freshness_at = received_at or recorded_at
@@ -376,41 +380,32 @@ async def get_project_monitoring_summary(
 
 
 def _actuator_electrical_payload(rows: list, now: datetime) -> dict:
-    by_role = {row._mapping["feedback_role"]: row._mapping for row in rows if row._mapping["sensor_id"] is not None}
+    row = rows[0]._mapping if rows else None
 
-    def metric(role: str, unit: str) -> dict:
-        row = by_role.get(role)
+    def metric(kind: str, unit: str) -> dict:
         if row is None:
             return {"configured": False, "sensor_id": None, "sensor_code": None, "sensor_name": None, "sensor_model_code": None, "source_device_id": None, "source_device_code": None, "source_device_name": None, "value_key": None, "value": None, "unit": unit, "quality": "NO_DATA", "freshness": "NO_DATA", "recorded_at": None, "received_at": None, "lower_threshold": None, "upper_threshold": None, "threshold_source": "NONE", "threshold_status": "UNCONFIGURED"}
-        sensor_id = row["sensor_id"]
-        model_code = row["sensor_model_code"]
-        binding_lower, binding_upper = row["lower_threshold"], row["upper_threshold"]
-        default_lower, default_upper = row["default_lower_threshold"], row["default_upper_threshold"]
-        raw_value, recorded_at, received_at = row["feedback_value"], row["recorded_at"], row["received_at"]
-        profile_config, project_override_config, actuator_override_config = row["profile_config"], row["project_override_config"], row["actuator_override_config"]
+        raw_value = row[f"{kind}_v"] if kind == "voltage" else row["current_a"]
+        recorded_at, received_at = row["electrical_recorded_at"], row["electrical_received_at"]
         numeric = float(raw_value) if raw_value is not None else None
-        quality = _quality(model_code or "", numeric)[0]
+        quality = "VALID" if numeric is not None else "NO_DATA"
         freshness = "NO_DATA" if received_at is None else "STALE" if (now - received_at).total_seconds() > settings.device_offline_seconds else "FRESH"
-        resolved_config = {**(profile_config or {}), **(project_override_config or {}), **(actuator_override_config or {})}
-        legacy_lower = resolved_config.get("min_running_current_a") if role == "RUNNING_CURRENT" else None
-        legacy_upper = resolved_config.get("max_running_current_a") if role == "RUNNING_CURRENT" else None
-        lower = binding_lower if binding_lower is not None else default_lower if default_lower is not None else legacy_lower
-        upper = binding_upper if binding_upper is not None else default_upper if default_upper is not None else legacy_upper
-        threshold_source = "ACTUATOR_OVERRIDE" if binding_lower is not None or binding_upper is not None else "MODEL_DEFAULT" if default_lower is not None or default_upper is not None else "NONE"
-        threshold_status = _electrical_threshold_status(configured=True, value=numeric, quality=quality, freshness=freshness, lower=lower, upper=upper)
+        lower, upper = row[f"{kind}_lower_threshold"], row[f"{kind}_upper_threshold"]
+        configured = numeric is not None or lower is not None or upper is not None
+        threshold_status = _electrical_threshold_status(configured=configured, value=numeric, quality=quality, freshness=freshness, lower=lower, upper=upper)
         return {
-            "configured": True, "sensor_id": sensor_id, "sensor_code": row["sensor_code"], "sensor_name": row["sensor_name"],
-            "sensor_model_code": model_code, "value_key": row["value_key"],
-            "source_device_id": row["source_device_id"], "source_device_code": row["source_device_code"], "source_device_name": row["source_device_name"],
-            "value": None if quality == "INVALID" else numeric, "unit": unit,
+            "configured": configured, "sensor_id": None, "sensor_code": None, "sensor_name": None,
+            "sensor_model_code": None, "value_key": f"{kind}_v" if kind == "voltage" else "current_a",
+            "source_device_id": None, "source_device_code": None, "source_device_name": None,
+            "value": numeric, "unit": unit,
             "quality": quality, "freshness": freshness,
             "recorded_at": recorded_at, "received_at": received_at,
             "lower_threshold": lower, "upper_threshold": upper,
-            "threshold_source": threshold_source, "threshold_status": threshold_status,
+            "threshold_source": "ACTUATOR_OVERRIDE" if lower is not None or upper is not None else "NONE", "threshold_status": threshold_status,
         }
 
-    current = metric("RUNNING_CURRENT", "A")
-    voltage = metric("SUPPLY_VOLTAGE", "V")
+    current = metric("current", "A")
+    voltage = metric("voltage", "V")
     incident_row = next((row._mapping for row in rows if row._mapping["incident_id"] is not None), None)
     incident = None
     if incident_row is not None:
@@ -422,7 +417,11 @@ def _actuator_electrical_payload(rows: list, now: datetime) -> dict:
         "configured": current["configured"], "sensor_id": current["sensor_id"],
         "current_a": current["value"], "quality": current["quality"], "freshness": current["freshness"],
         "recorded_at": current["recorded_at"], "received_at": current["received_at"],
-        "minimum_running_current_a": current["lower_threshold"], "maximum_running_current_a": current["upper_threshold"],
+        # Operating-current limits are not the same concept as Alert thresholds.
+        # The canonical actuator model currently has no independent running-current profile,
+        # so keep these explicitly unconfigured rather than leaking Alert thresholds into it.
+        "minimum_running_current_a": None, "maximum_running_current_a": None,
+        "current_lower_threshold": current["lower_threshold"], "current_upper_threshold": current["upper_threshold"],
         "active_incident": incident,
     }
 
@@ -492,6 +491,7 @@ def sensor_connection_status(
 async def get_project_monitoring_latest(db: AsyncSession, project_id: int) -> dict:
     now = datetime.now(timezone.utc)
     rows = await latest_project_sensor_rows(db, project_id)
+    threshold_by_sensor = await _sensor_threshold_map(db, rows)
     devices: dict[int, dict] = {}
     for device, sensor, model, value, recorded_at, received_at in rows:
         device_payload = devices.setdefault(
@@ -510,8 +510,8 @@ async def get_project_monitoring_latest(db: AsyncSession, project_id: int) -> di
         )
         if sensor is None or model is None:
             continue
-        threshold_config = resolve_sensor_threshold_config(sensor, model)
-        threshold_evaluation = evaluate_sensor_threshold(
+        threshold_config = threshold_by_sensor.get(sensor.id)
+        threshold_evaluation = evaluate_threshold(
             float(value) if value is not None else None, threshold_config
         )
         has_telemetry = value is not None and recorded_at is not None
@@ -547,10 +547,10 @@ async def get_project_monitoring_latest(db: AsyncSession, project_id: int) -> di
                     if has_telemetry
                     else None
                 ),
-                "lower_threshold": threshold_config.lower_threshold,
-                "upper_threshold": threshold_config.upper_threshold,
+                "lower_threshold": threshold_config.lower_threshold if threshold_config else None,
+                "upper_threshold": threshold_config.upper_threshold if threshold_config else None,
                 "threshold_state": threshold_evaluation.state,
-                "alerts_enabled": threshold_config.alerts_enabled,
+                "alerts_enabled": bool(threshold_config.enabled) if threshold_config else False,
             }
         )
     actuator_rows = await latest_project_actuator_rows(db, project_id)
@@ -629,45 +629,6 @@ async def get_project_monitoring_series(
                 "gaps": gaps_by_sensor.get(sensor_id, []),
             }
             for sensor_id, unit in sensor_rows
-        ],
-    }
-
-
-async def get_device_power_series(
-    db: AsyncSession,
-    *,
-    project_id: int,
-    device_id: int,
-    monitoring_range: MonitoringRange,
-    now: datetime | None = None,
-) -> dict:
-    config = MONITORING_RANGE_CONFIG[monitoring_range]
-    end = now or datetime.now(timezone.utc)
-    start = end - config.duration
-    rows = await device_power_series_rows(
-        db,
-        project_id=project_id,
-        device_id=device_id,
-        start=start,
-        end=end,
-        bucket_size=POWER_BUCKETS[monitoring_range],
-    )
-    return {
-        "project_id": project_id,
-        "device_id": device_id,
-        "range": monitoring_range,
-        "resolution": config.resolution,
-        "timezone": "UTC",
-        "unit": "W",
-        "points": [
-            {
-                "bucket_time": bucket_time,
-                "avg_value": float(avg_value),
-                "min_value": float(min_value),
-                "max_value": float(max_value),
-                "reading_count": int(reading_count),
-            }
-            for bucket_time, avg_value, min_value, max_value, reading_count in rows
         ],
     }
 

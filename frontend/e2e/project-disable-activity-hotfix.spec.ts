@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test"
 
+test.skip(true, "Historical admin activation endpoint is absent from the canonical OpenAPI; system lifecycle uses canonical CRUD.")
+
 test("Project disabled vẫn hiển thị và có thể kích hoạt lại không reload", async ({ page }) => {
   let status: "ACTIVE" | "DISABLED" = "DISABLED"
   const project = () => ({

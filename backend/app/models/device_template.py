@@ -23,10 +23,6 @@ class DeviceTemplate(Base, TimestampMixin, SoftDeleteMixin):
             "nominal_output_voltage_v IS NULL OR nominal_output_voltage_v > 0",
             name="nominal_voltage_positive",
         ),
-        CheckConstraint(
-            "device_kind IN ('GENERIC', 'ENERGY_MONITOR')",
-            name="device_kind_allowed",
-        ),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
@@ -34,9 +30,6 @@ class DeviceTemplate(Base, TimestampMixin, SoftDeleteMixin):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text)
     notes: Mapped[str | None] = mapped_column(Text)
-    device_kind: Mapped[str] = mapped_column(
-        String(40), default="GENERIC", server_default="GENERIC", nullable=False
-    )
     nominal_output_voltage_v: Mapped[float | None] = mapped_column(Float)
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
 
@@ -53,7 +46,7 @@ class DeviceTemplate(Base, TimestampMixin, SoftDeleteMixin):
 class DeviceTemplateSensor(Base, TimestampMixin):
     __tablename__ = "device_template_sensors"
     __table_args__ = (
-        UniqueConstraint("device_template_id", "sensor_model_id", name="uq_device_template_sensor_model"),
+        UniqueConstraint("device_template_id", "slot_code", name="uq_device_template_sensor_slot"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
@@ -63,14 +56,18 @@ class DeviceTemplateSensor(Base, TimestampMixin):
     sensor_model_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("sensor_models.id", ondelete="RESTRICT"), nullable=False, index=True
     )
+    slot_code: Mapped[str] = mapped_column(String(80), nullable=True)
     display_name: Mapped[str | None] = mapped_column(String(255))
     default_location: Mapped[str | None] = mapped_column(String(255))
     default_lower_threshold: Mapped[float | None] = mapped_column(Float)
     default_upper_threshold: Mapped[float | None] = mapped_column(Float)
-    default_warning_enabled: Mapped[bool | None] = mapped_column(Boolean)
+    legacy_default_warning_enabled: Mapped[bool | None] = mapped_column("default_warning_enabled")
+    default_alerts_enabled: Mapped[bool | None] = mapped_column(Boolean)
     default_below_threshold_message: Mapped[str | None] = mapped_column(Text)
     default_above_threshold_message: Mapped[str | None] = mapped_column(Text)
-    default_alert_risk_level: Mapped[str | None] = mapped_column(String(30))
+    default_below_risk_level: Mapped[str | None] = mapped_column(String(30))
+    default_above_risk_level: Mapped[str | None] = mapped_column(String(30))
+    legacy_default_alert_risk_level: Mapped[str | None] = mapped_column("default_alert_risk_level", String(30))
     sort_order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     is_required: Mapped[bool] = mapped_column(default=False, server_default="false", nullable=False)
 

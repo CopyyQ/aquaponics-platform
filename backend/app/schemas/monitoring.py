@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 
 from app.schemas.project_overview import (
-    ActuatorActiveIncidentRead,
+    ActuatorActiveAlertRead,
     ActuatorElectricalRead,
 )
 
@@ -52,7 +52,7 @@ class MonitoringActuator(BaseModel):
     latest_command: MonitoringLatestCommand | None
     last_reported_at: datetime | None
     electrical: ActuatorElectricalRead
-    active_incident: ActuatorActiveIncidentRead | None
+    active_alert: ActuatorActiveAlertRead | None
 
 
 class MonitoringDevice(BaseModel):
@@ -67,8 +67,8 @@ class MonitoringDevice(BaseModel):
     actuators: list[MonitoringActuator]
 
 
-class ProjectMonitoringLatestResponse(BaseModel):
-    project_id: int
+class MonitoringLatestRead(BaseModel):
+    aquaponics_system_id: int
     devices: list[MonitoringDevice]
 
 
@@ -249,8 +249,8 @@ class MonitoringSensorSeries(BaseModel):
     gaps: list[MonitoringDataGap]
 
 
-class ProjectMonitoringSeriesResponse(BaseModel):
-    project_id: int
+class MonitoringSeriesRead(BaseModel):
+    aquaponics_system_id: int
     range: MonitoringRange
     resolution: str
     series: list[MonitoringSensorSeries]
@@ -306,6 +306,13 @@ class MonitoringActuatorHistory(BaseModel):
 
 class ProjectMonitoringActuatorHistoryResponse(BaseModel):
     project_id: int
+    device_id: int
+    range: MonitoringRange
+    items: list[MonitoringActuatorHistory]
+
+
+class MonitoringActuatorHistoryRead(BaseModel):
+    aquaponics_system_id: int
     device_id: int
     range: MonitoringRange
     items: list[MonitoringActuatorHistory]

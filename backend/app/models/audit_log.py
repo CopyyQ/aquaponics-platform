@@ -12,7 +12,7 @@ class AuditLog(Base):
     __tablename__ = "audit_logs"
     __table_args__ = (
         Index("ix_audit_logs_created_at", "created_at"),
-        Index("ix_audit_logs_project_id_created_at", "project_id", "created_at"),
+        Index("ix_audit_logs_aquaponics_system_id_created_at", "aquaponics_system_id", "created_at"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
@@ -20,7 +20,7 @@ class AuditLog(Base):
         BigInteger, ForeignKey("users.id", ondelete="RESTRICT")
     )
     project_id: Mapped[int | None] = mapped_column(
-        BigInteger, ForeignKey("projects.id", ondelete="CASCADE"), nullable=True
+        "aquaponics_system_id", BigInteger, ForeignKey("aquaponics_systems.id", ondelete="CASCADE"), nullable=True
     )
     action: Mapped[str] = mapped_column(String(120))
     entity_type: Mapped[str] = mapped_column(String(120))

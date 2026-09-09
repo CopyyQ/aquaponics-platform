@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from datetime import datetime
 from typing import Any
@@ -9,13 +8,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.audit import AuditLog
 from app.models.project import Project
-from app.models.project_settings import ProjectNotificationRecipient, ProjectNotificationSettings
 from app.models.user import User
 from app.services.audit_service import write_audit
-from app.services.project_notification_service import format_display_time
-from app.services.telegram_notifier import TelegramDeliveryResult, TelegramNotifier
+from app.services.notification_outbox_service import enqueue_project_activity_notification
 
 logger = logging.getLogger(__name__)
+
+
+def format_display_time(value: datetime | None) -> str:
+    if value is None:
+        return "—"
+    return value.astimezone().strftime("%d/%m/%Y %H:%M:%S")
 
 ACTION_LABELS = {
     "PROJECT_CREATED": "Tạo dự án",
@@ -129,34 +132,33 @@ async def dispatch_project_activity(
     db: AsyncSession,
     *,
     activity_id: int,
-    notifier: TelegramNotifier | None = None,
 ) -> None:
-    notifier = notifier or TelegramNotifier()
     row = (
         await db.execute(
-            select(AuditLog, Project, User, ProjectNotificationSettings)
+            select(AuditLog, Project, User)
             .join(Project, Project.id == AuditLog.project_id)
             .outerjoin(User, User.id == AuditLog.user_id)
-            .outerjoin(ProjectNotificationSettings, ProjectNotificationSettings.project_id == Project.id)
             .where(AuditLog.id == activity_id)
         )
     ).first()
     if row is None:
         return
-    activity, project, actor, notification_settings = row
-    if notification_settings is None or not notification_settings.telegram_enabled or not notifier.configured:
-        return
-    recipients = list((await db.scalars(select(ProjectNotificationRecipient).where(ProjectNotificationRecipient.project_id == project.id, ProjectNotificationRecipient.enabled.is_(True)))).all())
+    activity, project, actor = row
     message = format_project_activity_message(activity, project, actor)
-
-    async def deliver(recipient: ProjectNotificationRecipient) -> None:
-        try:
-            result: TelegramDeliveryResult = await notifier.send_message(recipient.telegram_chat_id, message)
-            logger.info("event=telegram_project_activity project_id=%s activity_id=%s recipient_id=%s sent=%s status_code=%s error_category=%s", project.id, activity.id, recipient.id, result.sent, result.status_code, result.error_category)
-        except Exception:
-            logger.exception("event=telegram_project_activity project_id=%s activity_id=%s recipient_id=%s sent=false error_category=UNEXPECTED", project.id, activity.id, recipient.id)
-
-    await asyncio.gather(*(deliver(recipient) for recipient in recipients), return_exceptions=True)
+    await enqueue_project_activity_notification(
+        db,
+        project_id=project.id,
+        activity_id=activity.id,
+        payload_snapshot={
+            "message": message,
+            "project_name": project.name,
+            "project_code": project.code,
+            "recorded_at": activity.created_at.isoformat() if activity.created_at else None,
+        },
+    )
+    # Existing callers record and commit the audit row first. Commit the
+    # durable event here; duplicate calls are harmless due to its key.
+    await db.commit()
 
 
 async def list_project_activities(db: AsyncSession, *, project_id: int, page: int, page_size: int, action: str | None, entity_type: str | None) -> tuple[list[AuditLog], int]:

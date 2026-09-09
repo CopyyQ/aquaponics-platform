@@ -1,9 +1,10 @@
+import type { MonitoringRange as CanonicalMonitoringRange } from "@/api/contracts"
 import type { ConnectionStatus } from "@/entities/device/model/types"
 import type { ProjectOverviewActuator } from "@/entities/project/model/types"
 import type { ProjectAttention, ProjectDeviceHealth, ProjectHealth, ProjectInventory, ProjectMeasurementGroup, ProjectRecentAlert, ProjectAlertSummary, ProjectFreshness } from "@/entities/project/model/types"
 import type { TelemetryPoint } from "@/entities/telemetry/model/types"
 
-export type MonitoringRange = "1h" | "6h" | "12h" | "24h" | "1m"
+export type MonitoringRange = CanonicalMonitoringRange
 
 export interface MonitoringLatestValue {
   value: number

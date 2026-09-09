@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest"
 import { buildMonitoringWindow, monitoringExpectedInterval, monitoringRanges, parseMonitoringRange } from "@/entities/telemetry/lib/monitoring-range"
 
 describe("shared monitoring range contract", () => {
-  it("có canonical ranges theo đúng thứ tự và 1m nghĩa là một tháng", () => {
-    expect(monitoringRanges.map((item) => item.value)).toEqual(["1h", "6h", "12h", "24h", "1m"])
-    expect(monitoringRanges.at(-1)?.longLabel).toBe("1 tháng")
+  it("có canonical ranges theo đúng thứ tự và 30d nghĩa là 30 ngày", () => {
+    expect(monitoringRanges.map((item) => item.value)).toEqual(["1h", "6h", "12h", "24h", "30d"])
+    expect(monitoringRanges.at(-1)?.longLabel).toBe("30 ngày")
   })
 
   it("12h dùng cửa sổ 12 giờ và bucket kỳ vọng 10 phút", () => {

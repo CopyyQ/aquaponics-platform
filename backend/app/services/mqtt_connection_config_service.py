@@ -10,19 +10,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.core.enums import DeviceStatus, ProjectStatus, UserStatus
 from app.models.actuator import Actuator
-from app.models.actuator_model import ActuatorModel, ActuatorModelFeedbackDefinition
+from app.models.actuator_model import ActuatorModel
 from app.models.device import Device
 from app.models.device_template import DeviceTemplate, DeviceTemplateSensor
-from app.models.operational_alert import ActuatorFeedbackBinding
 from app.models.project import Project
 from app.models.sensor import Sensor
 from app.models.sensor_model import SensorModel
 from app.models.user import User
-from app.services.energy_monitor_service import (
-    ENERGY_MONITOR_KIND,
-    ENERGY_SENSOR_SPEC_BY_MODEL,
-)
-from app.services.actuator_electrical_feedback_service import ensure_device_actuator_electrical_feedback
 
 _UNSAFE_FILENAME = re.compile(r"[^A-Za-z0-9_-]+")
 
@@ -68,10 +62,6 @@ async def build_mqtt_connection_config(
             detail="Không tìm thấy thiết bị trong dự án",
         )
     project, device, owner = context
-    # Export is also a safe reconciliation trigger.  It only adds model-defined
-    # missing bindings and leaves explicit mappings untouched.
-    await ensure_device_actuator_electrical_feedback(db, device_id=device.id)
-    await db.flush()
     if (
         project.status != ProjectStatus.ACTIVE
     ):
@@ -119,15 +109,6 @@ async def build_mqtt_connection_config(
         if device.device_template_id is not None
         else None
     )
-    if template is not None and template.device_kind == ENERGY_MONITOR_KIND:
-        sensor_rows.sort(
-            key=lambda row: (
-                ENERGY_SENSOR_SPEC_BY_MODEL.get(row[1].code).sort_order
-                if row[1].code in ENERGY_SENSOR_SPEC_BY_MODEL
-                else 999,
-                row[0].id,
-            )
-        )
     required_model_ids = set()
     if template is not None:
         required_model_ids = set(
@@ -160,29 +141,6 @@ async def build_mqtt_connection_config(
             )
         ).all()
     )
-    actuator_ids = [actuator.id for actuator, _ in actuator_rows]
-    feedback_rows = []
-    if actuator_ids:
-        feedback_rows = list(
-            (
-                await db.execute(
-                    select(ActuatorFeedbackBinding, Sensor, SensorModel, Device, ActuatorModelFeedbackDefinition)
-                    .join(Sensor, Sensor.id == ActuatorFeedbackBinding.sensor_id)
-                    .join(SensorModel, SensorModel.id == Sensor.sensor_model_id)
-                    .join(Device, Device.id == Sensor.device_id)
-                    .outerjoin(ActuatorModelFeedbackDefinition, ActuatorModelFeedbackDefinition.id == ActuatorFeedbackBinding.model_feedback_id)
-                    .where(
-                        ActuatorFeedbackBinding.actuator_id.in_(actuator_ids),
-                        ActuatorFeedbackBinding.is_enabled.is_(True),
-                        Sensor.is_enabled.is_(True),
-                        Sensor.is_deleted.is_(False),
-                        Device.project_id == project.id,
-                    )
-                    .order_by(ActuatorFeedbackBinding.actuator_id, ActuatorFeedbackBinding.id)
-                )
-            ).all()
-        )
-
     telemetry_topic = f"aquaponics/{device.code}/telemetry"
     status_topic = f"aquaponics/{device.code}/status"
     command_topic = _device_topic(
@@ -214,29 +172,6 @@ async def build_mqtt_connection_config(
         }
         for sensor, model in sensor_rows
     ]
-    feedbacks_by_actuator: dict[int, list[dict[str, object]]] = {}
-    for binding, sensor, sensor_model, source_device, definition in feedback_rows:
-        feedback_topic = f"aquaponics/{source_device.code}/telemetry"
-        feedbacks_by_actuator.setdefault(binding.actuator_id, []).append(
-            {
-                "role": binding.feedback_role,
-                "sensor_id": sensor.id,
-                "sensor_code": sensor.code,
-                "sensor_model_code": sensor_model.code,
-                "value_key": binding.value_key,
-                "unit": binding.unit,
-                "data_type": binding.data_type,
-                "lower_threshold": binding.lower_threshold if binding.lower_threshold is not None else definition.default_lower_threshold if definition else None,
-                "upper_threshold": binding.upper_threshold if binding.upper_threshold is not None else definition.default_upper_threshold if definition else None,
-                "mqtt": {
-                    "topic": feedback_topic,
-                    "payload": {
-                        "sent_at": generated_at,
-                        "readings": [{"sensor_code": sensor.code, "value": f"<{binding.value_key}>", "recorded_at": generated_at}],
-                    },
-                },
-            }
-        )
     actuators = [
         {
             "id": actuator.id,
@@ -248,7 +183,15 @@ async def build_mqtt_connection_config(
             "default_state": model.default_state,
             "location": actuator.location,
             "is_enabled": True,
-            "feedbacks": feedbacks_by_actuator.get(actuator.id, []),
+            "electrical": {
+                "voltage_v": actuator.voltage_v,
+                "current_a": actuator.current_a,
+                "alerts_enabled": actuator.electrical_alerts_enabled,
+                "voltage_lower_threshold": actuator.voltage_lower_threshold,
+                "voltage_upper_threshold": actuator.voltage_upper_threshold,
+                "current_lower_threshold": actuator.current_lower_threshold,
+                "current_upper_threshold": actuator.current_upper_threshold,
+            },
         }
         for actuator, model in actuator_rows
     ]
@@ -262,7 +205,7 @@ async def build_mqtt_connection_config(
             "id": device.id,
             "code": device.code,
             "name": device.name,
-            "kind": template.device_kind if template else "GENERIC",
+            "device_type": device.device_type,
             "enabled": device.is_enabled,
             "status": device.status.value,
             "template": (
@@ -315,7 +258,7 @@ async def build_mqtt_connection_config(
             "command": {
                 "topic": command_topic,
                 "payload": {
-                    "command_id": "uuid",
+                    "command_id": 123,
                     "actuator_code": example_actuator_code,
                     "desired_state": True,
                     "requested_at": generated_at,
@@ -324,7 +267,7 @@ async def build_mqtt_connection_config(
             "command_ack": {
                 "topic": command_ack_topic,
                 "payload": {
-                    "command_id": "uuid",
+                    "command_id": 123,
                     "actuator_code": example_actuator_code,
                     "reported_state": True,
                     "status": "ACKNOWLEDGED",
@@ -347,19 +290,6 @@ async def build_mqtt_connection_config(
             },
         },
     }
-    if template is not None and template.device_kind == ENERGY_MONITOR_KIND:
-        normalized_config["energy_monitoring"] = {
-            "power_sensor_code": ENERGY_SENSOR_SPEC_BY_MODEL["POWER_W"].sensor_code,
-            "energy_sensor_code": ENERGY_SENSOR_SPEC_BY_MODEL["ENERGY_TOTAL_WH"].sensor_code,
-            "supported_ranges": ["1h", "6h", "12h", "24h", "1m"],
-            "range_meanings": {
-                "1h": "ONE_HOUR",
-                "6h": "SIX_HOURS",
-                "12h": "TWELVE_HOURS",
-                "24h": "TWENTY_FOUR_HOURS",
-                "1m": "ONE_MONTH",
-            },
-        }
     canonical = json.dumps(
         normalized_config,
         ensure_ascii=False,

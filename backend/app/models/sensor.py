@@ -7,7 +7,7 @@ from sqlalchemy import BigInteger, CheckConstraint, DateTime, Enum, Float, Forei
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, SoftDeleteMixin, TimestampMixin
-from app.core.enums import SensorPurpose, SensorStatus
+from app.core.enums import SensorStatus
 
 if TYPE_CHECKING:
     from app.models.alert import SensorAlert
@@ -20,7 +20,6 @@ class Sensor(Base, TimestampMixin, SoftDeleteMixin):
     __table_args__ = (
         Index("uq_sensor_device_code", "device_id", "code", unique=True),
         Index("ix_sensors_device_id", "device_id"),
-        Index("ix_sensors_purpose", "purpose"),
         CheckConstraint("alert_delay_seconds >= 0", name="alert_delay_non_negative"),
         CheckConstraint(
             "lower_threshold IS NULL OR upper_threshold IS NULL OR lower_threshold < upper_threshold",
@@ -35,24 +34,21 @@ class Sensor(Base, TimestampMixin, SoftDeleteMixin):
     )
     code: Mapped[str] = mapped_column(String(80))
     name: Mapped[str] = mapped_column(String(255))
-    purpose: Mapped[SensorPurpose] = mapped_column(
-        Enum(SensorPurpose, name="sensor_purpose"),
-        default=SensorPurpose.GENERAL,
-        server_default=text("'GENERAL'"),
-        nullable=False,
-    )
     installation_location: Mapped[str | None] = mapped_column(String(255))
     description: Mapped[str | None] = mapped_column(Text)
     status: Mapped[SensorStatus] = mapped_column(
         Enum(SensorStatus, name="sensor_status"), default=SensorStatus.WAITING_CONNECTION
     )
     last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    warning_enabled: Mapped[bool] = mapped_column(default=True)
+    legacy_warning_enabled: Mapped[bool] = mapped_column("warning_enabled", default=True, nullable=False)
+    legacy_alert_risk_level: Mapped[str | None] = mapped_column("alert_risk_level", String(30))
+    alerts_enabled: Mapped[bool] = mapped_column(default=True, nullable=False)
     lower_threshold: Mapped[float | None] = mapped_column(Float)
     upper_threshold: Mapped[float | None] = mapped_column(Float)
     below_threshold_message: Mapped[str | None] = mapped_column(Text)
     above_threshold_message: Mapped[str | None] = mapped_column(Text)
-    alert_risk_level: Mapped[str | None] = mapped_column(String(30))
+    below_risk_level: Mapped[str | None] = mapped_column(String(30))
+    above_risk_level: Mapped[str | None] = mapped_column(String(30))
     alert_delay_seconds: Mapped[int] = mapped_column(Integer, default=0)
     is_enabled: Mapped[bool] = mapped_column(default=True, nullable=False)
     disabled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
@@ -64,6 +60,7 @@ class Sensor(Base, TimestampMixin, SoftDeleteMixin):
     telemetry_readings: Mapped[list["TelemetryReading"]] = relationship(back_populates="sensor")
     telemetry_aggregates: Mapped[list["TelemetryAggregate"]] = relationship(back_populates="sensor")
     alerts: Mapped[list["SensorAlert"]] = relationship(back_populates="sensor")
+    threshold_alert_config = relationship("ThresholdAlertConfig", back_populates="sensor", uselist=False)
 
 
 # Compatibility import for callers migrating to app.models.sensor_model.

@@ -16,6 +16,7 @@ class TelegramDeliveryResult:
     sent: bool
     status_code: int | None = None
     error_category: str | None = None
+    retry_after_seconds: int | None = None
 
 
 class TelegramNotifier:
@@ -45,7 +46,13 @@ class TelegramNotifier:
                 403: "FORBIDDEN",
                 429: "RATE_LIMITED",
             }.get(response.status_code, "TELEGRAM_ERROR")
-            return TelegramDeliveryResult(False, response.status_code, category)
+            retry_after = None
+            if response.status_code == 429:
+                try:
+                    retry_after = int((response.json().get("parameters") or {}).get("retry_after"))
+                except (TypeError, ValueError):
+                    retry_after = None
+            return TelegramDeliveryResult(False, response.status_code, category, retry_after)
         except httpx.TimeoutException:
             return TelegramDeliveryResult(False, error_category="TIMEOUT")
         except httpx.HTTPError:

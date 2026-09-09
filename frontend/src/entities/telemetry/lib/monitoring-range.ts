@@ -9,7 +9,7 @@ export const monitoringRanges: ReadonlyArray<{
   { value: "6h", label: "6H", longLabel: "6 giờ" },
   { value: "12h", label: "12H", longLabel: "12 giờ" },
   { value: "24h", label: "24H", longLabel: "24 giờ" },
-  { value: "1m", label: "1 Tháng", longLabel: "1 tháng" },
+  { value: "30d", label: "30 ngày", longLabel: "30 ngày" },
 ]
 
 export function parseMonitoringRange(value: string | null): MonitoringRange {
@@ -37,7 +37,7 @@ export function buildMonitoringWindow(range: MonitoringRange) {
     "6h": 6 * 60 * 60_000,
     "12h": 12 * 60 * 60_000,
     "24h": 24 * 60 * 60_000,
-    "1m": 30 * 24 * 60 * 60_000,
+    "30d": 30 * 24 * 60 * 60_000,
   }
   return { start: new Date(end.getTime() - durationMs[range]), end }
 }

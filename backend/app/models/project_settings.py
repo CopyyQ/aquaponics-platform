@@ -16,12 +16,12 @@ if TYPE_CHECKING:
 class ProjectPublicSettings(Base, TimestampMixin):
     __tablename__ = "project_public_settings"
     __table_args__ = (
-        UniqueConstraint("project_id", name="uq_project_public_settings_project_id"),
+        UniqueConstraint("aquaponics_system_id", name="uq_aquaponics_system_public_settings_system_id"),
         UniqueConstraint("public_slug", name="uq_project_public_settings_public_slug"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
-    project_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True)
+    project_id: Mapped[int] = mapped_column("aquaponics_system_id", BigInteger, ForeignKey("aquaponics_systems.id", ondelete="CASCADE"), nullable=False, index=True)
     enabled: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("false"), nullable=False)
     public_slug: Mapped[str] = mapped_column(String(120), nullable=False)
     project: Mapped[Project] = relationship()
@@ -30,13 +30,16 @@ class ProjectPublicSettings(Base, TimestampMixin):
 class ProjectNotificationSettings(Base, TimestampMixin):
     __tablename__ = "project_notification_settings"
     __table_args__ = (
-        UniqueConstraint("project_id", name="uq_project_notification_settings_project_id"),
+        UniqueConstraint("aquaponics_system_id", name="uq_aquaponics_system_notification_settings_system_id"),
         CheckConstraint("reminder_interval_minutes IS NULL OR reminder_interval_minutes > 0", name="reminder_positive"),
         CheckConstraint("minimum_business_risk_level IN ('EXTREME','VERY_HIGH','HIGH','MEDIUM','LOW_MEDIUM','LOW')", name="risk_allowed"),
+        CheckConstraint("notification_generation >= 0", name="notification_generation_nonnegative"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
-    project_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True)
+    project_id: Mapped[int] = mapped_column("aquaponics_system_id", BigInteger, ForeignKey("aquaponics_systems.id", ondelete="CASCADE"), nullable=False, index=True)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"), nullable=False)
+    in_app_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"), nullable=False)
     telegram_enabled: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("false"), nullable=False)
     notify_alert_opened: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"), nullable=False)
     notify_alert_resolved: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"), nullable=False)
@@ -51,6 +54,7 @@ class ProjectNotificationSettings(Base, TimestampMixin):
     risk_medium_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"), nullable=False)
     risk_low_medium_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"), nullable=False)
     risk_low_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"), nullable=False)
+    notification_generation: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
     last_health_status: Mapped[str | None] = mapped_column(String(30))
     last_health_fingerprint: Mapped[str | None] = mapped_column(String(64))
     last_health_snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
@@ -62,7 +66,7 @@ class ProjectNotificationSettings(Base, TimestampMixin):
 class ProjectNotificationRiskPolicy(Base, TimestampMixin):
     __tablename__ = "project_notification_risk_policies"
     __table_args__ = (
-        UniqueConstraint("project_id", "risk_level", name="uq_project_notification_risk_policy"),
+        UniqueConstraint("aquaponics_system_id", "risk_level", name="uq_aquaponics_system_notification_risk_policy"),
         CheckConstraint("risk_level IN ('EXTREME','VERY_HIGH','HIGH','MEDIUM','LOW_MEDIUM','LOW')", name="risk_level_allowed"),
         CheckConstraint("initial_reminder_seconds >= 0", name="initial_nonnegative"),
         CheckConstraint("repeat_interval_seconds >= 0", name="repeat_nonnegative"),
@@ -70,7 +74,7 @@ class ProjectNotificationRiskPolicy(Base, TimestampMixin):
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
-    project_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True)
+    project_id: Mapped[int] = mapped_column("aquaponics_system_id", BigInteger, ForeignKey("aquaponics_systems.id", ondelete="CASCADE"), nullable=False, index=True)
     risk_level: Mapped[str] = mapped_column(String(30), nullable=False)
     telegram_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
     notify_on_open: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"), nullable=False)
@@ -88,11 +92,11 @@ class ProjectNotificationRiskPolicy(Base, TimestampMixin):
 class ProjectNotificationRecipient(Base, TimestampMixin):
     __tablename__ = "project_notification_recipients"
     __table_args__ = (
-        UniqueConstraint("project_id", "telegram_chat_id", name="uq_project_notification_recipient_chat"),
+        UniqueConstraint("aquaponics_system_id", "telegram_chat_id", name="uq_aquaponics_system_notification_recipient_chat"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
-    project_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True)
+    project_id: Mapped[int] = mapped_column("aquaponics_system_id", BigInteger, ForeignKey("aquaponics_systems.id", ondelete="CASCADE"), nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     telegram_chat_id: Mapped[str] = mapped_column(String(64), nullable=False)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"), nullable=False)

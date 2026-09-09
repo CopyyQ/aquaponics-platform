@@ -22,7 +22,10 @@ def upgrade() -> None:
         column["name"] for column in inspector.get_columns("devices")
     } and "token_version" in {column["name"] for column in inspector.get_columns("users")}:
         return
-    op.drop_index("uq_active_owner", table_name="users")
+    # The canonical 0001 metadata no longer creates the retired owner index.
+    # Keep the historical migration replayable on both legacy and fresh schemas.
+    if any(index.get("name") == "uq_active_owner" for index in inspector.get_indexes("users")):
+        op.drop_index("uq_active_owner", table_name="users")
     op.add_column("devices", sa.Column("owner_user_id", sa.BigInteger(), nullable=True))
     op.create_foreign_key(
         "fk_devices_owner_user_id_users",

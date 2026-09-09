@@ -3,28 +3,28 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class ProjectActivityActor(BaseModel):
+class AquaponicsSystemActivityActor(BaseModel):
     id: int
     name: str
 
 
-class ProjectActivityEntity(BaseModel):
+class AquaponicsSystemActivityEntity(BaseModel):
     type: str
     id: int | None
     name: str
 
 
-class ProjectActivityRead(BaseModel):
+class AquaponicsSystemActivityRead(BaseModel):
     id: int
     action: str
-    actor: ProjectActivityActor
-    entity: ProjectActivityEntity
+    actor: AquaponicsSystemActivityActor
+    entity: AquaponicsSystemActivityEntity
     summary: str
     created_at: datetime
 
 
-class ProjectActivityListResponse(BaseModel):
-    items: list[ProjectActivityRead]
+class AquaponicsSystemActivityListResponse(BaseModel):
+    items: list[AquaponicsSystemActivityRead]
     total: int
     page: int
     page_size: int

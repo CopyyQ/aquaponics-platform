@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.actuator import Actuator, ActuatorCommand
-from app.models.alert import SensorAlert
+from app.models.operational_alert import OperationalIncident
 from app.models.device import Device
 from app.models.scada_dashboard import ScadaDashboard
 from app.models.sensor import Sensor
@@ -97,22 +97,16 @@ async def latest_actuator_commands(
 
 async def open_project_alerts(
     db: AsyncSession, project_id: int
-) -> list[SensorAlert]:
+) -> list[OperationalIncident]:
     return list(
         (
             await db.scalars(
-                select(SensorAlert)
-                .join(Sensor, Sensor.id == SensorAlert.sensor_id)
-                .join(Device, Device.id == Sensor.device_id)
+                select(OperationalIncident)
                 .where(
-                    Device.project_id == project_id,
-                    Device.is_deleted.is_(False),
-                    Device.deleted_at.is_(None),
-                    Sensor.is_deleted.is_(False),
-                    Sensor.deleted_at.is_(None),
-                    SensorAlert.status.in_(("PENDING", "OPEN", "ACKNOWLEDGED")),
+                    OperationalIncident.project_id == project_id,
+                    OperationalIncident.status.in_(("PENDING", "OPEN", "ACKNOWLEDGED")),
                 )
-                .order_by(SensorAlert.started_at.desc(), SensorAlert.id.desc())
+                .order_by(OperationalIncident.started_at.desc(), OperationalIncident.id.desc())
             )
         ).all()
     )

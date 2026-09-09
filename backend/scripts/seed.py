@@ -1,7 +1,8 @@
 import asyncio
+import importlib.util
+from pathlib import Path
 
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -9,18 +10,10 @@ from app.core.database import AsyncSessionLocal
 from app.core.enums import UserRole, UserStatus
 from app.core.security import hash_password
 from app.models.sensor import SensorModel
-from app.models.device_template import DeviceTemplate, DeviceTemplateActuator, DeviceTemplateSensor
-from app.models.actuator_model import ActuatorModel, ActuatorModelFeedbackDefinition
+from app.models.actuator_model import ActuatorModel
 from app.models.operational_alert import AlertRule, AlertRuleProfile, AlertRuleSensorModelProfile
 from app.models.user import User
-from app.services.energy_monitor_service import (
-    ENERGY_MONITOR_KIND,
-    ENERGY_SENSOR_SPEC_BY_MODEL,
-    ENERGY_SENSOR_SPECS,
-    ENERGY_TEMPLATE_CODE,
-    add_missing_energy_sensor_mappings,
-    validate_energy_template,
-)
+from app.models.permission import Permission, Role, RolePermission
 
 SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
     {
@@ -30,8 +23,8 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "description": "Mẫu cấu hình Cảm biến pH",
         "value_type": "NUMBER",
         "chart_type": "LINE",
-        "default_lower_threshold": 6.5,
-        "default_upper_threshold": 8.5,
+        "default_lower_threshold": 6.0,
+        "default_upper_threshold": 7.5,
     },
     {
         "code": "TEMP",
@@ -40,8 +33,8 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "description": "Mẫu cấu hình Cảm biến nhiệt độ nước",
         "value_type": "NUMBER",
         "chart_type": "LINE",
-        "default_lower_threshold": 20.0,
-        "default_upper_threshold": 32.0,
+        "default_lower_threshold": 18.0,
+        "default_upper_threshold": 35.0,
     },
     {
         "code": "DO",
@@ -70,8 +63,8 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "description": "Mẫu cấu hình Cảm biến mực nước",
         "value_type": "NUMBER",
         "chart_type": "LINE",
-        "default_lower_threshold": 20.0,
-        "default_upper_threshold": 100.0,
+        "default_lower_threshold": 60.0,
+        "default_upper_threshold": None,
     },
     {
         "code": "AIR_HUMIDITY",
@@ -81,6 +74,16 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "value_type": "NUMBER",
         "chart_type": "LINE",
         "default_lower_threshold": None,
+        "default_upper_threshold": None,
+    },
+    {
+        "code": "TDS",
+        "name": "Cảm biến TDS",
+        "unit": "ppm",
+        "description": "Đo tổng chất rắn hòa tan trong nước.",
+        "value_type": "NUMBER",
+        "chart_type": "LINE",
+        "default_lower_threshold": 100.0,
         "default_upper_threshold": None,
     },
     {
@@ -113,20 +116,12 @@ SENSOR_MODELS: tuple[dict[str, str | float | None], ...] = (
         "default_lower_threshold": None,
         "default_upper_threshold": None,
     },
-    *tuple(
-        {
-            "code": spec.model_code,
-            "name": spec.name,
-            "unit": spec.unit,
-            "description": f"Đại lượng bắt buộc cho thiết bị giám sát năng lượng: {spec.name}.",
-            "value_type": "NUMBER",
-            "chart_type": "LINE",
-            "measurement_semantics": spec.measurement_semantics,
-            "default_lower_threshold": None,
-            "default_upper_threshold": None,
-        }
-        for spec in ENERGY_SENSOR_SPECS
-    ),
+    {"code": "OUTPUT_VOLTAGE_V", "name": "Điện áp đầu ra", "unit": "V", "description": "Điện áp đo trực tiếp tại Device.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE", "default_lower_threshold": None, "default_upper_threshold": None},
+    {"code": "INPUT_VOLTAGE_V", "name": "Điện áp đầu vào", "unit": "V", "description": "Điện áp đo trực tiếp tại Device.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE", "default_lower_threshold": None, "default_upper_threshold": None},
+    {"code": "LOAD_CURRENT_A", "name": "Dòng điện tải", "unit": "A", "description": "Dòng điện đo trực tiếp tại Device.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE", "default_lower_threshold": None, "default_upper_threshold": None},
+    {"code": "INPUT_CURRENT_A", "name": "Dòng điện đầu vào", "unit": "A", "description": "Dòng điện đo trực tiếp tại Device.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE", "default_lower_threshold": None, "default_upper_threshold": None},
+    {"code": "POWER_W", "name": "Công suất", "unit": "W", "description": "Công suất được phần cứng đo trực tiếp.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "GAUGE", "default_lower_threshold": None, "default_upper_threshold": None},
+    {"code": "ENERGY_TOTAL_WH", "name": "Điện năng tích lũy", "unit": "Wh", "description": "Bộ đếm điện năng tích lũy có xử lý reset theo đoạn.", "value_type": "NUMBER", "chart_type": "LINE", "measurement_semantics": "COUNTER", "default_lower_threshold": None, "default_upper_threshold": None},
 )
 
 ENVIRONMENTAL_SENSOR_MODEL_CODES = frozenset(
@@ -144,7 +139,19 @@ ACTUATOR_MODELS = (
     ("MIST_SYSTEM", "Phun sương", "Điều khiển hệ thống phun sương tạo ẩm môi trường.", 3),
     ("GROW_LIGHT", "Đèn chiếu sáng", "Điều khiển hệ thống đèn chiếu sáng cho khu vực trồng.", 4),
     ("ALARM_SIREN", "Còi cảnh báo", "Điều khiển còi cảnh báo khi hệ thống phát hiện sự cố.", 5),
+    ("AIR_PUMP", "Máy sủi oxy", "Cấp khí cho bể cá hoặc bể lọc vi sinh.", 6),
 )
+
+ACTUATOR_ELECTRICAL_DEFAULTS = {
+    code: {
+        "nominal_voltage_v": 12.0,
+        "voltage_tolerance_v": 1.5,
+        "zero_voltage_max_v": 1.0,
+        "minimum_running_current_a": 0.10,
+        "maximum_running_current_a": 10.0,
+    }
+    for code in ("FISH_TANK_PUMP", "IRRIGATION_PUMP", "MIST_SYSTEM", "GROW_LIGHT", "AIR_PUMP")
+}
 
 CANONICAL_ALERT_SENSOR_PROFILES = (
     ("FISH_TANK_DO_LOW", "DO"),
@@ -152,6 +159,33 @@ CANONICAL_ALERT_SENSOR_PROFILES = (
     ("TDS_LOW", "TDS"),
     ("AIR_TEMPERATURE_HIGH", "AIR_TEMPERATURE"),
 )
+
+
+def _canonical_permissions() -> tuple[tuple[str, str, str], ...]:
+    """Read the 0050 RBAC catalog from the migration that introduced it."""
+    path = Path(__file__).resolve().parents[1] / "alembic/versions/0047_permission_rbac.py"
+    spec = importlib.util.spec_from_file_location("permission_rbac_0047", path)
+    if spec is None or spec.loader is None: raise RuntimeError("Cannot load canonical permission catalog")
+    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+    return module.PERMISSIONS
+
+
+async def seed_rbac(db: AsyncSession) -> None:
+    roles: dict[str, Role] = {row.code: row for row in (await db.scalars(select(Role))).all()}
+    for code, name in (("ADMIN", "Administrator"), ("OWNER", "System Owner"), ("TECHNICIAN", "Technician"), ("VIEWER", "Viewer")):
+        if code not in roles:
+            roles[code] = Role(code=code, name=name, is_system=True, enabled=True); db.add(roles[code])
+    permissions: dict[str, Permission] = {row.code: row for row in (await db.scalars(select(Permission))).all()}
+    for code, resource, action in _canonical_permissions():
+        if code not in permissions:
+            permissions[code] = Permission(code=code, resource=resource, action=action); db.add(permissions[code])
+    await db.flush()
+    existing = {(row.role_id, row.permission_id) for row in (await db.scalars(select(RolePermission))).all()}
+    for role_code, role in roles.items():
+        for permission in permissions.values():
+            allowed = role_code == "ADMIN" or (role_code == "VIEWER" and permission.resource != "users" and permission.action in {"read", "telemetry.read", "thresholds.read", "commands.read", "readings.read", "history.read", "export"}) or (role_code in {"OWNER", "TECHNICIAN"} and permission.resource != "users" and permission.action not in {"read_all", "manage_all"})
+            if allowed and (role.id, permission.id) not in existing: db.add(RolePermission(role_id=role.id, permission_id=permission.id))
+    await db.flush()
 
 
 async def seed_sensor_models(db: AsyncSession) -> int:
@@ -189,71 +223,6 @@ async def seed_sensor_models(db: AsyncSession) -> int:
     return len(missing_models)
 
 
-async def seed_energy_monitor_template(db: AsyncSession) -> DeviceTemplate:
-    template = await db.scalar(
-        select(DeviceTemplate)
-        .options(
-            selectinload(DeviceTemplate.sensor_mappings).selectinload(
-                DeviceTemplateSensor.sensor_model
-            ),
-            selectinload(DeviceTemplate.actuator_mappings).selectinload(
-                DeviceTemplateActuator.actuator_model
-            ),
-        )
-        .where(DeviceTemplate.code == ENERGY_TEMPLATE_CODE)
-    )
-    if template is None:
-        template = DeviceTemplate(
-            code=ENERGY_TEMPLATE_CODE,
-            name="Thiết bị giám sát năng lượng 12V",
-            description="Thiết bị đo sáu đại lượng năng lượng bắt buộc.",
-            notes="ENERGY_TOTAL_WH là cumulative counter có xử lý reset theo đoạn.",
-            device_kind=ENERGY_MONITOR_KIND,
-            nominal_output_voltage_v=12,
-            is_active=False,
-        )
-        db.add(template)
-        await db.flush()
-        template.sensor_mappings = []
-    else:
-        template.name = "Thiết bị giám sát năng lượng 12V"
-        template.device_kind = ENERGY_MONITOR_KIND
-        template.nominal_output_voltage_v = 12
-        template.is_deleted = False
-        template.deleted_at = None
-    template.description = "Thiết bị đo sáu đại lượng năng lượng bắt buộc."
-    template.notes = "ENERGY_TOTAL_WH là cumulative counter có xử lý reset theo đoạn."
-    canonical_codes = {spec.model_code for spec in ENERGY_SENSOR_SPECS}
-    for mapping in list(template.sensor_mappings):
-        if mapping.sensor_model.code not in canonical_codes:
-            await db.delete(mapping)
-            continue
-        spec = ENERGY_SENSOR_SPEC_BY_MODEL[mapping.sensor_model.code]
-        mapping.display_name = spec.name
-        mapping.sort_order = spec.sort_order
-        mapping.is_required = True
-    await db.flush()
-    await add_missing_energy_sensor_mappings(db, template)
-    refreshed = await db.scalar(
-        select(DeviceTemplate)
-        .options(
-            selectinload(DeviceTemplate.sensor_mappings).selectinload(
-                DeviceTemplateSensor.sensor_model
-            ),
-            selectinload(DeviceTemplate.actuator_mappings).selectinload(
-                DeviceTemplateActuator.actuator_model
-            ),
-        )
-        .where(DeviceTemplate.id == template.id)
-        .execution_options(populate_existing=True)
-    )
-    if refreshed is None:
-        raise RuntimeError("Không thể tải lại mẫu Energy Monitor sau seed")
-    validate_energy_template(refreshed)
-    refreshed.is_active = True
-    return refreshed
-
-
 async def seed_actuator_models(db: AsyncSession) -> int:
     codes = tuple(item[0] for item in ACTUATOR_MODELS)
     existing_codes = set(
@@ -268,60 +237,19 @@ async def seed_actuator_models(db: AsyncSession) -> int:
             default_state=False,
             is_active=True,
             sort_order=sort_order,
+            **ACTUATOR_ELECTRICAL_DEFAULTS.get(code, {}),
         )
         for code, name, description, sort_order in ACTUATOR_MODELS
         if code not in existing_codes
     ]
+    existing_models = list((await db.scalars(select(ActuatorModel).where(ActuatorModel.code.in_(codes)))).all())
+    for model in existing_models:
+        for field, value in ACTUATOR_ELECTRICAL_DEFAULTS.get(model.code, {}).items():
+            if getattr(model, field) is None:
+                setattr(model, field, value)
     db.add_all(missing)
     await db.flush()
     return len(missing)
-
-
-async def seed_actuator_model_feedbacks(db: AsyncSession) -> int:
-    sensor_models = {
-        item.code: item
-        for item in (await db.scalars(select(SensorModel).where(
-            SensorModel.code.in_(("OUTPUT_VOLTAGE_V", "LOAD_CURRENT_A")),
-            SensorModel.is_active.is_(True),
-            SensorModel.is_deleted.is_(False),
-        ))).all()
-    }
-    if set(sensor_models) != {"OUTPUT_VOLTAGE_V", "LOAD_CURRENT_A"}:
-        return 0
-    models = list((await db.scalars(select(ActuatorModel).where(
-        ActuatorModel.is_active.is_(True),
-        ActuatorModel.is_deleted.is_(False),
-        ActuatorModel.data_type == "BOOLEAN",
-    ))).all())
-    existing = {
-        (model_id, role)
-        for model_id, role in (await db.execute(select(
-            ActuatorModelFeedbackDefinition.actuator_model_id,
-            ActuatorModelFeedbackDefinition.feedback_role,
-        ))).all()
-    }
-    created = 0
-    for model in models:
-        for role, sensor_model_code, value_key, unit, order in (
-            ("SUPPLY_VOLTAGE", "OUTPUT_VOLTAGE_V", "voltage_v", "V", 0),
-            ("RUNNING_CURRENT", "LOAD_CURRENT_A", "current_a", "A", 1),
-        ):
-            if (model.id, role) in existing:
-                continue
-            db.add(ActuatorModelFeedbackDefinition(
-                actuator_model_id=model.id,
-                feedback_role=role,
-                sensor_model_id=sensor_models[sensor_model_code].id,
-                value_key=value_key,
-                unit=unit,
-                data_type="FLOAT",
-                is_required=True,
-                is_enabled=True,
-                display_order=order,
-            ))
-            created += 1
-    await db.flush()
-    return created
 
 
 async def seed_canonical_alert_profiles(db: AsyncSession) -> int:
@@ -356,6 +284,7 @@ async def seed_canonical_alert_profiles(db: AsyncSession) -> int:
 
 async def seed() -> None:
     async with AsyncSessionLocal() as db:
+        await seed_rbac(db)
         admin = await db.scalar(select(User).where(User.username == settings.default_admin_username))
         if admin is None:
             admin = User(
@@ -379,12 +308,33 @@ async def seed() -> None:
             admin.email = "admin@aquaponics.vn"
             if settings.reset_default_admin_password:
                 admin.password_hash = hash_password(settings.default_admin_password)
+        owner = await db.scalar(select(User).where(User.username == settings.default_owner_username))
+        if owner is None:
+            owner = User(
+                username=settings.default_owner_username,
+                password_hash=hash_password(settings.default_admin_password),
+                full_name="Chủ sở hữu hệ thống",
+                email="owner@aquaponics.vn",
+                phone_number="0000000001",
+                address="",
+                system_role=UserRole.OWNER,
+                status=UserStatus.ACTIVE,
+                must_change_password=True,
+            )
+            db.add(owner)
+        else:
+            owner.system_role = UserRole.OWNER
+            owner.status = UserStatus.ACTIVE
+            owner.is_deleted = False
+            owner.deleted_at = None
+            owner.must_change_password = True
         await seed_sensor_models(db)
         await db.flush()
-        await seed_energy_monitor_template(db)
         await seed_actuator_models(db)
-        await seed_actuator_model_feedbacks(db)
-        await seed_canonical_alert_profiles(db)
+        roles = {role.code: role.id for role in (await db.scalars(select(Role))).all()}
+        if roles:
+            admin.role_id = roles.get(UserRole.ADMIN.value)
+            owner.role_id = roles.get(UserRole.OWNER.value)
         await db.commit()
 
 

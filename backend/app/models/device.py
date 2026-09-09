@@ -19,10 +19,9 @@ if TYPE_CHECKING:
 
 class Device(Base, TimestampMixin, SoftDeleteMixin):
     __tablename__ = "devices"
-
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
     project_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("projects.id", ondelete="RESTRICT"), nullable=False, index=True
+        "aquaponics_system_id", BigInteger, ForeignKey("aquaponics_systems.id", ondelete="RESTRICT"), nullable=False, index=True
     )
     device_template_id: Mapped[int | None] = mapped_column(
         BigInteger, ForeignKey("device_templates.id", ondelete="SET NULL"), nullable=True, index=True

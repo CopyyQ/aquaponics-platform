@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -41,7 +42,7 @@ class TelemetryReadingRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    sensor_id: int
+    sensor_id: UUID
     recorded_at: datetime
     received_at: datetime
     value: float

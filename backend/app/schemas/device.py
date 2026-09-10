@@ -29,12 +29,8 @@ class DeviceRead(DeviceBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    project_id: int
+    aquaponics_system_id: int
     device_template_id: int | None
-    device_kind: str = "GENERIC"
-    template_code: str | None = None
-    template_name: str | None = None
-    nominal_output_voltage_v: float | None = None
     status: DeviceStatus
     last_seen_at: datetime | None
     is_enabled: bool

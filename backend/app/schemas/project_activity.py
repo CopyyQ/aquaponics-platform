@@ -1,30 +1,31 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel
 
 
-class ProjectActivityActor(BaseModel):
-    id: int
+class AquaponicsSystemActivityActor(BaseModel):
+    id: UUID
     name: str
 
 
-class ProjectActivityEntity(BaseModel):
+class AquaponicsSystemActivityEntity(BaseModel):
     type: str
-    id: int | None
+    id: UUID | int | None
     name: str
 
 
-class ProjectActivityRead(BaseModel):
+class AquaponicsSystemActivityRead(BaseModel):
     id: int
     action: str
-    actor: ProjectActivityActor
-    entity: ProjectActivityEntity
+    actor: AquaponicsSystemActivityActor
+    entity: AquaponicsSystemActivityEntity
     summary: str
     created_at: datetime
 
 
-class ProjectActivityListResponse(BaseModel):
-    items: list[ProjectActivityRead]
+class AquaponicsSystemActivityListResponse(BaseModel):
+    items: list[AquaponicsSystemActivityRead]
     total: int
     page: int
     page_size: int

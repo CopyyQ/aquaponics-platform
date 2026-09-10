@@ -21,7 +21,8 @@ class ResolvedSensorThresholdConfig:
     upper_threshold: float | None
     below_threshold_message: str | None
     above_threshold_message: str | None
-    risk_level: str | None
+    below_risk_level: str | None
+    above_risk_level: str | None
     delay_seconds: int
     lower_source: str
     upper_source: str
@@ -42,7 +43,7 @@ def _resolve(instance: object, template: object | None, model: object, field: st
     template_field = f"default_{field}"
     if template is not None and getattr(template, template_field) is not None:
         return getattr(template, template_field), "DEVICE_TEMPLATE"
-    return getattr(model, template_field), "SENSOR_MODEL"
+    return getattr(model, template_field, getattr(model, "default_alert_risk_level", None)), "SENSOR_MODEL"
 
 
 def resolve_sensor_threshold_config(
@@ -50,24 +51,25 @@ def resolve_sensor_threshold_config(
 ) -> ResolvedSensorThresholdConfig:
     lower, lower_source = _resolve(sensor, template_sensor, sensor_model, "lower_threshold")
     upper, upper_source = _resolve(sensor, template_sensor, sensor_model, "upper_threshold")
-    # warning_enabled is non-null on a materialized Sensor, so it remains the
+    # alerts_enabled is non-null on a materialized Sensor, so it remains the
     # runtime authority; defaults apply only to incomplete legacy instances.
-    enabled = sensor.warning_enabled if sensor.warning_enabled is not None else (
-        template_sensor.default_warning_enabled if template_sensor and template_sensor.default_warning_enabled is not None else sensor_model.default_warning_enabled
+    enabled = sensor.alerts_enabled if sensor.alerts_enabled is not None else (
+        template_sensor.default_alerts_enabled if template_sensor and template_sensor.default_alerts_enabled is not None else sensor_model.default_warning_enabled
     )
     below, _ = _resolve(sensor, template_sensor, sensor_model, "below_threshold_message")
     above, _ = _resolve(sensor, template_sensor, sensor_model, "above_threshold_message")
-    risk, _ = _resolve(sensor, template_sensor, sensor_model, "alert_risk_level")
-    return ResolvedSensorThresholdConfig(bool(enabled), lower, upper, below, above, risk, sensor.alert_delay_seconds, lower_source, upper_source)
+    below_risk, _ = _resolve(sensor, template_sensor, sensor_model, "below_risk_level")
+    above_risk, _ = _resolve(sensor, template_sensor, sensor_model, "above_risk_level")
+    return ResolvedSensorThresholdConfig(bool(enabled), lower, upper, below, above, below_risk, above_risk, sensor.alert_delay_seconds, lower_source, upper_source)
 
 
 def evaluate_sensor_threshold(value: float | None, config: ResolvedSensorThresholdConfig) -> SensorThresholdEvaluation:
     if not config.alerts_enabled or (config.lower_threshold is None and config.upper_threshold is None):
-        return SensorThresholdEvaluation("UNCONFIGURED", None, None, config.risk_level)
+        return SensorThresholdEvaluation("UNCONFIGURED", None, None, None)
     if value is None:
-        return SensorThresholdEvaluation("UNCONFIGURED", None, None, config.risk_level)
+        return SensorThresholdEvaluation("UNCONFIGURED", None, None, None)
     if config.lower_threshold is not None and value < config.lower_threshold:
-        return SensorThresholdEvaluation("BELOW", config.below_threshold_message, config.lower_threshold, config.risk_level)
+        return SensorThresholdEvaluation("BELOW", config.below_threshold_message, config.lower_threshold, config.below_risk_level)
     if config.upper_threshold is not None and value > config.upper_threshold:
-        return SensorThresholdEvaluation("ABOVE", config.above_threshold_message, config.upper_threshold, config.risk_level)
-    return SensorThresholdEvaluation("NORMAL", None, None, config.risk_level)
+        return SensorThresholdEvaluation("ABOVE", config.above_threshold_message, config.upper_threshold, config.above_risk_level)
+    return SensorThresholdEvaluation("NORMAL", None, None, None)

@@ -29,6 +29,9 @@ class MqttStatusPayload(BaseModel):
 class MqttActuatorStatus(BaseModel):
     actuator_code: str
     state: bool
+    voltage_v: float | None = None
+    current_a: float | None = None
+    recorded_at: datetime | None = None
 
 
 class MqttCommandAckPayload(BaseModel):

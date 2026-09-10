@@ -7,7 +7,7 @@ export const telemetryRangeLabels: Record<TelemetryRange, string> = {
   "6h": monitoringRangeLabel("6h"),
   "12h": monitoringRangeLabel("12h"),
   "24h": monitoringRangeLabel("24h"),
-  "1m": monitoringRangeLabel("1m"),
+  "30d": monitoringRangeLabel("30d"),
 }
 export const buildTelemetryWindow = buildMonitoringWindow
 

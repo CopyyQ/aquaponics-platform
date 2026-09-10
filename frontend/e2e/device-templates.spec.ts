@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test"
 import { guardRuntime } from "./helpers/runtime-guards"
 
+test.skip(true, "Historical /admin/device-templates route; canonical catalog coverage uses /catalogs.")
+
 const exactCodes = ["OUTPUT_VOLTAGE_V", "INPUT_VOLTAGE_V", "LOAD_CURRENT_A", "INPUT_CURRENT_A", "POWER_W", "ENERGY_TOTAL_WH"]
 
 test("@smoke ENERGY_MONITOR_12V có đúng 6 phép đo", async ({ page }, testInfo) => {

@@ -1,9 +1,10 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
 from app.schemas.project_overview import (
-    ActuatorActiveIncidentRead,
+    ActuatorActiveAlertRead,
     ActuatorElectricalRead,
 )
 
@@ -21,7 +22,7 @@ class MonitoringLatestValue(BaseModel):
 
 
 class MonitoringSensor(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     unit: str
@@ -41,7 +42,7 @@ class MonitoringLatestCommand(BaseModel):
 
 
 class MonitoringActuator(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     actuator_model: str | None
@@ -52,11 +53,11 @@ class MonitoringActuator(BaseModel):
     latest_command: MonitoringLatestCommand | None
     last_reported_at: datetime | None
     electrical: ActuatorElectricalRead
-    active_incident: ActuatorActiveIncidentRead | None
+    active_alert: ActuatorActiveAlertRead | None
 
 
 class MonitoringDevice(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     is_enabled: bool
@@ -67,8 +68,8 @@ class MonitoringDevice(BaseModel):
     actuators: list[MonitoringActuator]
 
 
-class ProjectMonitoringLatestResponse(BaseModel):
-    project_id: int
+class MonitoringLatestRead(BaseModel):
+    aquaponics_system_id: UUID
     devices: list[MonitoringDevice]
 
 
@@ -243,14 +244,14 @@ class MonitoringDataGap(BaseModel):
 
 
 class MonitoringSensorSeries(BaseModel):
-    sensor_id: int
+    sensor_id: UUID
     unit: str
     points: list[MonitoringSeriesPoint]
     gaps: list[MonitoringDataGap]
 
 
-class ProjectMonitoringSeriesResponse(BaseModel):
-    project_id: int
+class MonitoringSeriesRead(BaseModel):
+    aquaponics_system_id: UUID
     range: MonitoringRange
     resolution: str
     series: list[MonitoringSensorSeries]
@@ -298,7 +299,7 @@ class ActuatorHistoryStatistics(BaseModel):
 
 
 class MonitoringActuatorHistory(BaseModel):
-    actuator_id: int
+    actuator_id: UUID
     points: list[ActuatorHistoryPoint]
     gaps: list[ActuatorHistoryGap]
     statistics: ActuatorHistoryStatistics
@@ -307,5 +308,12 @@ class MonitoringActuatorHistory(BaseModel):
 class ProjectMonitoringActuatorHistoryResponse(BaseModel):
     project_id: int
     device_id: int
+    range: MonitoringRange
+    items: list[MonitoringActuatorHistory]
+
+
+class MonitoringActuatorHistoryRead(BaseModel):
+    aquaponics_system_id: UUID
+    device_id: UUID
     range: MonitoringRange
     items: list[MonitoringActuatorHistory]

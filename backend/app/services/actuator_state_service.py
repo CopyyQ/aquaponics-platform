@@ -40,6 +40,8 @@ async def record_actuator_reported_state(
         or timestamp > actuator.last_reported_at
     ):
         actuator.last_reported_at = timestamp
+    # Explicit final-architecture name for the trusted server receipt time.
+    actuator.status_received_at = timestamp
 
     observed_at = state_reported_at or timestamp
     # Do not let a retained/duplicate older MQTT packet overwrite newer state.

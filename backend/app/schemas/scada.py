@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Literal
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
@@ -9,7 +10,7 @@ EntityType = Literal["DEVICE", "SENSOR", "ACTUATOR"]
 
 class ScadaBinding(BaseModel):
     entity_type: EntityType
-    entity_id: int
+    entity_id: UUID
 
 
 class ScadaSymbol(BaseModel):
@@ -44,33 +45,32 @@ class ScadaDashboardInfo(BaseModel):
 
 
 class ScadaInventoryDevice(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     device_template_id: int | None
     template_code: str | None
-    device_kind: str
     enabled: bool
     connectivity: str
     last_seen_at: datetime | None
 
 
 class ScadaInventorySensor(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     sensor_model_code: str
     unit: str
-    device_id: int
+    device_id: UUID
     enabled: bool
 
 
 class ScadaInventoryActuator(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     actuator_model_code: str | None
-    device_id: int
+    device_id: UUID
     enabled: bool
 
 
@@ -78,17 +78,16 @@ class ScadaInventory(BaseModel):
     devices: list[ScadaInventoryDevice]
     sensors: list[ScadaInventorySensor]
     actuators: list[ScadaInventoryActuator]
-    energy_monitors: list[ScadaInventoryDevice]
 
 
 class ScadaRuntimeDevice(BaseModel):
-    id: int
+    id: UUID
     connectivity: str
     last_seen_at: datetime | None
 
 
 class ScadaRuntimeSensor(BaseModel):
-    id: int
+    id: UUID
     value: float | None
     recorded_at: datetime | None
     received_at: datetime | None
@@ -98,7 +97,7 @@ class ScadaRuntimeSensor(BaseModel):
 
 
 class ScadaRuntimeActuator(BaseModel):
-    id: int
+    id: UUID
     desired_state: bool | None
     reported_state: bool | None
     synchronization: Literal["IN_SYNC", "OUT_OF_SYNC", "UNKNOWN"]
@@ -110,8 +109,10 @@ class ScadaRuntimeActuator(BaseModel):
 
 class ScadaRuntimeAlert(BaseModel):
     id: int
-    sensor_id: int
-    device_id: int
+    resource_type: Literal["SENSOR", "ACTUATOR"]
+    sensor_id: UUID | None
+    actuator_id: UUID | None
+    device_id: UUID | None
     severity: str
     status: str
     title: str
@@ -126,20 +127,6 @@ class ScadaRuntimeState(BaseModel):
     alerts: list[ScadaRuntimeAlert]
 
 
-class ScadaEnergyMonitorRuntime(BaseModel):
-    device_id: int
-    current_power: float | None
-    output_voltage: float | None
-    input_voltage: float | None
-    load_current: float | None
-    input_current: float | None
-    energy_total: float | None
-    valid_measurements: int
-    expected_measurements: int
-    latest_received_at: datetime | None
-    issue_severity: str | None
-
-
 class ScadaIssue(BaseModel):
     id: str
     severity: Literal["CRITICAL", "HIGH", "WARNING", "INFO"]
@@ -149,17 +136,17 @@ class ScadaIssue(BaseModel):
     current_state: str
     timestamp: datetime | None
     suggested_action: str
-    device_id: int | None = None
-    sensor_id: int | None = None
-    actuator_id: int | None = None
+    device_id: UUID | None = None
+    sensor_id: UUID | None = None
+    actuator_id: UUID | None = None
 
 
 class ScadaUnplacedEntity(BaseModel):
     entity_type: EntityType
-    entity_id: int
+    entity_id: UUID
     name: str
     code: str
-    parent_device_id: int | None = None
+    parent_device_id: UUID | None = None
     suggested_symbol_type: str
     reason: str
 
@@ -186,21 +173,25 @@ class ScadaSummary(BaseModel):
     commands_failed: int
     commands_timeout: int
     disabled_actuators: int
-    active_energy_monitors: int
-    connected_energy_monitors: int
     open_alerts: int
     critical_alerts: int
     warning_alerts: int
     unplaced_entities: int
 
 
+class ScadaAquaponicsSystem(BaseModel):
+    id: UUID
+    code: str
+    name: str
+    status: str
+
+
 class ScadaRuntimeResponse(BaseModel):
-    project: dict[str, object]
+    aquaponics_system: ScadaAquaponicsSystem
     dashboard: ScadaDashboardInfo
     layout: ScadaLayout
     inventory: ScadaInventory
     runtime: ScadaRuntimeState
-    energy_monitor_runtime: list[ScadaEnergyMonitorRuntime]
     summary: ScadaSummary
     issues: list[ScadaIssue]
     unplaced_entities: list[ScadaUnplacedEntity]

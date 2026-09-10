@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class AlertRuleRevisionRead(BaseModel):
@@ -48,7 +48,7 @@ class AlertRuleCreate(BaseModel):
     code: str = Field(pattern=r"^[A-Z][A-Z0-9_]{2,99}$")
     name: str = Field(min_length=1, max_length=255)
     target_type: Literal["SENSOR", "ACTUATOR"]
-    evaluator_type: Literal["THRESHOLD", "THRESHOLD_BANDS", "RANGE_BANDS", "DIGITAL_STATE", "THRESHOLD_DURATION", "ACTUATOR_FEEDBACK", "SCHEDULE_FEEDBACK", "BASELINE_DEVIATION", "WINDOW_DURATION", "TREND"]
+    evaluator_type: Literal["THRESHOLD", "THRESHOLD_BANDS", "RANGE_BANDS", "DIGITAL_STATE", "THRESHOLD_DURATION", "BASELINE_DEVIATION", "WINDOW_DURATION", "TREND"]
     revision: AlertRuleRevisionCreate
 
 
@@ -77,55 +77,6 @@ class AlertRuleProfileRead(BaseModel):
     sensor_model_ids: list[int] = []
     created_at: datetime
     updated_at: datetime
-
-
-class FeedbackBindingCreate(BaseModel):
-    sensor_id: int
-    feedback_role: Literal["SUPPLY_VOLTAGE", "RUNNING_CURRENT"] = "RUNNING_CURRENT"
-    value_key: str = Field(default="current_a", pattern=r"^[a-z][a-z0-9_]*$", min_length=2, max_length=80)
-    lower_threshold: float | None = None
-    upper_threshold: float | None = None
-
-    @model_validator(mode="after")
-    def validate_thresholds(self) -> "FeedbackBindingCreate":
-        if self.lower_threshold is not None and self.upper_threshold is not None and self.lower_threshold >= self.upper_threshold:
-            raise ValueError("Ngưỡng dưới phải nhỏ hơn ngưỡng trên")
-        return self
-
-
-class FeedbackBindingRead(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-    id: int
-    actuator_id: int
-    sensor_id: int
-    feedback_role: str
-    value_key: str
-    unit: str
-    data_type: str
-    lower_threshold: float | None
-    upper_threshold: float | None
-    effective_lower_threshold: float | None = None
-    effective_upper_threshold: float | None = None
-    default_lower_threshold: float | None = None
-    default_upper_threshold: float | None = None
-    threshold_source: Literal["ACTUATOR_OVERRIDE", "MODEL_DEFAULT", "NONE"] = "NONE"
-    is_enabled: bool
-    created_at: datetime
-    updated_at: datetime
-
-
-class FeedbackSensorOptionRead(BaseModel):
-    id: int
-    code: str
-    name: str
-    device_id: int
-    device_code: str
-    device_name: str
-    sensor_model_id: int
-    sensor_model_code: str
-    sensor_model_name: str
-    unit: str
-    data_type: str
 
 
 class NotificationDeliveryRead(BaseModel):

@@ -4,16 +4,15 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_operational_user, require_roles
+from app.api.deps import require_permission
 from app.db.session import get_db
-from app.core.enums import UserRole
 from app.models.sensor import Sensor, SensorModel
 from app.models.user import User
 from app.schemas.common import MessageResponse
 from app.schemas.sensor import SensorModelCreate, SensorModelRead, SensorModelUpdate
 from app.services.audit_service import write_audit
 
-router = APIRouter(prefix="/sensor-models", tags=["Sensor models"])
+router = APIRouter(prefix="/sensor-models", tags=["Sensor Models"])
 
 
 async def get_model_or_404(
@@ -31,7 +30,7 @@ async def get_model_or_404(
 @router.get("", response_model=list[SensorModelRead])
 async def list_sensor_models(
     db: AsyncSession = Depends(get_db),
-    _: User = Depends(get_current_operational_user),
+    _: User = Depends(require_permission("sensor_models.read")),
 ) -> list[SensorModel]:
     return list(
         (
@@ -48,7 +47,7 @@ async def list_sensor_models(
 async def create_sensor_model(
     payload: SensorModelCreate,
     db: AsyncSession = Depends(get_db),
-    actor: User = Depends(require_roles(UserRole.ADMIN)),
+    actor: User = Depends(require_permission("sensor_models.create")),
 ) -> SensorModel:
     exists = await db.scalar(select(SensorModel.id).where(SensorModel.code == payload.code))
     if exists:
@@ -73,7 +72,7 @@ async def create_sensor_model(
 async def get_sensor_model(
     model_id: int,
     db: AsyncSession = Depends(get_db),
-    _: User = Depends(get_current_operational_user),
+    _: User = Depends(require_permission("sensor_models.read")),
 ) -> SensorModel:
     return await get_model_or_404(db, model_id)
 
@@ -83,7 +82,7 @@ async def update_sensor_model(
     model_id: int,
     payload: SensorModelUpdate,
     db: AsyncSession = Depends(get_db),
-    actor: User = Depends(require_roles(UserRole.ADMIN)),
+    actor: User = Depends(require_permission("sensor_models.update")),
 ) -> SensorModel:
     model = await get_model_or_404(db, model_id)
     for key, value in payload.model_dump(exclude_unset=True).items():
@@ -105,7 +104,7 @@ async def update_sensor_model(
 async def delete_sensor_model(
     model_id: int,
     db: AsyncSession = Depends(get_db),
-    actor: User = Depends(require_roles(UserRole.ADMIN)),
+    actor: User = Depends(require_permission("sensor_models.delete")),
 ) -> Response:
     model = await get_model_or_404(db, model_id)
     sensor_count = await db.scalar(
@@ -128,22 +127,3 @@ async def delete_sensor_model(
     await db.commit()
     return Response(status_code=204)
 
-
-@router.post("/{model_id}/restore", response_model=MessageResponse)
-async def restore_sensor_model(
-    model_id: int,
-    db: AsyncSession = Depends(get_db),
-    actor: User = Depends(require_roles(UserRole.ADMIN)),
-) -> MessageResponse:
-    model = await get_model_or_404(db, model_id, include_deleted=True)
-    model.is_deleted = False
-    model.deleted_at = None
-    await write_audit(
-        db,
-        user_id=actor.id,
-        action="RESTORE_SENSOR_MODEL",
-        entity_type="SENSOR_MODEL",
-        entity_id=model.id,
-    )
-    await db.commit()
-    return MessageResponse(message="Đã khôi phục mẫu cảm biến")

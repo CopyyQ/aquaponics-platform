@@ -3,7 +3,7 @@ import { normalizeMonitoringSearchParams, parseMonitoringRange } from "@/pages/p
 import { queryKeys } from "@/shared/api/query-keys"
 
 describe("Project Monitoring range", () => {
-  it.each(["1h", "6h", "12h", "24h", "1m"] as const)("chấp nhận range %s", (range) => {
+  it.each(["1h", "6h", "12h", "24h", "30d"] as const)("chấp nhận range %s", (range) => {
     expect(parseMonitoringRange(range)).toBe(range)
   })
 

@@ -98,64 +98,6 @@ class RangeBandsEvaluator(BaseEvaluator):
         return EvaluationResult(True, severity, evidence={"lower": float(selected["lower"]), "upper": float(selected["upper"]), "operator": "OUTSIDE"})
 
 
-class ActuatorFeedbackEvaluator(BaseEvaluator):
-    required_fields = ("feedback_role",)
-
-    def validate(self, config: dict[str, Any]) -> list[str]:
-        missing = super().validate(config)
-        if config.get("feedback_role") not in {"RUNNING_CURRENT", "SUPPLY_VOLTAGE"}:
-            missing.append("feedback_role")
-        legacy = "min_running_current_a" in config or "max_running_current_a" in config
-        if legacy:
-            for field in ("min_running_current_a", "max_running_current_a"):
-                if config.get(field) is None:
-                    missing.append(field)
-            if not any(field in missing for field in ("min_running_current_a", "max_running_current_a")) and float(config["max_running_current_a"]) <= float(config["min_running_current_a"]):
-                missing.append("max_running_current_a")
-        else:
-            if config.get("operator") not in {"LT", "LTE", "GT", "GTE"}:
-                missing.append("operator")
-            if config.get("threshold") is None:
-                missing.append("threshold")
-        for field in ("startup_grace_seconds", "debounce_seconds"):
-            if config.get(field) is None:
-                missing.append(field)
-            elif int(config[field]) < 0:
-                missing.append(field)
-        recovery_field = "recovery_current_a" if legacy else "recovery_threshold"
-        if config.get(recovery_field) is None:
-            missing.append(recovery_field)
-        if config.get("recovery_duration_seconds") is None:
-            missing.append("recovery_duration_seconds")
-        elif int(config["recovery_duration_seconds"]) < 0:
-            missing.append("recovery_duration_seconds")
-        return list(dict.fromkeys(missing))
-
-    def evaluate(self, config: dict[str, Any], context: dict[str, Any]) -> EvaluationResult:
-        role = str(config.get("feedback_role") or "RUNNING_CURRENT")
-        value = context.get("feedback_value")
-        if value is None:
-            value = context.get("current_a") if role == "RUNNING_CURRENT" else context.get("voltage_v")
-        operator = config.get("operator")
-        if role == "RUNNING_CURRENT" and operator in {None, "LT", "LTE"} and not context.get("expected_on"):
-            return EvaluationResult(False)
-        if context.get("quality") != "VALID" or context.get("freshness") != "FRESH" or value is None:
-            return EvaluationResult(False, reason="Không thể xác nhận trạng thái điện")
-        observed = float(value)
-        if operator:
-            threshold = float(config["threshold"])
-            active = _compare(operator, observed, threshold)
-            return EvaluationResult(active, config.get("severity", "WARNING") if active else None, evidence={"operator": operator, "threshold": threshold, "feedback_role": role})
-        minimum = float(config["min_running_current_a"])
-        maximum = float(config["max_running_current_a"])
-        active = observed < minimum or observed > maximum
-        return EvaluationResult(active, config.get("severity", "CRITICAL") if active else None, evidence={"operator": "LT" if observed < minimum else "GT", "threshold": minimum if observed < minimum else maximum, "minimum_running_current_a": minimum, "maximum_running_current_a": maximum, "feedback_role": role})
-
-
-class ScheduleFeedbackEvaluator(ActuatorFeedbackEvaluator):
-    required_fields = ("schedule_id", *ActuatorFeedbackEvaluator.required_fields)
-
-
 class DigitalStateEvaluator(BaseEvaluator):
     required_fields = ("active_state", "active_value")
 
@@ -281,8 +223,6 @@ EVALUATOR_REGISTRY: dict[str, Evaluator] = {
     "RANGE_BANDS": RangeBandsEvaluator(),
     "DIGITAL_STATE": DigitalStateEvaluator(),
     "THRESHOLD_DURATION": ThresholdDurationEvaluator(),
-    "ACTUATOR_FEEDBACK": ActuatorFeedbackEvaluator(),
-    "SCHEDULE_FEEDBACK": ScheduleFeedbackEvaluator(),
     "BASELINE_DEVIATION": BaselineDeviationEvaluator(),
     "WINDOW_DURATION": WindowDurationEvaluator(),
     "TREND": TrendEvaluator(),

@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test"
 import { guardRuntime } from "./helpers/runtime-guards"
 
+test.skip(true, "Historical /admin/projects SCADA route; canonical SCADA is covered by canonical navigation and live walk.")
+
 test("@smoke SCADA Project 81 biểu diễn Energy Monitor và refresh không reload", async ({ page }, testInfo) => {
   const assertRuntime = guardRuntime(page, testInfo)
   let documentLoads = 0

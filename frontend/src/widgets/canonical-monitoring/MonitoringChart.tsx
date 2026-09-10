@@ -1,0 +1,13 @@
+import type { MonitoringSeries } from "@/api/contracts"
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card"
+
+export function MonitoringChart({ series }: { series: MonitoringSeries }) {
+  const points = [...series.points].sort((left, right) => Date.parse(left.recorded_at) - Date.parse(right.recorded_at))
+  const values = points.map((point) => point.value)
+  const min = values.length ? Math.min(...values) : 0
+  const max = values.length ? Math.max(...values) : 1
+  const span = max - min || 1
+  const coordinates = points.map((point, index) => ({ point, x: points.length === 1 ? 50 : (index / (points.length - 1)) * 100, y: 91 - ((point.value - min) / span) * 82 }))
+  const line = coordinates.map(({ x, y }) => `${x},${y}`).join(" ")
+  return <Card><CardHeader><CardTitle className="flex flex-wrap items-baseline justify-between gap-2 text-base"><span>Sensor #{series.sensor_id} · {series.unit}</span><span className="text-xs font-normal text-muted-foreground">{points.length} điểm · min {points.length ? min : "—"} · max {points.length ? max : "—"}</span></CardTitle></CardHeader><CardContent>{points.length ? <svg className="h-44 w-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label={`Biểu đồ sensor ${series.sensor_id}`}><defs><linearGradient id={`fill-${series.sensor_id}`} x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="currentColor" stopOpacity=".24" /><stop offset="1" stopColor="currentColor" stopOpacity="0" /></linearGradient></defs>{points.length > 1 ? <polyline points={`0,100 ${line} 100,100`} fill={`url(#fill-${series.sensor_id})`} stroke="none" /> : null}<polyline points={line} fill="none" stroke="currentColor" strokeWidth="1.5" vectorEffect="non-scaling-stroke" className="text-primary" />{coordinates.map(({ point, x, y }) => <circle key={`${point.recorded_at}-${point.value}`} cx={x} cy={y} r="1.8" className="fill-primary" vectorEffect="non-scaling-stroke"><title>{`${new Date(point.recorded_at).toLocaleString("vi-VN")}: ${point.value} ${series.unit}`}</title></circle>)}</svg> : <p className="py-12 text-center text-sm text-muted-foreground">Chưa có dữ liệu trong khoảng thời gian này.</p>}{series.gaps.length ? <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">{series.gaps.length} khoảng thiếu dữ liệu được backend đánh dấu.</p> : null}<div className="mt-2 flex justify-between gap-3 text-xs text-muted-foreground"><span>{points[0] ? new Date(points[0].recorded_at).toLocaleString("vi-VN") : "—"}</span><span className="text-right">{points.at(-1) ? new Date(points.at(-1)!.recorded_at).toLocaleString("vi-VN") : "—"}</span></div></CardContent></Card>
+}

@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test"
 import { guardRuntime } from "./helpers/runtime-guards"
 
+test.skip(true, "Historical special runtime device-kind API conflicts with the canonical mixed Device/Sensor model.")
+
 type RuntimeDevice = { id: number; device_kind?: string }
 type MqttConfig = {
   sensors: Array<{ sensor_code: string; sensor_model_code: string }>

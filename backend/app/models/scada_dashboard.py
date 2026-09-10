@@ -15,7 +15,7 @@ class ScadaDashboard(Base, TimestampMixin):
         CheckConstraint("status IN ('DRAFT', 'PUBLISHED')", name="status_allowed"),
         Index(
             "ix_scada_dashboards_project_status_version",
-            "project_id",
+            "aquaponics_system_id",
             "status",
             "version",
         ),
@@ -23,7 +23,7 @@ class ScadaDashboard(Base, TimestampMixin):
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
     project_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
+        "aquaponics_system_id", BigInteger, ForeignKey("aquaponics_systems.id", ondelete="CASCADE"), nullable=False
     )
     status: Mapped[str] = mapped_column(String(20), nullable=False)
     version: Mapped[int] = mapped_column(Integer, nullable=False)

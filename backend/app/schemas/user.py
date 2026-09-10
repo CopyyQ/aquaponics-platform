@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 import re
 
@@ -13,11 +14,11 @@ class UserBase(BaseModel):
     email: EmailStr
     phone_number: str = Field(min_length=8, max_length=30)
     address: str = ""
-    system_role: UserRole = UserRole.VIEWER
 
 
 class UserCreate(UserBase):
     temporary_password: str = Field(min_length=8, max_length=128)
+    role_id: int | None = None
 
 
 USERNAME_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
@@ -92,7 +93,8 @@ class UserSelfUpdate(BaseModel):
 class UserRead(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
+    id: UUID = Field(validation_alias="public_id")
+    role_id: int | None
     status: UserStatus
     must_change_password: bool
     last_login_at: datetime | None
@@ -102,10 +104,8 @@ class UserRead(UserBase):
     is_deleted: bool
     deleted_at: datetime | None
     disabled_at: datetime | None
-    disabled_by_user_id: int | None
     disabled_reason: str | None
     locked_at: datetime | None
-    locked_by_user_id: int | None
     locked_reason: str | None
 
 
@@ -150,4 +150,4 @@ class AdminUserDetail(UserRead):
 
 
 class AssignOwnerRequest(BaseModel):
-    user_id: int
+    user_id: UUID

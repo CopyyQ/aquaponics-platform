@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import TYPE_CHECKING
+from uuid import UUID, uuid4
 
 from sqlalchemy import BigInteger, DateTime, Enum, ForeignKey, Identity, Index, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
 from app.db.base import Base, SoftDeleteMixin, TimestampMixin
 from app.core.enums import ProjectStatus
@@ -16,13 +18,15 @@ if TYPE_CHECKING:
 
 
 class Project(Base, TimestampMixin, SoftDeleteMixin):
-    __tablename__ = "projects"
+    """Internal compatibility model for the canonical Aquaponics System."""
+    __tablename__ = "aquaponics_systems"
     __table_args__ = (
-        Index("ix_projects_status", "status"),
-        Index("ix_projects_disabled_by_user_id", "disabled_by_user_id"),
+        Index("ix_aquaponics_systems_status", "status"),
+        Index("ix_aquaponics_systems_disabled_by_user_id", "disabled_by_user_id"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    public_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), default=uuid4, unique=True, index=True, nullable=False)
     owner_user_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
     )

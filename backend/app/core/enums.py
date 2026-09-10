@@ -4,6 +4,7 @@ from enum import StrEnum
 class UserRole(StrEnum):
     ADMIN = "ADMIN"
     OWNER = "OWNER"
+    TECHNICIAN = "TECHNICIAN"
     VIEWER = "VIEWER"
 
 
@@ -14,11 +15,16 @@ class UserStatus(StrEnum):
     SOFT_DELETED = "SOFT_DELETED"
 
 
-class ProjectStatus(StrEnum):
+class AquaponicsSystemStatus(StrEnum):
     ACTIVE = "ACTIVE"
     INACTIVE = "INACTIVE"
     ARCHIVED = "ARCHIVED"
     DISABLED = "DISABLED"
+
+
+# Internal persistence code retains this compatibility name. Public schemas
+# expose AquaponicsSystemStatus.
+ProjectStatus = AquaponicsSystemStatus
 
 
 class DeviceStatus(StrEnum):
@@ -28,9 +34,9 @@ class DeviceStatus(StrEnum):
     DISABLED = "DISABLED"
 
 
-class DeviceKind(StrEnum):
-    GENERIC = "GENERIC"
-    ENERGY_MONITOR = "ENERGY_MONITOR"
+class DeviceType(StrEnum):
+    SENSOR_DEVICE = "SENSOR_DEVICE"
+    ACTUATOR_DEVICE = "ACTUATOR_DEVICE"
 
 
 class MeasurementSemantics(StrEnum):
@@ -45,11 +51,6 @@ class SensorStatus(StrEnum):
     DISABLED = "DISABLED"
 
 
-class SensorPurpose(StrEnum):
-    GENERAL = "GENERAL"
-    ACTUATOR_FEEDBACK = "ACTUATOR_FEEDBACK"
-
-
 class AggregatePeriod(StrEnum):
     HOUR = "HOUR"
     DAY = "DAY"
@@ -60,7 +61,36 @@ class MonitoringRange(StrEnum):
     SIX_HOURS = "6h"
     TWELVE_HOURS = "12h"
     TWENTY_FOUR_HOURS = "24h"
-    ONE_MONTH = "1m"
+    THIRTY_DAYS = "30d"
+
+
+class ThresholdMetricType(StrEnum):
+    SENSOR_VALUE = "SENSOR_VALUE"
+    VOLTAGE = "VOLTAGE"
+    CURRENT = "CURRENT"
+
+
+class ActuatorThresholdMetric(StrEnum):
+    VOLTAGE = "VOLTAGE"
+    CURRENT = "CURRENT"
+
+
+class AlertResourceType(StrEnum):
+    SENSOR = "SENSOR"
+    ACTUATOR = "ACTUATOR"
+
+
+class AlertDirection(StrEnum):
+    BELOW = "BELOW"
+    ABOVE = "ABOVE"
+
+
+class AlertLifecycleStatus(StrEnum):
+    PENDING = "PENDING"
+    OPEN = "OPEN"
+    ACKNOWLEDGED = "ACKNOWLEDGED"
+    NORMALIZED = "NORMALIZED"
+    RESOLVED = "RESOLVED"
 
 
 class AlertType(StrEnum):

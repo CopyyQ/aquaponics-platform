@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -101,16 +102,10 @@ class DeviceListResponse(BaseModel):
     total: int
 
 
-class DeviceConfigOwner(BaseModel):
-    id: int
-    full_name: str
-
-
-class DeviceConfigProject(BaseModel):
-    id: int
+class DeviceConfigAquaponicsSystem(BaseModel):
+    id: UUID
     code: str
     name: str
-    owner: DeviceConfigOwner
 
 
 class DeviceConfigMqtt(BaseModel):
@@ -123,49 +118,29 @@ class DeviceConfigMqtt(BaseModel):
 class DeviceConfigTopics(BaseModel):
     telemetry: str
     status: str
+    command: str
 
 
 class DeviceConfigSensor(BaseModel):
-    id: int
+    id: UUID
     sensor_code: str
     sensor_model_code: str
     name: str
     unit: str
     is_enabled: bool
     status: SensorStatus
-    lower_threshold: float | None
-    upper_threshold: float | None
-
-
-class DeviceConfigFeedbackMqtt(BaseModel):
-    topic: str
-    payload: dict[str, object]
-
-
-class DeviceConfigActuatorFeedback(BaseModel):
-    role: str
-    sensor_id: int
-    sensor_code: str
-    sensor_model_code: str
-    value_key: str
-    unit: str
-    data_type: str
-    lower_threshold: float | None
-    upper_threshold: float | None
-    mqtt: DeviceConfigFeedbackMqtt
 
 
 class DeviceConfigActuator(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     actuator_model_code: str | None
     is_enabled: bool
-    feedbacks: list[DeviceConfigActuatorFeedback]
 
 
 class DeviceConfigDevice(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     is_enabled: bool
@@ -176,24 +151,11 @@ class DeviceConfigDevice(BaseModel):
     actuators: list[DeviceConfigActuator]
 
 
-class DeviceConfigSummary(BaseModel):
-    device_count: int
-    enabled_device_count: int
-    disabled_device_count: int
-    sensor_count: int
-    enabled_sensor_count: int
-    disabled_sensor_count: int
-    actuator_count: int
-    enabled_actuator_count: int
-    feedback_count: int
-
-
-class ProjectDeviceConfig(BaseModel):
+class AquaponicsSystemMqttConfigExport(BaseModel):
     exported_at: datetime
-    project: DeviceConfigProject
+    aquaponics_system: DeviceConfigAquaponicsSystem
     mqtt: DeviceConfigMqtt
     devices: list[DeviceConfigDevice]
-    summary: DeviceConfigSummary
 
 
 class ProjectMemberCreate(BaseModel):

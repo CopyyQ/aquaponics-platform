@@ -1,7 +1,6 @@
-from collections.abc import Awaitable, Callable
-from typing import Any
+from uuid import UUID
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import (
     HTTPAuthorizationCredentials,
     HTTPBearer,
@@ -10,9 +9,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
-from app.core.enums import UserRole, UserStatus
+from app.core.enums import UserStatus
 from app.core.security import decode_access_token
 from app.models.user import User
+from app.services.permission_service import has_permission
+from app.services.public_identity_service import PublicIdentityNotFoundError, get_system_by_public_id
 
 
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -54,30 +55,6 @@ def _inactive_account_error(
         "ACCOUNT_INACTIVE",
         "Tài khoản đã bị vô hiệu hóa hoặc khóa.",
     )
-
-
-def normalize_role(
-    value: UserRole | str | Any | None,
-) -> str:
-    """
-    Chuẩn hóa các dạng:
-    - UserRole.ADMIN
-    - "ADMIN"
-    - "UserRole.ADMIN"
-    thành "ADMIN".
-    """
-    if value is None:
-        return ""
-
-    if isinstance(value, UserRole):
-        return value.name.strip().upper()
-
-    normalized = str(value).strip().upper()
-
-    if "." in normalized:
-        normalized = normalized.rsplit(".", 1)[-1]
-
-    return normalized
 
 
 async def get_current_user(
@@ -176,72 +153,29 @@ async def get_current_operational_user(
 get_authenticated_user = get_current_active_user
 
 
-def require_roles(
-    *roles: UserRole | str,
-) -> Callable[..., Awaitable[User]]:
-    allowed_roles = {
-        normalize_role(role)
-        for role in roles
-        if normalize_role(role)
-    }
-
-    if not allowed_roles:
-        raise ValueError(
-            "require_roles phải nhận ít nhất một vai trò."
-        )
-
+def require_permission(permission_code: str):
     async def dependency(
-        user: User = Depends(
-            get_current_operational_user
-        ),
+        request: Request,
+        user: User = Depends(get_current_operational_user),
+        db: AsyncSession = Depends(get_db),
     ) -> User:
-        current_role = normalize_role(
-            user.system_role
-        )
-
-        if current_role not in allowed_roles:
+        raw_system_id = request.path_params.get("system_id")
+        system_id = None
+        if raw_system_id is not None:
+            try:
+                system = await get_system_by_public_id(db, UUID(str(raw_system_id)))
+            except (ValueError, PublicIdentityNotFoundError) as exc:
+                raise HTTPException(status_code=404, detail="Aquaponics System không tồn tại") from exc
+            system_id = system.id
+        if not await has_permission(db, user, permission_code, system_id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail={
-                    "code": "INSUFFICIENT_ROLE",
-                    "detail": (
-                        "Tài khoản không có quyền "
-                        "thực hiện thao tác này."
-                    ),
-                    "current_role": current_role,
-                    "required_roles": sorted(
-                        allowed_roles
-                    ),
+                    "code": "PERMISSION_REQUIRED",
+                    "permission": permission_code,
+                    "detail": "Tài khoản không có quyền thực hiện thao tác này.",
                 },
             )
-
         return user
 
     return dependency
-
-
-async def require_admin(
-    user: User = Depends(
-        get_current_operational_user
-    ),
-) -> User:
-    role = (
-        user.system_role.value
-        if isinstance(user.system_role, UserRole)
-        else str(user.system_role).split(".")[-1]
-    ).upper()
-
-    if role != UserRole.ADMIN.value.upper():
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail={
-                "code": "ADMIN_REQUIRED",
-                "detail": (
-                    "Chỉ Quản trị viên mới có "
-                    "quyền thực hiện thao tác này."
-                ),
-                "current_role": role,
-            },
-        )
-
-    return user

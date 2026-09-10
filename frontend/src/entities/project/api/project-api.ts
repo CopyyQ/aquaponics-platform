@@ -35,22 +35,6 @@ export const projectApi = {
       )
     ).data,
 
-  createForUser: async (
-    userId: number,
-    payload: {
-      code: string
-      name: string
-      location?: string
-      description?: string
-    },
-  ) =>
-    (
-      await httpClient.post<Project>(
-        `/admin/users/${userId}/projects`,
-        payload,
-      )
-    ).data,
-
   devices: async (projectId: number, includeDisabled = false) =>
     (
       await httpClient.get<ProjectDeviceList>(

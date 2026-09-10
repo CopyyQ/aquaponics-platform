@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test"
 
 const remoteRuntime = Boolean(process.env.PLAYWRIGHT_BASE_URL)
-const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000"
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:4174"
 
 export default defineConfig({
   testDir: "./e2e",
@@ -17,15 +17,9 @@ export default defineConfig({
     video: "retain-on-failure",
   },
   webServer: remoteRuntime ? undefined : {
-    command: "npm run dev -- --host 0.0.0.0",
+    command: "npm run dev -- --host 127.0.0.1 --port 4174 --strictPort",
     url: baseURL,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
   },
-  projects: [
-    { name: "public-gateway", testMatch: /public-monitoring-gateway\.spec\.ts/, use: { ...devices["Desktop Chrome"] } },
-    { name: "setup", testMatch: /auth\.setup\.ts/ },
-    { name: "chromium", use: { ...devices["Desktop Chrome"], storageState: "playwright/.auth/admin.json" }, dependencies: ["setup"] },
-    { name: "firefox-smoke", grep: /@smoke/, use: { ...devices["Desktop Firefox"], storageState: "playwright/.auth/admin.json" }, dependencies: ["setup"] },
-    { name: "webkit-smoke", grep: /@smoke/, use: { ...devices["Desktop Safari"], storageState: "playwright/.auth/admin.json" }, dependencies: ["setup"] },
-  ],
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 })

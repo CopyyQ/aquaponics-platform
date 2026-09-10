@@ -5,7 +5,7 @@ from pydantic import ValidationError
 from sqlalchemy import select
 
 from app.db.session import async_session_factory
-from app.models.actuator import Actuator, ActuatorCommand
+from app.models.actuator import Actuator, ActuatorCommand, ActuatorReading
 from app.models.device import Device
 from app.mqtt.schemas import MqttCommandAckPayload, MqttStatusPayload, MqttTelemetryPayload
 from app.services.actuator_state_service import (
@@ -15,6 +15,7 @@ from app.services.actuator_state_service import (
 from app.services.audit_service import write_audit
 from app.services.device_status_service import update_device_status
 from app.services.project_notification_service import dispatch_actuator_command_transition
+from app.services.operational_incident_service import evaluate_actuator_composite_incident
 from app.services.telemetry_ingest_service import ingest_mqtt_telemetry
 
 logger = logging.getLogger(__name__)
@@ -88,6 +89,21 @@ async def handle_status(device_code: str, raw_payload: bytes) -> None:
                         actuator=actuator,
                         reported_state=item.state,
                         acknowledged_at=received_at,
+                    )
+                if item.voltage_v is not None or item.current_a is not None:
+                    recorded_at = item.recorded_at or payload.sent_at
+                    actuator.voltage_v = item.voltage_v
+                    actuator.current_a = item.current_a
+                    actuator.electrical_recorded_at = recorded_at
+                    actuator.electrical_received_at = received_at
+                    db.add(ActuatorReading(
+                        actuator_id=actuator.id, voltage_v=item.voltage_v,
+                        current_a=item.current_a, recorded_at=recorded_at,
+                        received_at=received_at, quality="VALID",
+                    ))
+                    await evaluate_actuator_composite_incident(
+                        db, device=device, actuator=actuator,
+                        recorded_at=recorded_at, received_at=received_at,
                     )
             await db.commit()
         logger.info(

@@ -60,15 +60,16 @@ def test_notification_settings_contract_accepts_six_risks_and_rejects_invalid_va
         NotificationSettingsUpdate.model_validate(invalid_integer)
 
 
-def test_operational_payload_uses_business_threshold_and_live_incident_duration() -> None:
+def test_operational_payload_keeps_the_outbox_event_snapshot_immutable() -> None:
     started = datetime.now(UTC) - timedelta(days=1, hours=20)
-    incident = OperationalIncident(id=6, project_id=1, rule_id=1, rule_revision_id=1, context_key="sensor:1", status="OPEN", technical_severity="CRITICAL", business_risk_level_snapshot="VERY_HIGH", started_at=started, opened_at=started, last_triggered_at=started, occurrence_count=120, trigger_snapshot={})
-    outbox = NotificationOutbox(id=10, incident_id=6, event_type="OPEN", idempotency_key="incident:6:OPEN", payload_snapshot={"project_name": "Dự án cá trê", "project_code": "TB-0015", "device_name": "Thiết bị môi trường", "device_code": "ENV-01", "sensor_name": "Cảm biến pH", "sensor_code": "ENV-01-PH", "rule_name": "pH nước", "value": 2, "unit": "pH", "operator": "OUTSIDE", "lower": 6.0, "upper": 8.0, "quality": "VALID", "freshness": "FRESH", "message": "pH bất thường"})
+    incident = OperationalIncident(id=6, project_id=1, rule_id=1, rule_revision_id=1, context_key="sensor:1", status="OPEN", technical_severity="CRITICAL", business_risk_level_snapshot="VERY_HIGH", started_at=started, opened_at=started, last_triggered_at=started, occurrence_count=120, trigger_snapshot={"value": 99, "message": "later incident state"})
+    outbox = NotificationOutbox(id=10, incident_id=6, event_type="OPEN", idempotency_key="incident:6:OPEN", created_at=started + timedelta(hours=2), payload_snapshot={"project_name": "Dự án cá trê", "project_code": "TB-0015", "device_name": "Thiết bị môi trường", "device_code": "ENV-01", "sensor_name": "Cảm biến pH", "sensor_code": "ENV-01-PH", "rule_name": "pH nước", "value": 2, "unit": "pH", "operator": "OUTSIDE", "lower": 6.0, "upper": 8.0, "quality": "VALID", "freshness": "FRESH", "message": "pH bất thường", "duration_seconds": 7200})
     payload = _payload_at_delivery(outbox, incident, datetime.now(UTC))
     message = format_operational_message(payload)
     assert "Ngưỡng cảnh báo: < 6 hoặc > 8 pH" in message
     assert "Mã cảm biến: ENV-01-PH" in message
-    assert "Bắt đầu: —" not in message and "Đã kéo dài: 1 ngày 20 giờ" in message
+    assert payload["value"] == 2 and payload["message"] == "pH bất thường"
+    assert "Bắt đầu: —" not in message and "Đã kéo dài: 2 giờ" in message
     assert "CRITICAL" not in message and "WARNING" not in message
 
 
@@ -101,7 +102,12 @@ async def test_120_abnormal_samples_create_one_incident_and_one_open_outbox() ->
         assert incident.occurrence_count == 120
         assert int(await db.scalar(select(func.count(OperationalIncident.id)).where(OperationalIncident.rule_id == rule.id)) or 0) == 1
         assert int(await db.scalar(select(func.count(NotificationOutbox.id)).where(NotificationOutbox.incident_id == incident.id, NotificationOutbox.event_type == "OPEN")) or 0) == 1
-        settings = ProjectNotificationSettings(project_id=project.id, telegram_enabled=True, notify_alert_opened=True)
+        settings = await db.scalar(select(ProjectNotificationSettings).where(ProjectNotificationSettings.project_id == project.id))
+        if settings is None:
+            settings = ProjectNotificationSettings(project_id=project.id)
+        settings.enabled = True
+        settings.telegram_enabled = True
+        settings.notify_alert_opened = True
         policy = ProjectNotificationRiskPolicy(project_id=project.id, risk_level="VERY_HIGH", telegram_enabled=True, notify_on_open=True, notify_on_escalation=True, notify_on_recovery=True, notify_on_resolved=True, reminder_enabled=False, initial_reminder_seconds=900, repeat_interval_seconds=1800, max_reminders=0, stop_reminders_on_ack=True)
         recipient = ProjectNotificationRecipient(project_id=project.id, name="Kiểm thử", telegram_chat_id=f"chat-{suffix}", enabled=True)
         db.add_all([settings, policy, recipient])
@@ -113,7 +119,7 @@ async def test_120_abnormal_samples_create_one_incident_and_one_open_outbox() ->
 
             async def send_message(self, chat_id: str, text: str) -> TelegramDeliveryResult:
                 self.calls += 1
-                assert "CẢNH BÁO RẤT CAO" in text
+                assert "CẢNH BÁO MỚI — MỨC ĐỘ RẤT CAO" in text
                 return TelegramDeliveryResult(True, 200)
 
         notifier = CountingNotifier()

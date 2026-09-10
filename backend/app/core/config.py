@@ -50,6 +50,7 @@ class Settings(BaseSettings):
 
     default_admin_username: str = "admin"
     default_admin_password: str = Field(min_length=8)
+    default_owner_username: str = "owner"
     reset_default_admin_password: bool = False
 
     @field_validator("cors_origins", mode="before")

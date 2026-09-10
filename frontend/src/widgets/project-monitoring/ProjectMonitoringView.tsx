@@ -1,6 +1,6 @@
 import { AlertTriangle, CheckCircle2, RefreshCw } from "lucide-react"
 import { Link } from "react-router-dom"
-import type { MonitoringDevice, ProjectMonitoringSummary } from "@/entities/telemetry/model/project-monitoring"
+import type { CoreId, MonitoringDevice, ProjectMonitoringSummary } from "@/entities/telemetry/model/project-monitoring"
 import type { MonitoringDialogTab } from "@/features/view-device-monitoring-history/model/monitoring-dialog.types"
 import { formatDateTime, formatRelative } from "@/shared/lib/date"
 import { Alert, AlertDescription, AlertTitle } from "@/shared/ui/alert"
@@ -20,7 +20,7 @@ interface ProjectMonitoringViewProps {
   mode: "admin" | "public-readonly"
   isRefetching: boolean
   onRefresh: () => void
-  onOpenMonitoring?: (deviceId: number, tab: MonitoringDialogTab, resourceId?: number) => void
+  onOpenMonitoring?: (deviceId: CoreId, tab: MonitoringDialogTab, resourceId?: CoreId) => void
 }
 
 export function ProjectMonitoringView({ project, summary, devices, mode, isRefetching, onRefresh, onOpenMonitoring }: ProjectMonitoringViewProps) {

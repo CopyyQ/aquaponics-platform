@@ -80,7 +80,7 @@ async def resolve_alert_manually(
 
 async def evaluate_threshold(db: AsyncSession, sensor: Sensor, value: float, recorded_at: datetime) -> list[tuple[SensorAlert, str]]:
     transitions: list[tuple[SensorAlert, str]] = []
-    if not sensor.warning_enabled:
+    if not sensor.alerts_enabled:
         return transitions
 
     alert_type: AlertType | None = None

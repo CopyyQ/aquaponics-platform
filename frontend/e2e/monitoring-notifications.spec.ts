@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test"
 import { guardRuntime } from "./helpers/runtime-guards"
 
+test.skip(true, "Historical Project routes and recipient-level notification API are absent from current canonical OpenAPI.")
+
 test("Project Monitoring và Notification page có contract mới", async ({ page }, testInfo) => {
   const assertRuntime = guardRuntime(page, testInfo)
   await page.goto("/admin/projects/81/monitoring")

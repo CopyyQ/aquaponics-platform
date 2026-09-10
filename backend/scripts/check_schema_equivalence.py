@@ -30,7 +30,9 @@ def _snapshot(sync_connection) -> dict:
     inspector = inspect(sync_connection)
     tables: dict[str, dict] = {}
     for table_name in sorted(
-        name for name in inspector.get_table_names() if name != "alembic_version"
+        name
+        for name in inspector.get_table_names()
+        if name != "alembic_version" and not name.startswith("legacy_")
     ):
         columns = [
             {

@@ -8,7 +8,7 @@ import { StatusBadge } from "@/shared/ui/status-badge"
 import { MonitoringChart } from "./MonitoringChart"
 
 export function MonitoringDashboard({ latest, series, range }: { latest: MonitoringLatest; series: MonitoringSeriesRead; range: MonitoringRange }) {
-  const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null)
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null)
   const sensors = latest.devices.flatMap((device) => device.sensors.map((sensor) => ({ ...sensor, device })))
   const actuators = latest.devices.flatMap((device) => device.actuators.map((actuator) => ({ ...actuator, device })))
   const reporting = sensors.filter((sensor) => sensor.latest?.value !== null && sensor.latest?.value !== undefined).length

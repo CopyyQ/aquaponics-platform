@@ -15,7 +15,7 @@ import { errorMessage } from "@/api/client"
 import { Input } from "@/shared/ui/input"
 
 export function ScadaPage() {
-  const systemId = Number(useParams().systemId); const { can } = useAuth(); const client = useQueryClient(); const [selectedId, setSelectedId] = useState<string | null>(null); const [editMode, setEditMode] = useState(false); const [editorLayout, setEditorLayout] = useState<ScadaLayout | null>(null)
+  const systemId = useParams().systemId ?? ""; const { can } = useAuth(); const client = useQueryClient(); const [selectedId, setSelectedId] = useState<string | null>(null); const [editMode, setEditMode] = useState(false); const [editorLayout, setEditorLayout] = useState<ScadaLayout | null>(null)
   const runtime = useQuery({ queryKey: queryKeys.scada(systemId), queryFn: () => getScadaRuntime(systemId), refetchInterval: 15_000 })
   const draft = useMutation({ mutationFn: (layout: ScadaLayout) => saveScadaDraft(systemId, layout), onSuccess: async (saved) => { setEditorLayout(saved.layout); await client.invalidateQueries({ queryKey: queryKeys.scada(systemId) }) } })
   const publish = useMutation({ mutationFn: () => publishScada(systemId), onSuccess: () => void client.invalidateQueries({ queryKey: queryKeys.scada(systemId) }) })

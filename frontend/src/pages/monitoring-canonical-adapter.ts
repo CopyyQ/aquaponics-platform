@@ -5,6 +5,7 @@ import type {
   MonitoringLatest,
 } from "@/api/contracts"
 import type {
+  CoreId,
   MonitoringActuator,
   MonitoringDevice,
   MonitoringSensor,
@@ -124,7 +125,7 @@ function latestTimestamp(devices: MonitoringDevice[]): string | null {
 }
 
 function buildMeasurementGroups(devices: MonitoringDevice[]): ProjectMeasurementGroup[] {
-  const groups = new Map<string, Array<{ deviceId: number; sensor: MonitoringSensor }>>()
+  const groups = new Map<string, Array<{ deviceId: CoreId; sensor: MonitoringSensor }>>()
   for (const device of devices) {
     for (const sensor of device.sensors.filter((candidate) => candidate.is_enabled)) {
       const key = `${sensor.name.trim().toLocaleLowerCase("vi-VN")}::${sensor.unit}`

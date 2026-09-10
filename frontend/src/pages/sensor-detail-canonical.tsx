@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Activity, Pencil, Save, Trash2 } from "lucide-react"
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { toast } from "sonner"
 import {
   deleteSensor, deleteSensorThreshold, getSensor, getSensorModel, getSensorTelemetry, getSensorThreshold,
   queryKeys, saveSensorThreshold, updateSensor, updateSensorThreshold,
@@ -39,22 +40,42 @@ function isRiskLevel(value: string): value is RiskLevel {
 }
 
 const emptyThreshold: ThresholdAlertConfigInput = {
-  enabled: true,
+  enabled: false,
   lower_threshold: null,
   upper_threshold: null,
-  below_risk_level: "LOW",
-  above_risk_level: "HIGH",
+  below_risk_level: null,
+  above_risk_level: null,
   below_message: null,
   above_message: null,
-  delay_seconds: 0,
+  below_consequence: null,
+  above_consequence: null,
+  below_recommended_actions: null,
+  above_recommended_actions: null,
+}
+
+export function thresholdDraftFromResponse(config: ThresholdAlertConfigInput): ThresholdAlertConfigInput {
+  return {
+    enabled: config.enabled,
+    lower_threshold: config.lower_threshold,
+    upper_threshold: config.upper_threshold,
+    below_risk_level: config.below_risk_level,
+    above_risk_level: config.above_risk_level,
+    below_message: config.below_message,
+    above_message: config.above_message,
+    below_consequence: config.below_consequence,
+    above_consequence: config.above_consequence,
+    below_recommended_actions: config.below_recommended_actions,
+    above_recommended_actions: config.above_recommended_actions,
+    delay_seconds: config.delay_seconds,
+  }
 }
 
 export function SensorDetailPage() {
   const params = useParams()
-  const systemId = Number(params.systemId)
-  const deviceId = Number(params.deviceId)
-  const sensorId = Number(params.sensorId)
-  const validIds = systemId > 0 && deviceId > 0 && sensorId > 0
+  const systemId = params.systemId ?? ""
+  const deviceId = params.deviceId ?? ""
+  const sensorId = params.sensorId ?? ""
+  const validIds = Boolean(systemId && deviceId && sensorId)
   const { can } = useAuth()
   const client = useQueryClient()
   const navigate = useNavigate()
@@ -76,16 +97,7 @@ export function SensorDetailPage() {
   const [editDraft, setEditDraft] = useState<SensorUpdate>({})
   useEffect(() => {
     if (!threshold.data) return setThresholdDraft(emptyThreshold)
-    setThresholdDraft({
-      enabled: threshold.data.enabled,
-      lower_threshold: threshold.data.lower_threshold,
-      upper_threshold: threshold.data.upper_threshold,
-      below_risk_level: threshold.data.below_risk_level ?? "LOW",
-      above_risk_level: threshold.data.above_risk_level ?? "HIGH",
-      below_message: threshold.data.below_message,
-      above_message: threshold.data.above_message,
-      delay_seconds: threshold.data.delay_seconds,
-    })
+    setThresholdDraft(thresholdDraftFromResponse(threshold.data))
   }, [threshold.data])
   useEffect(() => {
     if (!sensor.data) return
@@ -109,26 +121,13 @@ export function SensorDetailPage() {
     ])
   }
   const saveThreshold = useMutation({ mutationFn: () => {
-    const normalizedDraft: ThresholdAlertConfigInput = {
-      ...thresholdDraft,
-      below_risk_level: thresholdDraft.lower_threshold == null ? thresholdDraft.below_risk_level : (thresholdDraft.below_risk_level ?? "LOW"),
-      above_risk_level: thresholdDraft.upper_threshold == null ? thresholdDraft.above_risk_level : (thresholdDraft.above_risk_level ?? "HIGH"),
-    }
-    return threshold.data ? updateSensorThreshold(systemId, deviceId, sensorId, normalizedDraft) : saveSensorThreshold(systemId, deviceId, sensorId, normalizedDraft)
+    return threshold.data ? updateSensorThreshold(systemId, deviceId, sensorId, thresholdDraft) : saveSensorThreshold(systemId, deviceId, sensorId, thresholdDraft)
   }, onSuccess: async (canonicalConfig) => {
     client.setQueryData(queryKeys.sensorThreshold(systemId, deviceId, sensorId), canonicalConfig)
-    setThresholdDraft({
-      enabled: canonicalConfig.enabled,
-      lower_threshold: canonicalConfig.lower_threshold,
-      upper_threshold: canonicalConfig.upper_threshold,
-      below_risk_level: canonicalConfig.below_risk_level ?? "LOW",
-      above_risk_level: canonicalConfig.above_risk_level ?? "HIGH",
-      below_message: canonicalConfig.below_message,
-      above_message: canonicalConfig.above_message,
-      delay_seconds: canonicalConfig.delay_seconds,
-    })
+    setThresholdDraft(thresholdDraftFromResponse(canonicalConfig))
     await refreshThresholdViews()
-  } })
+    toast.success("Đã cập nhật Threshold Alert thành công.")
+  }, onError: (error) => toast.error(errorMessage(error)) })
   const removeThreshold = useMutation({ mutationFn: () => deleteSensorThreshold(systemId, deviceId, sensorId), onSuccess: refreshThresholdViews })
   const saveSensor = useMutation({ mutationFn: () => updateSensor(systemId, deviceId, sensorId, editDraft), onSuccess: async () => { await refreshSensor(); setEditing(false) } })
   const removeSensor = useMutation({ mutationFn: () => deleteSensor(systemId, deviceId, sensorId), onSuccess: async () => { await client.invalidateQueries({ queryKey: queryKeys.device(systemId, deviceId) }); navigate(`/aquaponics-systems/${systemId}/devices/${deviceId}`) } })
@@ -141,7 +140,8 @@ export function SensorDetailPage() {
   const orderedTelemetry = [...(telemetry.data ?? [])].sort((left, right) => Date.parse(left.recorded_at) - Date.parse(right.recorded_at))
   const thresholdInvalid = thresholdDraft.lower_threshold !== null && thresholdDraft.lower_threshold !== undefined
     && thresholdDraft.upper_threshold !== null && thresholdDraft.upper_threshold !== undefined
-    && thresholdDraft.lower_threshold > thresholdDraft.upper_threshold
+    && thresholdDraft.lower_threshold >= thresholdDraft.upper_threshold
+  const thresholdFormInvalid = thresholdInvalid || thresholdDraft.delay_seconds === undefined
 
   return <div className="space-y-6">
     <div className="flex flex-wrap items-start justify-between gap-3">
@@ -163,7 +163,7 @@ export function SensorDetailPage() {
 
     <Card><CardHeader><div className="flex flex-wrap items-center justify-between gap-3"><CardTitle>Telemetry · {monitoringRangeLabel(range)}</CardTitle><MonitoringRangeSelector range={range} onRangeChange={(next) => setSearchParams({ range: next }, { replace: true })} /></div></CardHeader><CardContent>{telemetry.isLoading ? <Skeleton className="h-72" /> : telemetry.isError ? <EmptyState icon={Activity} title="Không thể tải telemetry" description={errorMessage(telemetry.error)} /> : orderedTelemetry.length ? <SensorChartRenderer modelCode={model.data?.code} data={orderedTelemetry.map((item) => ({ timestamp: item.recorded_at, value: item.value }))} unit={model.data?.unit} lastUpdatedAt={orderedTelemetry.at(-1)?.recorded_at} rangeLabel={monitoringRangeLabel(range)} expectedIntervalMs={monitoringExpectedInterval(range)} /> : <EmptyState icon={Activity} title="Chưa có telemetry" description="Không có dữ liệu trong khoảng truy vấn hiện tại." />}</CardContent></Card>
 
-    {can("sensors.thresholds.read") ? <Card><CardHeader><CardTitle>Threshold Alert</CardTitle></CardHeader><CardContent className="space-y-4">{threshold.isLoading ? <Skeleton className="h-28" /> : <ThresholdFields value={thresholdDraft} onChange={setThresholdDraft} />}{thresholdInvalid ? <p role="alert" className="text-sm text-destructive">Ngưỡng dưới không được lớn hơn ngưỡng trên.</p> : null}{saveThreshold.isError || removeThreshold.isError ? <p role="alert" className="text-sm text-destructive">{errorMessage(saveThreshold.error ?? removeThreshold.error)}</p> : null}<div className="flex flex-wrap gap-2">{((threshold.data && can("sensors.thresholds.update")) || (!threshold.data && can("sensors.thresholds.create"))) ? <Button onClick={() => saveThreshold.mutate()} disabled={thresholdInvalid || saveThreshold.isPending}><Save />{threshold.data ? "Cập nhật" : "Tạo cấu hình"}</Button> : null}{threshold.data && can("sensors.thresholds.delete") ? <Button variant="outline" onClick={() => removeThreshold.mutate()} disabled={removeThreshold.isPending}><Trash2 />Xoá cấu hình</Button> : null}</div></CardContent></Card> : null}
+    {can("sensors.thresholds.read") ? <Card><CardHeader><CardTitle>Threshold Alert</CardTitle></CardHeader><CardContent className="space-y-4">{threshold.isLoading ? <Skeleton className="h-28" /> : threshold.isError ? <p role="alert" className="text-sm text-destructive">{errorMessage(threshold.error)}</p> : <ThresholdFields value={thresholdDraft} onChange={setThresholdDraft} />}{thresholdInvalid ? <p id="threshold-order-error" role="alert" className="text-sm text-destructive">Ngưỡng dưới phải nhỏ hơn ngưỡng trên.</p> : null}{thresholdDraft.delay_seconds === undefined ? <p role="alert" className="text-sm text-destructive">Vui lòng nhập thời gian xác nhận.</p> : null}{saveThreshold.isError || removeThreshold.isError ? <p role="alert" className="text-sm text-destructive">{errorMessage(saveThreshold.error ?? removeThreshold.error)}</p> : null}<div className="flex flex-wrap gap-2">{((threshold.data && can("sensors.thresholds.update")) || (!threshold.data && can("sensors.thresholds.create"))) ? <Button onClick={() => saveThreshold.mutate()} disabled={thresholdFormInvalid || saveThreshold.isPending} aria-busy={saveThreshold.isPending}><Save />{saveThreshold.isPending ? "Đang lưu…" : threshold.data ? "Cập nhật" : "Tạo cấu hình"}</Button> : null}{threshold.data && can("sensors.thresholds.delete") ? <Button variant="outline" onClick={() => removeThreshold.mutate()} disabled={removeThreshold.isPending}><Trash2 />Xoá cấu hình</Button> : null}</div></CardContent></Card> : null}
   </div>
 }
 
@@ -173,6 +173,21 @@ function TextField({ id, label, value, onChange }: { id: string; label: string; 
 
 function ThresholdFields({ value, onChange }: { value: ThresholdAlertConfigInput; onChange: (value: ThresholdAlertConfigInput) => void }) {
   const setNumber = (key: "lower_threshold" | "upper_threshold", raw: string) => onChange({ ...value, [key]: raw === "" ? null : Number(raw) })
-  const setRisk = (key: "below_risk_level" | "above_risk_level", raw: string) => { if (isRiskLevel(raw)) onChange({ ...value, [key]: raw }) }
-  return <div className="grid gap-4 sm:grid-cols-2"><div><Label htmlFor="threshold-lower">Ngưỡng dưới</Label><Input id="threshold-lower" className="mt-1" type="number" step="any" value={value.lower_threshold ?? ""} onChange={(event) => setNumber("lower_threshold", event.target.value)} /></div><div><Label htmlFor="threshold-upper">Ngưỡng trên</Label><Input id="threshold-upper" className="mt-1" type="number" step="any" value={value.upper_threshold ?? ""} onChange={(event) => setNumber("upper_threshold", event.target.value)} /></div><div><Label>Mức rủi ro dưới</Label><Select value={value.below_risk_level ?? "LOW"} onValueChange={(raw) => setRisk("below_risk_level", raw)}><SelectTrigger className="mt-1"><SelectValue /></SelectTrigger><SelectContent>{riskLevels.map((level) => <SelectItem key={level} value={level}>{level}</SelectItem>)}</SelectContent></Select></div><div><Label>Mức rủi ro trên</Label><Select value={value.above_risk_level ?? "HIGH"} onValueChange={(raw) => setRisk("above_risk_level", raw)}><SelectTrigger className="mt-1"><SelectValue /></SelectTrigger><SelectContent>{riskLevels.map((level) => <SelectItem key={level} value={level}>{level}</SelectItem>)}</SelectContent></Select></div><div><Label htmlFor="threshold-delay">Thời gian xác nhận (giây)</Label><Input id="threshold-delay" className="mt-1" type="number" min={0} step={1} value={value.delay_seconds ?? 0} onChange={(event) => onChange({ ...value, delay_seconds: Math.max(0, Number(event.target.value) || 0) })} /><p className="mt-1 text-xs text-muted-foreground">Giữ điều kiện bất thường liên tục trong khoảng này trước khi mở cảnh báo.</p></div><div className="hidden sm:block" aria-hidden="true" /><div><Label htmlFor="threshold-below-message">Thông báo dưới ngưỡng</Label><Textarea id="threshold-below-message" className="mt-1" value={value.below_message ?? ""} onChange={(event) => onChange({ ...value, below_message: event.target.value || null })} /></div><div><Label htmlFor="threshold-above-message">Thông báo trên ngưỡng</Label><Textarea id="threshold-above-message" className="mt-1" value={value.above_message ?? ""} onChange={(event) => onChange({ ...value, above_message: event.target.value || null })} /></div><label className="flex items-center gap-3 text-sm sm:col-span-2"><Switch checked={value.enabled ?? true} onCheckedChange={(enabled) => onChange({ ...value, enabled })} />Bật đánh giá ngưỡng</label></div>
+  const setRisk = (key: "below_risk_level" | "above_risk_level", raw: string) => onChange({ ...value, [key]: isRiskLevel(raw) ? raw : null })
+  const setContent = (key: "below_message" | "above_message" | "below_consequence" | "above_consequence" | "below_recommended_actions" | "above_recommended_actions", raw: string) => onChange({ ...value, [key]: raw || null })
+  const direction = (side: "below" | "above", title: string) => {
+    const lower = side === "below"
+    const prefix = `threshold-${side}`
+    return <section className="space-y-4 rounded-lg border p-4" aria-labelledby={`${prefix}-title`}><h3 id={`${prefix}-title`} className="font-semibold">{title}</h3><div><Label htmlFor={`${prefix}-value`}>{lower ? "Ngưỡng dưới" : "Ngưỡng trên"}</Label><Input id={`${prefix}-value`} className="mt-1" type="number" step="any" aria-invalid={thresholdInvalid(value)} aria-describedby={thresholdInvalid(value) ? "threshold-order-error" : undefined} value={(lower ? value.lower_threshold : value.upper_threshold) ?? ""} onChange={(event) => setNumber(lower ? "lower_threshold" : "upper_threshold", event.target.value)} /></div><div><Label htmlFor={`${prefix}-risk`}>{lower ? "Mức rủi ro dưới" : "Mức rủi ro trên"}</Label><Select value={(lower ? value.below_risk_level : value.above_risk_level) ?? "UNSET"} onValueChange={(raw) => setRisk(lower ? "below_risk_level" : "above_risk_level", raw)}><SelectTrigger id={`${prefix}-risk`} className="mt-1"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="UNSET">Chưa cấu hình</SelectItem>{riskLevels.map((level) => <SelectItem key={level} value={level}>{level}</SelectItem>)}</SelectContent></Select></div><ContentField id={`${prefix}-message`} label={lower ? "Thông báo dưới ngưỡng" : "Thông báo trên ngưỡng"} value={(lower ? value.below_message : value.above_message) ?? ""} onChange={(raw) => setContent(lower ? "below_message" : "above_message", raw)} /><ContentField id={`${prefix}-consequence`} label={lower ? "Ảnh hưởng dưới ngưỡng" : "Ảnh hưởng trên ngưỡng"} value={(lower ? value.below_consequence : value.above_consequence) ?? ""} onChange={(raw) => setContent(lower ? "below_consequence" : "above_consequence", raw)} /><ContentField id={`${prefix}-actions`} label={lower ? "Khuyến nghị dưới ngưỡng" : "Khuyến nghị trên ngưỡng"} value={(lower ? value.below_recommended_actions : value.above_recommended_actions) ?? ""} onChange={(raw) => setContent(lower ? "below_recommended_actions" : "above_recommended_actions", raw)} /></section>
+  }
+  return <div className="space-y-4"><div className="grid gap-4 lg:grid-cols-2">{direction("below", "DƯỚI NGƯỠNG")}{direction("above", "TRÊN NGƯỠNG")}</div><div><Label htmlFor="threshold-delay">Thời gian xác nhận (giây)</Label><Input id="threshold-delay" className="mt-1 max-w-xs" type="number" min={0} step={1} aria-invalid={value.delay_seconds === undefined} value={value.delay_seconds ?? ""} onChange={(event) => onChange({ ...value, delay_seconds: event.target.value === "" ? undefined : Number(event.target.value) })} /><p className="mt-1 text-xs text-muted-foreground">Giữ điều kiện bất thường liên tục trong khoảng này trước khi mở cảnh báo.</p></div><label className="flex items-center gap-3 text-sm"><Switch checked={value.enabled ?? false} onCheckedChange={(enabled) => onChange({ ...value, enabled })} />Bật đánh giá ngưỡng</label></div>
+}
+
+function thresholdInvalid(value: ThresholdAlertConfigInput): boolean {
+  return value.lower_threshold != null && value.upper_threshold != null
+    && value.lower_threshold >= value.upper_threshold
+}
+
+function ContentField({ id, label, value, onChange }: { id: string; label: string; value: string; onChange: (value: string) => void }) {
+  return <div><Label htmlFor={id}>{label}</Label><Textarea id={id} className="mt-1" value={value} onChange={(event) => onChange(event.target.value)} /></div>
 }

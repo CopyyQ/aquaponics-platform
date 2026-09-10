@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -102,7 +103,7 @@ class DeviceListResponse(BaseModel):
 
 
 class DeviceConfigAquaponicsSystem(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
 
@@ -121,7 +122,7 @@ class DeviceConfigTopics(BaseModel):
 
 
 class DeviceConfigSensor(BaseModel):
-    id: int
+    id: UUID
     sensor_code: str
     sensor_model_code: str
     name: str
@@ -131,7 +132,7 @@ class DeviceConfigSensor(BaseModel):
 
 
 class DeviceConfigActuator(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     actuator_model_code: str | None
@@ -139,7 +140,7 @@ class DeviceConfigActuator(BaseModel):
 
 
 class DeviceConfigDevice(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     is_enabled: bool

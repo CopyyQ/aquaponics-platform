@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import TYPE_CHECKING
+from uuid import UUID, uuid4
 
 from sqlalchemy import BigInteger, Boolean, CheckConstraint, DateTime, Float, ForeignKey, Identity, Index, Integer, String, Text, UniqueConstraint, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
 from app.db.base import Base, SoftDeleteMixin, TimestampMixin
 
@@ -21,6 +23,7 @@ class Actuator(Base, TimestampMixin, SoftDeleteMixin):
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    public_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), default=uuid4, unique=True, index=True, nullable=False)
     device_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("devices.id", ondelete="RESTRICT"), index=True)
     actuator_model_id: Mapped[int | None] = mapped_column(
         BigInteger, ForeignKey("actuator_models.id", ondelete="SET NULL"), nullable=True

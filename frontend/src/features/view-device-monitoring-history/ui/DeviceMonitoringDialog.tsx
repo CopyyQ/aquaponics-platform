@@ -5,6 +5,7 @@ import { formatSensorValue } from "@/entities/sensor/lib/format-sensor-value"
 import { getSensorValueStatus } from "@/entities/sensor/lib/get-sensor-value-status"
 import { monitoringExpectedInterval, monitoringRangeLabel } from "@/entities/telemetry/lib/monitoring-range"
 import type {
+  CoreId,
   MonitoringActuator,
   MonitoringDevice,
   MonitoringRange,
@@ -103,13 +104,13 @@ function ResourceSelect({
   value,
   onValueChange,
 }: {
-  resources: Array<{ id: number; name: string }>
-  value: number | null
-  onValueChange: (id: number) => void
+  resources: Array<{ id: CoreId; name: string }>
+  value: CoreId | null
+  onValueChange: (id: CoreId) => void
 }) {
   if (!resources.length) return null
   return <div className="lg:hidden">
-    <Select value={value === null ? undefined : String(value)} onValueChange={(next) => onValueChange(Number(next))}>
+    <Select value={value === null ? undefined : String(value)} onValueChange={(next) => { const resource = resources.find((item) => String(item.id) === next); if (resource) onValueChange(resource.id) }}>
       <SelectTrigger aria-label="Chọn tài nguyên để xem biểu đồ">
         <SelectValue placeholder="Chọn tài nguyên" />
       </SelectTrigger>
@@ -145,16 +146,16 @@ export function DeviceMonitoringDialog({
   projectId: number
   device: MonitoringDevice | null
   tab: MonitoringDialogTab
-  resourceId: number | null
+  resourceId: CoreId | null
   range: MonitoringRange
   onOpenChange: (open: boolean) => void
   onTabChange: (tab: MonitoringDialogTab) => void
-  onResourceChange: (resourceId: number) => void
+  onResourceChange: (resourceId: CoreId) => void
   onRangeChange: (range: MonitoringRange) => void
 }) {
   const history = useDeviceMonitoringHistory({
     projectId,
-    deviceId: device?.id ?? 0,
+    deviceId: Number(device?.id ?? 0),
     range,
     tab,
     open: open && device !== null,

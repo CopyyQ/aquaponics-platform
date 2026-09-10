@@ -1,6 +1,7 @@
 """Typed global catalog and User endpoints for the canonical API."""
 
 from datetime import datetime
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
@@ -15,6 +16,7 @@ from app.models.actuator_model import ActuatorModel
 from app.models.device_template import DeviceTemplate, DeviceTemplateActuator, DeviceTemplateSensor
 from app.models.sensor_model import SensorModel
 from app.models.user import User
+from app.services.public_identity_service import PublicIdentityNotFoundError, get_user_by_public_id
 
 router = APIRouter()
 
@@ -132,7 +134,7 @@ class ActuatorModelRead(ActuatorModelCreate):
 
 
 class UserRead(BaseModel):
-    id: int
+    id: UUID
     username: str
     full_name: str
     email: str
@@ -141,6 +143,7 @@ class UserRead(BaseModel):
     role_code: str | None
     role_name: str | None
     status: UserStatus
+    last_login_at: datetime | None
     created_at: datetime
     updated_at: datetime
 
@@ -164,9 +167,10 @@ def _template_read(row: DeviceTemplate) -> DeviceTemplateRead:
 
 
 def _user_read(row: User) -> UserRead:
-    return UserRead(id=row.id, username=row.username, full_name=row.full_name, email=row.email,
+    return UserRead(id=row.public_id, username=row.username, full_name=row.full_name, email=row.email,
         phone_number=row.phone_number, role_id=row.role_id, role_code=row.role.code if row.role else None,
-        role_name=row.role.name if row.role else None, status=row.status, created_at=row.created_at, updated_at=row.updated_at)
+        role_name=row.role.name if row.role else None, status=row.status, last_login_at=row.last_login_at,
+        created_at=row.created_at, updated_at=row.updated_at)
 
 
 async def _template(db: AsyncSession, template_id: int) -> DeviceTemplate:
@@ -194,9 +198,12 @@ async def list_users(db: AsyncSession = Depends(get_db), _: User = Depends(requi
 
 
 @router.get("/users/{user_id}", response_model=UserRead, tags=["Users"])
-async def get_user(user_id: int, db: AsyncSession = Depends(get_db), _: User = Depends(require_permission("users.read"))) -> UserRead:
-    row = await db.scalar(select(User).options(selectinload(User.role)).where(User.id == user_id, User.is_deleted.is_(False)))
-    if row is None: raise HTTPException(404, "Không tìm thấy User")
+async def get_user(user_id: UUID, db: AsyncSession = Depends(get_db), _: User = Depends(require_permission("users.read"))) -> UserRead:
+    try:
+        row = await get_user_by_public_id(db, user_id)
+    except PublicIdentityNotFoundError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    await db.refresh(row, attribute_names=["role"])
     return _user_read(row)
 
 

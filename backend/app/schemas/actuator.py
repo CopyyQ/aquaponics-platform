@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -75,7 +76,7 @@ class ActuatorReadingRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    actuator_id: int
+    actuator_id: UUID
     voltage_v: float | None
     current_a: float | None
     recorded_at: datetime
@@ -91,7 +92,7 @@ class ActuatorCommandRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     command_id: int
-    actuator_id: int
+    actuator_id: UUID
     desired_state: bool
     reported_state: bool | None
     status: str

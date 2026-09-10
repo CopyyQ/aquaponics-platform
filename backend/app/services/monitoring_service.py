@@ -14,6 +14,8 @@ from app.models.project_member import ProjectMember
 from app.models.sensor import Sensor
 from app.models.threshold_alert_config import ThresholdAlertConfig
 from app.models.device import Device
+from app.models.project import Project
+from app.models.actuator import Actuator
 from app.services.measurement_quality import classify_measurement_quality
 from app.services.threshold_alert_config_service import evaluate_threshold
 from app.queries.monitoring_queries import (
@@ -489,6 +491,7 @@ def sensor_connection_status(
 
 
 async def get_project_monitoring_latest(db: AsyncSession, project_id: int) -> dict:
+    project_public_id = await db.scalar(select(Project.public_id).where(Project.id == project_id))
     now = datetime.now(timezone.utc)
     rows = await latest_project_sensor_rows(db, project_id)
     threshold_by_sensor = await _sensor_threshold_map(db, rows)
@@ -497,7 +500,7 @@ async def get_project_monitoring_latest(db: AsyncSession, project_id: int) -> di
         device_payload = devices.setdefault(
             device.id,
             {
-                "id": device.id,
+                "id": device.public_id,
                 "code": device.code,
                 "name": device.name,
                 "is_enabled": device.is_enabled,
@@ -518,7 +521,7 @@ async def get_project_monitoring_latest(db: AsyncSession, project_id: int) -> di
         freshness = "NO_DATA" if not has_telemetry else "STALE" if (now - (received_at or recorded_at)).total_seconds() > settings.device_offline_seconds else "FRESH"
         device_payload["sensors"].append(
             {
-                "id": sensor.id,
+                "id": sensor.public_id,
                 "code": sensor.code,
                 "name": sensor.name,
                 "unit": model.unit,
@@ -568,7 +571,7 @@ async def get_project_monitoring_latest(db: AsyncSession, project_id: int) -> di
         active_incident = electrical.pop("active_incident")
         device_payload["actuators"].append(
             {
-                "id": actuator.id,
+                "id": actuator.public_id,
                 "code": actuator.code,
                 "name": actuator.name,
                 "actuator_model": actuator.actuator_model.name if actuator.actuator_model else None,
@@ -586,7 +589,7 @@ async def get_project_monitoring_latest(db: AsyncSession, project_id: int) -> di
                 "active_incident": active_incident,
             }
         )
-    return {"project_id": project_id, "devices": list(devices.values())}
+    return {"project_id": project_public_id, "devices": list(devices.values())}
 
 
 async def get_project_monitoring_series(
@@ -601,6 +604,10 @@ async def get_project_monitoring_series(
     end = now or datetime.now(timezone.utc)
     start = end - config.duration
     sensor_rows = await project_sensor_metadata_rows(db, project_id, device_id)
+    sensor_public_ids = dict((await db.execute(select(Sensor.id, Sensor.public_id).where(
+        Sensor.id.in_([sensor_id for sensor_id, _ in sensor_rows])
+    ))).all()) if sensor_rows else {}
+    project_public_id = await db.scalar(select(Project.public_id).where(Project.id == project_id))
     sensor_units = {sensor_id: unit for sensor_id, unit in sensor_rows}
     rows = await project_series_rows(
         db,
@@ -618,12 +625,12 @@ async def get_project_monitoring_series(
         for sensor_id, sensor_points in points.items()
     }
     return {
-        "project_id": project_id,
+        "project_id": project_public_id,
         "range": monitoring_range,
         "resolution": config.resolution,
         "series": [
             {
-                "sensor_id": sensor_id,
+                "sensor_id": sensor_public_ids[sensor_id],
                 "unit": unit,
                 "points": points[sensor_id],
                 "gaps": gaps_by_sensor.get(sensor_id, []),
@@ -847,25 +854,27 @@ async def get_device_actuator_history(
         )
     actuator_rows = await latest_project_actuator_rows(db, project_id)
     actuator_ids = [
-        actuator.id
+        (actuator.id, actuator.public_id)
         for row_device_id, actuator, _, _ in actuator_rows
         if row_device_id == device_id
     ]
     items = []
-    for actuator_id in actuator_ids:
+    for actuator_id, actuator_public_id in actuator_ids:
         points = points_by_actuator[actuator_id]
         gaps, statistics = _actuator_history_payload(points, start=start, end=end)
         items.append(
             {
-                "actuator_id": actuator_id,
+                "actuator_id": actuator_public_id,
                 "points": points,
                 "gaps": gaps,
                 "statistics": statistics,
             }
         )
+    project_public_id = await db.scalar(select(Project.public_id).where(Project.id == project_id))
+    device_public_id = await db.scalar(select(Device.public_id).where(Device.id == device_id, Device.project_id == project_id))
     return {
-        "project_id": project_id,
-        "device_id": device_id,
+        "project_id": project_public_id,
+        "device_id": device_public_id,
         "range": monitoring_range,
         "items": items,
     }

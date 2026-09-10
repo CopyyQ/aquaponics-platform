@@ -12,7 +12,7 @@ import { Switch } from "@/shared/ui/switch"
 import { errorMessage } from "@/api/client"
 
 export function SettingsPage() {
-  const systemId = Number(useParams().systemId); const { can } = useAuth(); const client = useQueryClient(); const settings = useQuery({ queryKey: queryKeys.alertSettings(systemId), queryFn: () => getAlertSettings(systemId) }); const [draft, setDraft] = useState<{ enabled: boolean; in_app_enabled: boolean; telegram_enabled: boolean } | null>(null)
+  const systemId = useParams().systemId ?? ""; const { can } = useAuth(); const client = useQueryClient(); const settings = useQuery({ queryKey: queryKeys.alertSettings(systemId), queryFn: () => getAlertSettings(systemId), enabled: Boolean(systemId) }); const [draft, setDraft] = useState<{ enabled: boolean; in_app_enabled: boolean; telegram_enabled: boolean } | null>(null)
   const save = useMutation({ mutationFn: () => updateAlertSettings(systemId, draft ?? settings.data!), onSuccess: (value) => { client.setQueryData(queryKeys.alertSettings(systemId), value); setDraft(null) } })
   if (settings.isLoading) return <Skeleton className="h-80" />
   if (settings.isError || !settings.data) return <EmptyState icon={BellRing} title="Không thể tải thiết lập" description={errorMessage(settings.error)} />

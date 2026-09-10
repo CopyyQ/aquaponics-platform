@@ -28,6 +28,7 @@ import {
 } from "@/entities/telemetry/lib/monitoring-range"
 
 import type {
+  CoreId,
   MonitoringActuator,
   MonitoringDevice,
   MonitoringRange,
@@ -368,11 +369,11 @@ function ResourceSelect({
   onValueChange,
 }: {
   resources: Array<{
-    id: number
+    id: CoreId
     name: string
   }>
-  value: number | null
-  onValueChange: (id: number) => void
+  value: CoreId | null
+  onValueChange: (id: CoreId) => void
 }) {
   if (!resources.length) {
     return null
@@ -387,9 +388,8 @@ function ResourceSelect({
             : String(value)
         }
         onValueChange={(next: string) => {
-          onValueChange(
-            Number(next),
-          )
+          const resource = resources.find((item) => String(item.id) === next)
+          if (resource) onValueChange(resource.id)
         }}
       >
         <SelectTrigger
@@ -799,14 +799,14 @@ function PublicDeviceMonitoringDialog({
   open: boolean
   device: MonitoringDevice | null
   tab: MonitoringDialogTab
-  resourceId: number | null
+  resourceId: CoreId | null
   range: MonitoringRange
   onOpenChange: (open: boolean) => void
   onTabChange: (
     tab: MonitoringDialogTab,
   ) => void
   onResourceChange: (
-    resourceId: number,
+    resourceId: CoreId,
   ) => void
   onRangeChange: (
     range: MonitoringRange,
@@ -1350,7 +1350,7 @@ export function PublicMonitoringPage() {
   const [
     monitoringDeviceId,
     setMonitoringDeviceId,
-  ] = useState<number | null>(null)
+  ] = useState<CoreId | null>(null)
 
   const [
     monitoringTab,
@@ -1362,7 +1362,7 @@ export function PublicMonitoringPage() {
   const [
     monitoringResourceId,
     setMonitoringResourceId,
-  ] = useState<number | null>(null)
+  ] = useState<CoreId | null>(null)
 
   /* ------------------------------------------------------------------------
    * Public overview
@@ -1479,9 +1479,9 @@ export function PublicMonitoringPage() {
    * ------------------------------------------------------------------------ */
 
   const openMonitoring = (
-    deviceId: number,
+    deviceId: CoreId,
     tab: MonitoringDialogTab,
-    resourceId?: number,
+    resourceId?: CoreId,
   ) => {
     setMonitoringDeviceId(
       deviceId,
@@ -2055,7 +2055,7 @@ export function PublicMonitoringPage() {
           )
         }}
         onResourceChange={(
-          resourceId: number,
+          resourceId: CoreId,
         ) => {
           setMonitoringResourceId(
             resourceId,

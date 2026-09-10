@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 import re
 
@@ -92,7 +93,7 @@ class UserSelfUpdate(BaseModel):
 class UserRead(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
+    id: UUID = Field(validation_alias="public_id")
     role_id: int | None
     status: UserStatus
     must_change_password: bool
@@ -103,10 +104,8 @@ class UserRead(UserBase):
     is_deleted: bool
     deleted_at: datetime | None
     disabled_at: datetime | None
-    disabled_by_user_id: int | None
     disabled_reason: str | None
     locked_at: datetime | None
-    locked_by_user_id: int | None
     locked_reason: str | None
 
 
@@ -151,4 +150,4 @@ class AdminUserDetail(UserRead):
 
 
 class AssignOwnerRequest(BaseModel):
-    user_id: int
+    user_id: UUID

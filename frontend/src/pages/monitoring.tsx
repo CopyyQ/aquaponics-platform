@@ -17,8 +17,7 @@ import { ProjectMonitoringView } from "@/widgets/project-monitoring/ProjectMonit
 const monitoringRanges: readonly MonitoringRange[] = ["1h", "6h", "12h", "24h", "30d"]
 
 function parseId(value: string | null) {
-  const id = Number(value)
-  return Number.isInteger(id) && id > 0 ? id : null
+  return value?.trim() || null
 }
 
 function parseRange(value: string | null): MonitoringRange {
@@ -26,7 +25,7 @@ function parseRange(value: string | null): MonitoringRange {
 }
 
 export function MonitoringPage() {
-  const systemId = Number(useParams().systemId)
+  const systemId = useParams().systemId ?? ""
   const { system } = useOutletContext<{ system: AquaponicsSystem }>()
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
@@ -38,14 +37,14 @@ export function MonitoringPage() {
   const latest = useQuery({
     queryKey: queryKeys.monitoringLatest(systemId),
     queryFn: () => getMonitoringLatest(systemId),
-    enabled: Number.isInteger(systemId) && systemId > 0,
+    enabled: Boolean(systemId),
     staleTime: 30_000,
     refetchInterval: 60_000,
   })
   const alerts = useQuery({
     queryKey: queryKeys.alerts(systemId),
     queryFn: () => listAlerts(systemId),
-    enabled: Number.isInteger(systemId) && systemId > 0 && can("incidents.read"),
+    enabled: Boolean(systemId) && can("incidents.read"),
     staleTime: 30_000,
     refetchInterval: 60_000,
   })
@@ -56,8 +55,8 @@ export function MonitoringPage() {
     staleTime: 30_000,
   })
   const actuatorHistory = useQuery({
-    queryKey: queryKeys.monitoringActuatorHistory(systemId, selectedDeviceId ?? 0, range),
-    queryFn: () => getMonitoringActuatorHistory(systemId, selectedDeviceId ?? 0, range),
+    queryKey: queryKeys.monitoringActuatorHistory(systemId, selectedDeviceId ?? "", range),
+    queryFn: () => getMonitoringActuatorHistory(systemId, selectedDeviceId ?? "", range),
     enabled: selectedDeviceId !== null && tab === "actuators",
     staleTime: 30_000,
   })
@@ -78,7 +77,7 @@ export function MonitoringPage() {
     }, { replace: true })
   }
 
-  const openDialog = (deviceId: number, nextTab: MonitoringDialogTab, resourceId?: number) => {
+  const openDialog = (deviceId: string | number, nextTab: MonitoringDialogTab, resourceId?: string | number) => {
     updateDialog({
       monitoringDevice: String(deviceId),
       monitoringTab: nextTab,
@@ -112,7 +111,7 @@ export function MonitoringPage() {
   }
   const emptyActuatorHistory: MonitoringActuatorHistoryRead = {
     aquaponics_system_id: systemId,
-    device_id: selectedDeviceId ?? 0,
+    device_id: selectedDeviceId ?? "",
     range,
     items: [],
   }

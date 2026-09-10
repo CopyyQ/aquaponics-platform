@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Boxes, Database, Pencil, Plus, Trash2 } from "lucide-react"
+import { Boxes, ChevronDown, ChevronRight, Database, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react"
 import { useSearchParams } from "react-router-dom"
 import {
   addTemplateActuator, addTemplateSensor, createActuatorModel, createDeviceTemplate, createSensorModel,
@@ -16,11 +16,13 @@ import { errorMessage } from "@/api/client"
 import { useAuth } from "@/app/auth"
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
-  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/shared/ui/alert-dialog"
+import { Badge } from "@/shared/ui/badge"
 import { Button } from "@/shared/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/shared/ui/dialog"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu"
 import { EmptyState } from "@/shared/ui/empty-state"
 import { Input } from "@/shared/ui/input"
 import { Label } from "@/shared/ui/label"
@@ -42,59 +44,188 @@ export function CatalogsCanonicalPage() {
   const sensors = useQuery({ queryKey: queryKeys.sensorModels, queryFn: listSensorModels })
   const actuators = useQuery({ queryKey: queryKeys.actuatorModels, queryFn: listActuatorModels })
 
-  return <div className="space-y-6"><div><h1 className="text-2xl font-semibold">Danh mục vận hành</h1><p className="text-sm text-muted-foreground">DeviceTemplate, SensorModel và ActuatorModel là catalog, không phải runtime instance.</p></div><Tabs value={tab} onValueChange={(value) => { if (isCatalogTab(value)) setParams({ tab: value }, { replace: true }) }}><TabsList className="max-w-full overflow-x-auto"><TabsTrigger value="templates">DeviceTemplate</TabsTrigger><TabsTrigger value="sensors">SensorModel</TabsTrigger><TabsTrigger value="actuators">ActuatorModel</TabsTrigger></TabsList><TabsContent value="templates"><TemplateCatalog items={templates.data ?? []} loading={templates.isLoading} error={templates.error} sensorModels={sensors.data ?? []} actuatorModels={actuators.data ?? []} canCreate={can("device_templates.create")} canUpdate={can("device_templates.update")} canDelete={can("device_templates.delete")} /></TabsContent><TabsContent value="sensors"><SensorModelCatalog items={sensors.data ?? []} loading={sensors.isLoading} error={sensors.error} canCreate={can("sensor_models.create")} canUpdate={can("sensor_models.update")} canDelete={can("sensor_models.delete")} /></TabsContent><TabsContent value="actuators"><ActuatorModelCatalog items={actuators.data ?? []} loading={actuators.isLoading} error={actuators.error} canCreate={can("actuator_models.create")} canUpdate={can("actuator_models.update")} canDelete={can("actuator_models.delete")} /></TabsContent></Tabs></div>
+  return <div className="space-y-6"><div><h1 className="text-2xl font-semibold">Danh mục vận hành </h1><p className="text-sm text-muted-foreground">DeviceTemplate, SensorModel và ActuatorModel là catalog, không phải runtime instance.</p></div><Tabs value={tab} onValueChange={(value) => { if (isCatalogTab(value)) setParams({ tab: value }, { replace: true }) }}><TabsList className="max-w-full overflow-x-auto"><TabsTrigger value="templates">Mẫu thiết bị</TabsTrigger><TabsTrigger value="sensors">Cảm biến</TabsTrigger><TabsTrigger value="actuators">Cơ cấu chấp hành</TabsTrigger></TabsList><TabsContent value="templates"><TemplateCatalog items={templates.data ?? []} loading={templates.isLoading} error={templates.error} sensorModels={sensors.data ?? []} actuatorModels={actuators.data ?? []} canCreate={can("device_templates.create")} canUpdate={can("device_templates.update")} canDelete={can("device_templates.delete")} /></TabsContent><TabsContent value="sensors"><SensorModelCatalog items={sensors.data ?? []} loading={sensors.isLoading} error={sensors.error} canCreate={can("sensor_models.create")} canUpdate={can("sensor_models.update")} canDelete={can("sensor_models.delete")} /></TabsContent><TabsContent value="actuators"><ActuatorModelCatalog items={actuators.data ?? []} loading={actuators.isLoading} error={actuators.error} canCreate={can("actuator_models.create")} canUpdate={can("actuator_models.update")} canDelete={can("actuator_models.delete")} /></TabsContent></Tabs></div>
 }
+
+type SlotKind = "sensor" | "actuator"
+type SlotRow = { key: string; template: DeviceTemplate; kind: SlotKind; sensor: TemplateSensorSlot | null; actuator: TemplateActuatorSlot | null }
+
+function slotCodeOf(row: SlotRow) { const slot = row.sensor ?? row.actuator; return slot?.code ?? "" }
+function slotModelOf(row: SlotRow) { return row.sensor?.sensor_model_name ?? row.actuator?.actuator_model_name ?? "" }
+
+function templateRows(template: DeviceTemplate, kind: SlotKind): SlotRow[] {
+  if (kind === "sensor") return [...template.sensors].sort((a, b) => a.sort_order - b.sort_order).map((slot) => ({ key: `sensor-${slot.id}`, template, kind, sensor: slot, actuator: null }))
+  return [...template.actuators].sort((a, b) => a.sort_order - b.sort_order).map((slot) => ({ key: `actuator-${slot.id}`, template, kind, sensor: null, actuator: slot }))
+}
+
+const BADGE_CHIP = "h-6 shrink-0 whitespace-nowrap px-2.5 py-0 text-xs leading-none"
 
 function TemplateCatalog({ items, loading, error, sensorModels, actuatorModels, canCreate, canUpdate, canDelete }: { items: DeviceTemplate[]; loading: boolean; error: Error | null; sensorModels: SensorModel[]; actuatorModels: ActuatorModel[]; canCreate: boolean; canUpdate: boolean; canDelete: boolean }) {
   const client = useQueryClient()
+  const refresh = () => client.invalidateQueries({ queryKey: queryKeys.templates })
   const [createOpen, setCreateOpen] = useState(false)
   const [draft, setDraft] = useState<DeviceTemplateInput>({ code: "", name: "", description: null })
-  const refresh = () => client.invalidateQueries({ queryKey: queryKeys.templates })
+  const [addTemplate, setAddTemplate] = useState<DeviceTemplate | null>(null)
+  const [editingKey, setEditingKey] = useState<string | null>(null)
+  const [editTemplate, setEditTemplate] = useState<DeviceTemplate | null>(null)
+  const [deleteTemplate, setDeleteTemplate] = useState<DeviceTemplate | null>(null)
+  const [deleteSlot, setDeleteSlot] = useState<SlotRow | null>(null)
+  const [search, setSearch] = useState("")
+  const [kindFilter, setKindFilter] = useState<"all" | SlotKind>("all")
+
   const creation = useMutation({ mutationFn: () => createDeviceTemplate({ ...draft, code: draft.code.trim().toUpperCase(), name: draft.name.trim(), description: draft.description?.trim() || null }), onSuccess: async () => { await refresh(); setDraft({ code: "", name: "", description: null }); setCreateOpen(false) } })
+  const addSensor = useMutation({ mutationFn: ({ templateId, value }: { templateId: number; value: TemplateSensorSlotInput }) => addTemplateSensor(templateId, { ...value, code: value.code.trim().toUpperCase() }), onSuccess: async () => { await refresh(); setAddTemplate(null) } })
+  const addActuator = useMutation({ mutationFn: ({ templateId, value }: { templateId: number; value: TemplateActuatorSlotInput }) => addTemplateActuator(templateId, { ...value, code: value.code.trim().toUpperCase() }), onSuccess: async () => { await refresh(); setAddTemplate(null) } })
+  const editSensor = useMutation({ mutationFn: ({ templateId, id, value }: { templateId: number; id: number; value: TemplateSensorSlotInput }) => updateTemplateSensor(templateId, id, { ...value, code: value.code.trim().toUpperCase() }), onSuccess: async () => { await refresh(); setEditingKey(null) } })
+  const editActuator = useMutation({ mutationFn: ({ templateId, id, value }: { templateId: number; id: number; value: TemplateActuatorSlotInput }) => updateTemplateActuator(templateId, id, { ...value, code: value.code.trim().toUpperCase() }), onSuccess: async () => { await refresh(); setEditingKey(null) } })
+  const removeSensor = useMutation({ mutationFn: ({ templateId, id }: { templateId: number; id: number }) => deleteTemplateSensor(templateId, id), onSuccess: refresh })
+  const removeActuator = useMutation({ mutationFn: ({ templateId, id }: { templateId: number; id: number }) => deleteTemplateActuator(templateId, id), onSuccess: refresh })
+  const removeTemplate = useMutation({ mutationFn: (id: number) => deleteDeviceTemplate(id), onSuccess: async () => { await refresh(); setDeleteTemplate(null) } })
+
   if (loading) return <Skeleton className="h-96" />
   if (error) return <EmptyState icon={Boxes} title="Không thể tải DeviceTemplate" description={errorMessage(error)} />
-  return <div className="space-y-4">{canCreate ? <Dialog open={createOpen} onOpenChange={setCreateOpen}><DialogTrigger asChild><Button><Plus />Thêm DeviceTemplate</Button></DialogTrigger><DialogContent><DialogHeader><DialogTitle>Tạo DeviceTemplate</DialogTitle><DialogDescription>Tạo catalog trước, sau đó cấu hình Sensor và Actuator slot theo protocol order.</DialogDescription></DialogHeader><form className="space-y-4" onSubmit={(event) => { event.preventDefault(); creation.mutate() }}><TemplateFields draft={draft} onChange={setDraft} codeEditable />{creation.isError ? <ErrorText error={creation.error} /> : null}<DialogFooter><Button type="submit" disabled={creation.isPending}>Tạo template</Button></DialogFooter></form></DialogContent></Dialog> : null}{items.length ? <div className="space-y-5">{items.map((template) => <TemplateCard key={template.id} template={template} sensorModels={sensorModels} actuatorModels={actuatorModels} canUpdate={canUpdate} canDelete={canDelete} refresh={refresh} />)}</div> : <EmptyState icon={Boxes} title="Chưa có DeviceTemplate" description="Tạo catalog template trước khi khởi tạo Device." />}</div>
+
+  const term = search.trim().toLowerCase()
+  const ordered = [...items].sort((a, b) => a.name.localeCompare(b.name, "vi"))
+  const rowError = addSensor.error ?? addActuator.error ?? editSensor.error ?? editActuator.error ?? removeSensor.error ?? removeActuator.error ?? removeTemplate.error
+
+  return <div className="space-y-4">
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <h2 className="text-lg font-semibold">Danh sách thiết bị</h2>
+      {canCreate ? <Dialog open={createOpen} onOpenChange={setCreateOpen}><DialogTrigger asChild><Button><Plus />Thêm Mẫu thiết bị</Button></DialogTrigger><DialogContent><DialogHeader><DialogTitle>Thêm mẫu thiết bị</DialogTitle><DialogDescription>Mỗi DeviceTemplate là một thiết bị độc lập; sau khi tạo hãy thêm slot cảm biến và cơ cấu chấp hành cho nó.</DialogDescription></DialogHeader><form className="space-y-4" onSubmit={(event) => { event.preventDefault(); creation.mutate() }}><TemplateFields draft={draft} onChange={setDraft} codeEditable />{creation.isError ? <ErrorText error={creation.error} /> : null}<DialogFooter><Button type="submit" disabled={creation.isPending}>Tạo thiết bị</Button></DialogFooter></form></DialogContent></Dialog> : null}
+    </div>
+    <div className="flex flex-wrap items-center gap-2">
+      <Input aria-label="Tìm kiếm slot" className="w-full sm:max-w-sm" placeholder="Tìm theo mã slot hoặc model" value={search} onChange={(event) => setSearch(event.target.value)} />
+      <select aria-label="Lọc theo loại" className="h-9 w-auto rounded-md border bg-background px-2 text-sm" value={kindFilter} onChange={(event) => setKindFilter(event.target.value as "all" | SlotKind)}><option value="all">Tất cả loại</option><option value="sensor">Cảm biến</option><option value="actuator">Cơ cấu chấp hành</option></select>
+    </div>
+    {rowError ? <ErrorText error={rowError} /> : null}
+    {ordered.length ? <div className="space-y-4">{ordered.map((template) => <DeviceTemplateBlock key={template.id} template={template} sensorModels={sensorModels} actuatorModels={actuatorModels} term={term} kindFilter={kindFilter} canUpdate={canUpdate} canDelete={canDelete} editingKey={editingKey} pending={editSensor.isPending || editActuator.isPending} onEdit={setEditingKey} onCancelEdit={() => setEditingKey(null)} onSaveSensor={(row, value) => editSensor.mutate({ templateId: row.template.id, id: row.sensor!.id, value })} onSaveActuator={(row, value) => editActuator.mutate({ templateId: row.template.id, id: row.actuator!.id, value })} onDeleteSlot={setDeleteSlot} onAddSlot={() => setAddTemplate(template)} onEditTemplate={() => setEditTemplate(template)} onDeleteTemplate={() => setDeleteTemplate(template)} />)}</div>
+      : <EmptyState icon={Boxes} title="Chưa có DeviceTemplate" description="Tạo catalog template trước khi khởi tạo Device." />}
+    {addTemplate ? <AddSlotDialog template={addTemplate} sensorModels={sensorModels} actuatorModels={actuatorModels} pending={addSensor.isPending || addActuator.isPending} error={addSensor.error ?? addActuator.error} onClose={() => setAddTemplate(null)} onAddSensor={(templateId, value) => addSensor.mutate({ templateId, value })} onAddActuator={(templateId, value) => addActuator.mutate({ templateId, value })} /> : null}
+    {editTemplate ? <TemplateEditDialog template={editTemplate} refresh={refresh} onClose={() => setEditTemplate(null)} /> : null}
+    <AlertDialog open={Boolean(deleteSlot)} onOpenChange={(open) => { if (!open) setDeleteSlot(null) }}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Bạn có chắc chắn muốn xoá {deleteSlot ? slotModelOf(deleteSlot) : ""} không?</AlertDialogTitle><AlertDialogDescription>{deleteSlot ? `Slot ${slotCodeOf(deleteSlot)} sẽ bị gỡ khỏi thiết bị ${deleteSlot.template.name}. Hành động này không thể hoàn tác.` : ""}</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Huỷ</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={() => { if (!deleteSlot) return; if (deleteSlot.sensor) removeSensor.mutate({ templateId: deleteSlot.template.id, id: deleteSlot.sensor.id }); else if (deleteSlot.actuator) removeActuator.mutate({ templateId: deleteSlot.template.id, id: deleteSlot.actuator.id }); setDeleteSlot(null) }}>Xoá</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+    <AlertDialog open={Boolean(deleteTemplate)} onOpenChange={(open) => { if (!open) setDeleteTemplate(null) }}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Xoá thiết bị {deleteTemplate?.name}?</AlertDialogTitle><AlertDialogDescription>Toàn bộ slot của thiết bị này sẽ bị gỡ. Backend sẽ từ chối nếu template còn được Device sử dụng.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Huỷ</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={() => { if (deleteTemplate) removeTemplate.mutate(deleteTemplate.id) }}>Xoá</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+  </div>
 }
 
-function TemplateCard({ template, sensorModels, actuatorModels, canUpdate, canDelete, refresh }: { template: DeviceTemplate; sensorModels: SensorModel[]; actuatorModels: ActuatorModel[]; canUpdate: boolean; canDelete: boolean; refresh: () => Promise<unknown> }) {
-  const [editing, setEditing] = useState(false)
+function DeviceTemplateBlock({ template, sensorModels, actuatorModels, term, kindFilter, canUpdate, canDelete, editingKey, pending, onEdit, onCancelEdit, onSaveSensor, onSaveActuator, onDeleteSlot, onAddSlot, onEditTemplate, onDeleteTemplate }: { template: DeviceTemplate; sensorModels: SensorModel[]; actuatorModels: ActuatorModel[]; term: string; kindFilter: "all" | SlotKind; canUpdate: boolean; canDelete: boolean; editingKey: string | null; pending: boolean; onEdit: (key: string) => void; onCancelEdit: () => void; onSaveSensor: (row: SlotRow, value: TemplateSensorSlotInput) => void; onSaveActuator: (row: SlotRow, value: TemplateActuatorSlotInput) => void; onDeleteSlot: (row: SlotRow) => void; onAddSlot: () => void; onEditTemplate: () => void; onDeleteTemplate: () => void }) {
+  const [open, setOpen] = useState(true)
+  const [groupsOpen, setGroupsOpen] = useState({ sensor: true, actuator: true })
+  const matches = (row: SlotRow) => {
+    if (kindFilter !== "all" && row.kind !== kindFilter) return false
+    if (!term) return true
+    return [slotCodeOf(row), slotModelOf(row), template.name, template.code].some((value) => value.toLowerCase().includes(term))
+  }
+  const sensorRows = templateRows(template, "sensor").filter(matches)
+  const actuatorRows = templateRows(template, "actuator").filter(matches)
+  const total = template.sensors.length + template.actuators.length
+  const renderCard = (row: SlotRow) => <SlotCard key={row.key} row={row} sensorModels={sensorModels} actuatorModels={actuatorModels} editing={editingKey === row.key} pending={pending} canUpdate={canUpdate} onEdit={() => onEdit(row.key)} onCancel={onCancelEdit} onSaveSensor={(value) => onSaveSensor(row, value)} onSaveActuator={(value) => onSaveActuator(row, value)} onDelete={() => onDeleteSlot(row)} />
+
+  return <Card data-testid={`device-template-card-${template.code}`}>
+    <CardHeader>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <button type="button" aria-expanded={open} className="flex min-w-0 flex-1 items-start gap-3 text-left" onClick={() => setOpen((current) => !current)}>
+          {open ? <ChevronDown className="mt-1 size-5 shrink-0 text-muted-foreground" /> : <ChevronRight className="mt-1 size-5 shrink-0 text-muted-foreground" />}
+          <div className="min-w-0">
+            <CardTitle className="break-words">{template.name}</CardTitle>
+            <p className="mt-1 break-words text-sm text-muted-foreground">{template.code} · {total} thành phần · {template.sensors.length} cảm biến · {template.actuators.length} cơ cấu chấp hành</p>
+          </div>
+        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          <StatusBadge className={BADGE_CHIP} value={template.is_active ? "ACTIVE" : "DISABLED"} />
+          {canUpdate ? <Button variant="outline" onClick={onAddSlot}><Plus />Thêm slot</Button> : null}
+          {canUpdate || canDelete ? <DropdownMenu><DropdownMenuTrigger asChild><Button aria-label={`Thao tác thiết bị ${template.code}`} size="icon" variant="ghost"><MoreHorizontal /></Button></DropdownMenuTrigger><DropdownMenuContent align="end">{canUpdate ? <DropdownMenuItem onSelect={onEditTemplate}><Pencil />Sửa template</DropdownMenuItem> : null}{canDelete ? <DropdownMenuItem onSelect={onDeleteTemplate}><Trash2 />Xoá template</DropdownMenuItem> : null}</DropdownMenuContent></DropdownMenu> : null}
+        </div>
+      </div>
+    </CardHeader>
+    {open ? <CardContent className="space-y-3">
+      {!total ? <EmptyState icon={Boxes} title="Chưa cấu hình slot" description="Bấm Thêm slot để gắn cảm biến hoặc cơ cấu chấp hành cho thiết bị này." />
+        : !sensorRows.length && !actuatorRows.length ? <p className="text-sm text-muted-foreground">Không có slot nào khớp bộ lọc.</p>
+        : <>
+          {sensorRows.length ? <SlotGroup title="Cảm biến" count={sensorRows.length} open={groupsOpen.sensor} onToggle={() => setGroupsOpen((current) => ({ ...current, sensor: !current.sensor }))}>{sensorRows.map(renderCard)}</SlotGroup> : null}
+          {actuatorRows.length ? <SlotGroup title="Cơ cấu chấp hành" count={actuatorRows.length} open={groupsOpen.actuator} onToggle={() => setGroupsOpen((current) => ({ ...current, actuator: !current.actuator }))}>{actuatorRows.map(renderCard)}</SlotGroup> : null}
+        </>}
+    </CardContent> : null}
+  </Card>
+}
+
+function SlotGroup({ title, count, open, onToggle, children }: { title: string; count: number; open: boolean; onToggle: () => void; children: React.ReactNode }) {
+  return <section className="overflow-hidden rounded-xl border bg-muted/30">
+    <button type="button" aria-expanded={open} className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left" onClick={onToggle}>
+      <span className="flex items-center gap-2 text-sm font-semibold">{open ? <ChevronDown className="size-4 text-muted-foreground" /> : <ChevronRight className="size-4 text-muted-foreground" />}{title}</span>
+      <Badge className={BADGE_CHIP} variant="secondary">{count}</Badge>
+    </button>
+    {open ? <div className="grid gap-4 border-t bg-background/60 p-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{children}</div> : null}
+  </section>
+}
+
+function SlotCard({ row, sensorModels, actuatorModels, editing, pending, canUpdate, onEdit, onCancel, onSaveSensor, onSaveActuator, onDelete }: { row: SlotRow; sensorModels: SensorModel[]; actuatorModels: ActuatorModel[]; editing: boolean; pending: boolean; canUpdate: boolean; onEdit: () => void; onCancel: () => void; onSaveSensor: (value: TemplateSensorSlotInput) => void; onSaveActuator: (value: TemplateActuatorSlotInput) => void; onDelete: () => void }) {
+  const slot = row.sensor ?? row.actuator
+  const code = slotCodeOf(row)
+  return <Card data-testid={`catalog-slot-card-${row.key}`}>
+    <CardHeader>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <CardTitle className="break-words">{slot ? slotModelOf(row) : row.template.name}</CardTitle>
+          <p className="break-words text-sm text-muted-foreground">{slot ? `${code} · ${row.template.code}` : row.template.code}</p>
+        </div>
+        <StatusBadge className={BADGE_CHIP} value={row.template.is_active ? "ACTIVE" : "DISABLED"} />
+      </div>
+    </CardHeader>
+    <CardContent className="space-y-3">
+      {editing && slot ? <SlotRowForm row={row} sensorModels={sensorModels} actuatorModels={actuatorModels} pending={pending} onCancel={onCancel} onSaveSensor={onSaveSensor} onSaveActuator={onSaveActuator} /> : <>
+        {slot ? <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground"><Badge className={BADGE_CHIP} variant={row.kind === "sensor" ? "secondary" : "outline"}>{row.kind === "sensor" ? "Sensor" : "Actuator"}</Badge><span>thứ tự {slot.sort_order} · {slot.is_required ? "Bắt buộc" : "Tuỳ chọn"}</span></div> : <p className="text-sm text-muted-foreground">Chưa cấu hình slot</p>}
+        <div className="flex flex-wrap items-center gap-2">
+          {canUpdate && slot ? <Button size="sm" variant="outline" onClick={onEdit}><Pencil />Sửa</Button> : null}
+          {canUpdate && slot ? <Button aria-label={`Xoá ${code}`} size="sm" variant="ghost" onClick={onDelete}><Trash2 />Xoá</Button> : null}
+        </div>
+      </>}
+    </CardContent>
+  </Card>
+}
+
+function SlotRowForm({ row, sensorModels, actuatorModels, pending, onCancel, onSaveSensor, onSaveActuator }: { row: SlotRow; sensorModels: SensorModel[]; actuatorModels: ActuatorModel[]; pending: boolean; onCancel: () => void; onSaveSensor: (value: TemplateSensorSlotInput) => void; onSaveActuator: (value: TemplateActuatorSlotInput) => void }) {
+  const [sensorDraft, setSensorDraft] = useState<TemplateSensorSlotInput>({ sensor_model_id: row.sensor?.sensor_model_id ?? 0, code: row.sensor?.code ?? "", sort_order: row.sensor?.sort_order ?? 0, is_required: row.sensor?.is_required ?? true })
+  const [actuatorDraft, setActuatorDraft] = useState<TemplateActuatorSlotInput>({ actuator_model_id: row.actuator?.actuator_model_id ?? 0, code: row.actuator?.code ?? "", sort_order: row.actuator?.sort_order ?? 0, is_required: row.actuator?.is_required ?? true })
+  if (row.kind === "sensor") return <SlotForm kind="sensor" models={sensorModels} value={sensorDraft} onChange={setSensorDraft} onSubmit={() => onSaveSensor(sensorDraft)} onCancel={onCancel} pending={pending} />
+  return <SlotForm kind="actuator" models={actuatorModels} value={actuatorDraft} onChange={setActuatorDraft} onSubmit={() => onSaveActuator(actuatorDraft)} onCancel={onCancel} pending={pending} />
+}
+
+function nextSlotCode(template: DeviceTemplate, kind: SlotKind, modelCode: string) {
+  const base = modelCode.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "_")
+  const taken = new Set((kind === "sensor" ? template.sensors : template.actuators).map((slot) => slot.code))
+  if (!taken.has(base)) return base
+  let index = 2
+  while (taken.has(`${base}_${index}`)) index += 1
+  return `${base}_${index}`
+}
+
+function AddSlotDialog({ template, sensorModels, actuatorModels, pending, error, onClose, onAddSensor, onAddActuator }: { template: DeviceTemplate; sensorModels: SensorModel[]; actuatorModels: ActuatorModel[]; pending: boolean; error: Error | null; onClose: () => void; onAddSensor: (templateId: number, value: TemplateSensorSlotInput) => void; onAddActuator: (templateId: number, value: TemplateActuatorSlotInput) => void }) {
+  const [kind, setKind] = useState<SlotKind>("sensor")
+  const [modelId, setModelId] = useState(0)
+  const models: Array<SensorModel | ActuatorModel> = kind === "sensor" ? sensorModels : actuatorModels
+  const model = models.find((item) => item.id === modelId)
+  const changeKind = (value: SlotKind) => { setKind(value); setModelId(0) }
+  const submit = () => {
+    if (!model) return
+    const code = nextSlotCode(template, kind, model.code)
+    const sort_order = kind === "sensor" ? template.sensors.length : template.actuators.length
+    if (kind === "sensor") onAddSensor(template.id, { sensor_model_id: modelId, code, sort_order, is_required: true })
+    else onAddActuator(template.id, { actuator_model_id: modelId, code, sort_order, is_required: true })
+  }
+  return <Dialog open onOpenChange={(open) => { if (!open) onClose() }}><DialogContent><DialogHeader><DialogTitle>Thêm cảm biến hoặc cơ cấu chấp hành</DialogTitle><DialogDescription>Chọn loại slot và model</DialogDescription></DialogHeader><form className="space-y-3" onSubmit={(event) => { event.preventDefault(); submit() }}>
+    <div><Label htmlFor="add-slot-kind">Loại slot</Label><select id="add-slot-kind" className="mt-1 h-9 w-full rounded-md border bg-background px-3 text-sm" value={kind} onChange={(event) => changeKind(event.target.value as SlotKind)}><option value="sensor">Cảm biến</option><option value="actuator">Cơ cấu chấp hành</option></select></div>
+    <div><Label htmlFor="add-slot-model">Model</Label><select id="add-slot-model" className="mt-1 h-9 w-full rounded-md border bg-background px-3 text-sm" value={modelId || ""} onChange={(event) => setModelId(Number(event.target.value))} required><option value="">Chọn model</option>{models.filter((item) => item.is_active).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>
+    {error ? <ErrorText error={error} /> : null}
+    <DialogFooter><Button data-testid={kind === "sensor" ? "add-template-sensor" : "add-template-actuator"} type="submit" disabled={pending || modelId <= 0}><Plus />Thêm slot</Button></DialogFooter>
+  </form></DialogContent></Dialog>
+}
+
+function TemplateEditDialog({ template, refresh, onClose }: { template: DeviceTemplate; refresh: () => Promise<unknown>; onClose: () => void }) {
   const [draft, setDraft] = useState<DeviceTemplateInput>({ code: template.code, name: template.name, description: template.description })
-  const update = useMutation({ mutationFn: () => updateDeviceTemplate(template.id, { name: draft.name, description: draft.description, is_active: template.is_active }), onSuccess: async () => { await refresh(); setEditing(false) } })
-  const remove = useMutation({ mutationFn: () => deleteDeviceTemplate(template.id), onSuccess: refresh })
-  return <Card data-testid={template.code === "ENERGY_MONITOR_12V" ? "energy-monitor-template" : undefined}><CardHeader><div className="flex flex-wrap items-start justify-between gap-3"><div><CardTitle>{template.name}</CardTitle><p className="mt-1 text-sm text-muted-foreground">{template.code}</p></div><div className="flex flex-wrap items-center gap-2"><StatusBadge value={template.is_active ? "ACTIVE" : "DISABLED"} />{canUpdate ? <Button size="sm" variant="outline" onClick={() => setEditing((current) => !current)}><Pencil />Chỉnh sửa</Button> : null}{canDelete ? <AlertDialog><AlertDialogTrigger asChild><Button size="sm" variant="destructive"><Trash2 />Xoá</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Xoá {template.name}?</AlertDialogTitle><AlertDialogDescription>Backend sẽ từ chối nếu template còn được Device sử dụng.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Huỷ</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={() => remove.mutate()}>Xoá</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog> : null}</div></div></CardHeader><CardContent className="space-y-5">{editing ? <form className="space-y-4 rounded-xl bg-muted p-4" onSubmit={(event) => { event.preventDefault(); update.mutate() }}><TemplateFields draft={draft} onChange={setDraft} codeEditable={false} /><Button type="submit" disabled={update.isPending}>Lưu template</Button>{update.isError ? <ErrorText error={update.error} /> : null}</form> : template.description ? <p className="text-sm text-muted-foreground">{template.description}</p> : null}<div className="grid gap-5 lg:grid-cols-2"><SensorSlots template={template} models={sensorModels} canUpdate={canUpdate} refresh={refresh} /><ActuatorSlots template={template} models={actuatorModels} canUpdate={canUpdate} refresh={refresh} /></div>{remove.isError ? <ErrorText error={remove.error} /> : null}</CardContent></Card>
+  const update = useMutation({ mutationFn: () => updateDeviceTemplate(template.id, { name: draft.name, description: draft.description, is_active: template.is_active }), onSuccess: async () => { await refresh(); onClose() } })
+  return <Dialog open onOpenChange={(open) => { if (!open) onClose() }}><DialogContent><DialogHeader><DialogTitle>Sửa {template.code}</DialogTitle><DialogDescription>Code là khoá catalog nên không thể đổi sau khi tạo.</DialogDescription></DialogHeader><form className="space-y-4" onSubmit={(event) => { event.preventDefault(); update.mutate() }}><TemplateFields draft={draft} onChange={setDraft} codeEditable={false} />{update.isError ? <ErrorText error={update.error} /> : null}<DialogFooter><Button type="submit" disabled={update.isPending}>Lưu template</Button></DialogFooter></form></DialogContent></Dialog>
 }
-
-function SensorSlots({ template, models, canUpdate, refresh }: { template: DeviceTemplate; models: SensorModel[]; canUpdate: boolean; refresh: () => Promise<unknown> }) {
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const [draft, setDraft] = useState<TemplateSensorSlotInput>({ sensor_model_id: 0, slot_code: "", sort_order: template.sensors.length, is_required: true })
-  const add = useMutation({ mutationFn: () => addTemplateSensor(template.id, { ...draft, slot_code: draft.slot_code.trim().toUpperCase() }), onSuccess: async () => { await refresh(); setDraft({ sensor_model_id: 0, slot_code: "", sort_order: template.sensors.length + 1, is_required: true }) } })
-  const update = useMutation({ mutationFn: ({ id, value }: { id: number; value: TemplateSensorSlotInput }) => updateTemplateSensor(template.id, id, value), onSuccess: async () => { await refresh(); setEditingId(null) } })
-  const remove = useMutation({ mutationFn: (id: number) => deleteTemplateSensor(template.id, id), onSuccess: refresh })
-  return <section className="space-y-3"><div className="flex items-center justify-between"><h3 className="font-semibold">Sensor slots ({template.sensors.length})</h3></div>{template.sensors.map((slot) => <SensorSlotRow key={slot.id} slot={slot} models={models} editing={editingId === slot.id} canUpdate={canUpdate} onEdit={() => setEditingId(slot.id)} onCancel={() => setEditingId(null)} onSave={(value) => update.mutate({ id: slot.id, value })} onDelete={() => remove.mutate(slot.id)} />)}{canUpdate ? <SlotForm kind="sensor" models={models} value={draft} onChange={setDraft} onSubmit={() => add.mutate()} pending={add.isPending} /> : null}{add.isError || update.isError || remove.isError ? <ErrorText error={add.error ?? update.error ?? remove.error} /> : null}</section>
-}
-
-function ActuatorSlots({ template, models, canUpdate, refresh }: { template: DeviceTemplate; models: ActuatorModel[]; canUpdate: boolean; refresh: () => Promise<unknown> }) {
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const [draft, setDraft] = useState<TemplateActuatorSlotInput>({ actuator_model_id: 0, slot_code: "", sort_order: template.actuators.length, is_required: true })
-  const add = useMutation({ mutationFn: () => addTemplateActuator(template.id, { ...draft, slot_code: draft.slot_code.trim().toUpperCase() }), onSuccess: async () => { await refresh(); setDraft({ actuator_model_id: 0, slot_code: "", sort_order: template.actuators.length + 1, is_required: true }) } })
-  const update = useMutation({ mutationFn: ({ id, value }: { id: number; value: TemplateActuatorSlotInput }) => updateTemplateActuator(template.id, id, value), onSuccess: async () => { await refresh(); setEditingId(null) } })
-  const remove = useMutation({ mutationFn: (id: number) => deleteTemplateActuator(template.id, id), onSuccess: refresh })
-  return <section className="space-y-3"><div className="flex items-center justify-between"><h3 className="font-semibold">Actuator slots ({template.actuators.length})</h3></div>{template.actuators.map((slot) => <ActuatorSlotRow key={slot.id} slot={slot} models={models} editing={editingId === slot.id} canUpdate={canUpdate} onEdit={() => setEditingId(slot.id)} onCancel={() => setEditingId(null)} onSave={(value) => update.mutate({ id: slot.id, value })} onDelete={() => remove.mutate(slot.id)} />)}{canUpdate ? <SlotForm kind="actuator" models={models} value={draft} onChange={setDraft} onSubmit={() => add.mutate()} pending={add.isPending} /> : null}{add.isError || update.isError || remove.isError ? <ErrorText error={add.error ?? update.error ?? remove.error} /> : null}</section>
-}
-
-function SensorSlotRow({ slot, models, editing, canUpdate, onEdit, onCancel, onSave, onDelete }: { slot: TemplateSensorSlot; models: SensorModel[]; editing: boolean; canUpdate: boolean; onEdit: () => void; onCancel: () => void; onSave: (value: TemplateSensorSlotInput) => void; onDelete: () => void }) {
-  const [draft, setDraft] = useState<TemplateSensorSlotInput>({ sensor_model_id: slot.sensor_model_id, slot_code: slot.slot_code, sort_order: slot.sort_order, is_required: slot.is_required })
-  if (editing) return <SlotForm kind="sensor" models={models} value={draft} onChange={setDraft} onSubmit={() => onSave(draft)} onCancel={onCancel} pending={false} />
-  return <SlotSummary code={slot.slot_code} model={slot.sensor_model_name} order={slot.sort_order} required={slot.is_required} canUpdate={canUpdate} onEdit={onEdit} onDelete={onDelete} />
-}
-
-function ActuatorSlotRow({ slot, models, editing, canUpdate, onEdit, onCancel, onSave, onDelete }: { slot: TemplateActuatorSlot; models: ActuatorModel[]; editing: boolean; canUpdate: boolean; onEdit: () => void; onCancel: () => void; onSave: (value: TemplateActuatorSlotInput) => void; onDelete: () => void }) {
-  const [draft, setDraft] = useState<TemplateActuatorSlotInput>({ actuator_model_id: slot.actuator_model_id, slot_code: slot.slot_code, sort_order: slot.sort_order, is_required: slot.is_required })
-  if (editing) return <SlotForm kind="actuator" models={models} value={draft} onChange={setDraft} onSubmit={() => onSave(draft)} onCancel={onCancel} pending={false} />
-  return <SlotSummary code={slot.slot_code} model={slot.actuator_model_name} order={slot.sort_order} required={slot.is_required} canUpdate={canUpdate} onEdit={onEdit} onDelete={onDelete} />
-}
-
-function SlotSummary({ code, model, order, required, canUpdate, onEdit, onDelete }: { code: string; model: string; order: number; required: boolean; canUpdate: boolean; onEdit: () => void; onDelete: () => void }) { return <div className="flex items-center justify-between gap-3 rounded-lg border p-3"><div><p className="font-medium">{order}. {code}</p><p className="text-xs text-muted-foreground">{model} · {required ? "Bắt buộc" : "Tuỳ chọn"}</p></div>{canUpdate ? <div className="flex gap-1"><Button aria-label={`Sửa ${code}`} size="icon" variant="ghost" onClick={onEdit}><Pencil /></Button><Button aria-label={`Xoá ${code}`} size="icon" variant="ghost" onClick={onDelete}><Trash2 /></Button></div> : null}</div> }
 
 type SlotFormProps =
   | { kind: "sensor"; models: SensorModel[]; value: TemplateSensorSlotInput; onChange: (value: TemplateSensorSlotInput) => void; onSubmit: () => void; onCancel?: () => void; pending: boolean }
@@ -102,9 +233,9 @@ type SlotFormProps =
 
 function SlotForm(props: SlotFormProps) {
   if (props.kind === "sensor") {
-    return <SlotFormLayout kind="sensor" models={props.models} code={props.value.slot_code} modelId={props.value.sensor_model_id} order={props.value.sort_order ?? 0} required={props.value.is_required ?? true} pending={props.pending} editing={Boolean(props.onCancel)} onCancel={props.onCancel} onSubmit={props.onSubmit} onCode={(slot_code) => props.onChange({ ...props.value, slot_code })} onModel={(sensor_model_id) => props.onChange({ ...props.value, sensor_model_id })} onOrder={(sort_order) => props.onChange({ ...props.value, sort_order })} onRequired={(is_required) => props.onChange({ ...props.value, is_required })} />
+    return <SlotFormLayout kind="sensor" models={props.models} code={props.value.code} modelId={props.value.sensor_model_id} order={props.value.sort_order ?? 0} required={props.value.is_required ?? true} pending={props.pending} editing={Boolean(props.onCancel)} onCancel={props.onCancel} onSubmit={props.onSubmit} onCode={(code) => props.onChange({ ...props.value, code })} onModel={(sensor_model_id) => props.onChange({ ...props.value, sensor_model_id })} onOrder={(sort_order) => props.onChange({ ...props.value, sort_order })} onRequired={(is_required) => props.onChange({ ...props.value, is_required })} />
   }
-  return <SlotFormLayout kind="actuator" models={props.models} code={props.value.slot_code} modelId={props.value.actuator_model_id} order={props.value.sort_order ?? 0} required={props.value.is_required ?? true} pending={props.pending} editing={Boolean(props.onCancel)} onCancel={props.onCancel} onSubmit={props.onSubmit} onCode={(slot_code) => props.onChange({ ...props.value, slot_code })} onModel={(actuator_model_id) => props.onChange({ ...props.value, actuator_model_id })} onOrder={(sort_order) => props.onChange({ ...props.value, sort_order })} onRequired={(is_required) => props.onChange({ ...props.value, is_required })} />
+  return <SlotFormLayout kind="actuator" models={props.models} code={props.value.code} modelId={props.value.actuator_model_id} order={props.value.sort_order ?? 0} required={props.value.is_required ?? true} pending={props.pending} editing={Boolean(props.onCancel)} onCancel={props.onCancel} onSubmit={props.onSubmit} onCode={(code) => props.onChange({ ...props.value, code })} onModel={(actuator_model_id) => props.onChange({ ...props.value, actuator_model_id })} onOrder={(sort_order) => props.onChange({ ...props.value, sort_order })} onRequired={(is_required) => props.onChange({ ...props.value, is_required })} />
 }
 
 function SlotFormLayout({ kind, models, code, modelId, order, required, pending, editing, onCancel, onSubmit, onCode, onModel, onOrder, onRequired }: { kind: "sensor" | "actuator"; models: Array<SensorModel | ActuatorModel>; code: string; modelId: number; order: number; required: boolean; pending: boolean; editing: boolean; onCancel?: () => void; onSubmit: () => void; onCode: (value: string) => void; onModel: (value: number) => void; onOrder: (value: number) => void; onRequired: (value: boolean) => void }) {

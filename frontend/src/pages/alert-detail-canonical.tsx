@@ -16,9 +16,9 @@ import { Textarea } from "@/shared/ui/textarea"
 
 export function AlertDetailPage() {
   const params = useParams()
-  const systemId = Number(params.systemId)
+  const systemId = params.systemId ?? ""
   const alertId = Number(params.alertId)
-  const validIds = systemId > 0 && alertId > 0
+  const validIds = Boolean(systemId) && alertId > 0
   const { can } = useAuth()
   const client = useQueryClient()
   const [note, setNote] = useState("")

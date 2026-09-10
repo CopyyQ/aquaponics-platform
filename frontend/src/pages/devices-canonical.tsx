@@ -19,8 +19,8 @@ import { Textarea } from "@/shared/ui/textarea"
 const initialDraft: DeviceInput = { code: "", name: "", description: null, location: null, device_template_id: null }
 
 export function DevicesPage() {
-  const systemId = Number(useParams().systemId)
-  const validId = systemId > 0
+  const systemId = useParams().systemId ?? ""
+  const validId = Boolean(systemId)
   const { can } = useAuth()
   const client = useQueryClient()
   const [queryText, setQueryText] = useState("")

@@ -67,7 +67,8 @@ async def test_threshold_patch_api_re_evaluates_latest_reading_and_returns_canon
             ),
         ])
         await db.commit()
-        system_id, device_id, sensor_id = project.id, device.id, sensor.id
+        system_id, device_id, sensor_id = project.public_id, device.public_id, sensor.public_id
+        sensor_internal_id = sensor.id
         headers = _headers(owner)
 
     url = f"/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/threshold-alert"
@@ -108,7 +109,7 @@ async def test_threshold_patch_api_re_evaluates_latest_reading_and_returns_canon
 
     async with AsyncSessionLocal() as db:
         incident = await db.scalar(select(OperationalIncident).where(
-            OperationalIncident.sensor_id == sensor_id,
+            OperationalIncident.sensor_id == sensor_internal_id,
             OperationalIncident.status == "PENDING",
         ))
         assert incident is not None

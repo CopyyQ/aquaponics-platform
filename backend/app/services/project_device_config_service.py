@@ -75,7 +75,7 @@ async def export_project_device_config(
     actuator_rows = list((await db.execute(select(Actuator, ActuatorModel.code).join(ActuatorModel, ActuatorModel.id == Actuator.actuator_model_id, isouter=True).where(Actuator.device_id.in_(device_ids), Actuator.is_deleted.is_(False), Actuator.removed_at.is_(None)).order_by(Actuator.device_id, Actuator.id))).all()) if device_ids else []
     actuators_by_device = {device_id: [] for device_id in device_ids}
     for actuator, model_code in actuator_rows:
-        actuators_by_device[actuator.device_id].append(DeviceConfigActuator(id=actuator.id, code=actuator.code, name=actuator.name, actuator_model_code=model_code, is_enabled=actuator.is_enabled))
+        actuators_by_device[actuator.device_id].append(DeviceConfigActuator(id=actuator.public_id, code=actuator.code, name=actuator.name, actuator_model_code=model_code, is_enabled=actuator.is_enabled))
     sensor_rows = (
         list(
             (
@@ -100,7 +100,7 @@ async def export_project_device_config(
     for sensor, sensor_model_code, unit in sensor_rows:
         sensors_by_device[sensor.device_id].append(
             DeviceConfigSensor(
-                id=sensor.id,
+                id=sensor.public_id,
                 sensor_code=sensor.code,
                 sensor_model_code=sensor_model_code,
                 name=sensor.name,
@@ -111,7 +111,7 @@ async def export_project_device_config(
         )
     exported_devices = [
         DeviceConfigDevice(
-            id=device.id,
+            id=device.public_id,
             code=device.code,
             name=device.name,
             is_enabled=device.is_enabled,
@@ -130,7 +130,7 @@ async def export_project_device_config(
     return AquaponicsSystemMqttConfigExport(
         exported_at=datetime.now(UTC),
         aquaponics_system=DeviceConfigAquaponicsSystem(
-            id=project.id,
+            id=project.public_id,
             code=project.code,
             name=project.name,
         ),

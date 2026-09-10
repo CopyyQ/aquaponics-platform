@@ -22,10 +22,10 @@ const tabs = [
 ] as const
 
 export function AquaponicsSystemLayout() {
-  const systemId = Number(useParams().systemId)
+  const systemId = useParams().systemId ?? ""
   const { can } = useAuth()
   const client = useQueryClient()
-  const system = useQuery({ queryKey: queryKeys.system(systemId), queryFn: () => getSystem(systemId), enabled: Number.isInteger(systemId) && systemId > 0 })
+  const system = useQuery({ queryKey: queryKeys.system(systemId), queryFn: () => getSystem(systemId), enabled: Boolean(systemId) })
 
   if (system.isLoading) return <div className="space-y-5"><Skeleton className="h-28" /><Skeleton className="h-12" /><Skeleton className="h-96" /></div>
   if (system.isError || !system.data) return <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-destructive">Không thể tải hệ thống Aquaponics.</div>

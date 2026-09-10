@@ -5,6 +5,7 @@ import type { ProjectAttention, ProjectDeviceHealth, ProjectHealth, ProjectInven
 import type { TelemetryPoint } from "@/entities/telemetry/model/types"
 
 export type MonitoringRange = CanonicalMonitoringRange
+export type CoreId = string | number
 
 export interface MonitoringLatestValue {
   value: number
@@ -17,7 +18,7 @@ export interface MonitoringLatestValue {
 }
 
 export interface MonitoringSensor {
-  id: number
+  id: CoreId
   code: string
   name: string
   unit: string
@@ -37,7 +38,7 @@ export interface MonitoringLatestCommand {
 }
 
 export interface MonitoringActuator {
-  id: number
+  id: CoreId
   code: string
   name: string
   actuator_model: string | null
@@ -52,7 +53,7 @@ export interface MonitoringActuator {
 }
 
 export interface MonitoringDevice {
-  id: number
+  id: CoreId
   code: string
   name: string
   is_enabled: boolean
@@ -64,12 +65,12 @@ export interface MonitoringDevice {
 }
 
 export interface ProjectMonitoringLatest {
-  project_id: number
+  project_id: CoreId
   devices: MonitoringDevice[]
 }
 
 export interface ProjectMonitoringSummary {
-  project_id: number
+  project_id: CoreId
   health: ProjectHealth
   inventory: ProjectInventory
   alerts: ProjectAlertSummary
@@ -83,8 +84,8 @@ export interface ProjectMonitoringSummary {
 }
 
 export interface ProjectActuatorHealth {
-  id: number
-  device_id: number
+  id: CoreId
+  device_id: CoreId
   device_name: string
   device_code: string
   code: string
@@ -107,7 +108,7 @@ export interface MonitoringSeriesPoint {
 }
 
 export interface MonitoringSensorSeries {
-  sensor_id: number
+  sensor_id: CoreId
   unit: string
   points: MonitoringSeriesPoint[]
   gaps: MonitoringDataGap[]
@@ -120,7 +121,7 @@ export interface MonitoringDataGap {
 }
 
 export interface ProjectMonitoringSeries {
-  project_id: number
+  project_id: CoreId
   range: MonitoringRange
   resolution: "raw" | "5m" | "10m" | "15m" | "1h" | "1d"
   series: MonitoringSensorSeries[]
@@ -135,7 +136,7 @@ export type EnergySensorModelCode =
   | "ENERGY_TOTAL_WH"
 
 export interface EnergyLatestValue {
-  sensor_id: number
+  sensor_id: CoreId
   sensor_code: string
   sensor_enabled: boolean
   value: number | null
@@ -145,7 +146,7 @@ export interface EnergyLatestValue {
 }
 
 export interface EnergyMonitoringDevice {
-  id: number
+  id: CoreId
   code: string
   name: string
   enabled: boolean
@@ -153,7 +154,7 @@ export interface EnergyMonitoringDevice {
   last_seen_at: string | null
   location: string | null
   template: {
-    id: number
+    id: CoreId
     code: string
     name: string
     nominal_output_voltage_v: number | null
@@ -162,13 +163,13 @@ export interface EnergyMonitoringDevice {
 }
 
 export interface EnergyMonitoringResponse {
-  project_id: number
+  project_id: CoreId
   devices: EnergyMonitoringDevice[]
 }
 
 export interface DevicePowerSeries {
-  project_id: number
-  device_id: number
+  project_id: CoreId
+  device_id: CoreId
   range: MonitoringRange
   resolution: string
   timezone: "UTC"
@@ -204,15 +205,15 @@ export interface MonitoringActuatorStatistics {
 }
 
 export interface MonitoringActuatorHistory {
-  actuator_id: number
+  actuator_id: CoreId
   points: MonitoringActuatorHistoryPoint[]
   gaps: MonitoringActuatorHistoryGap[]
   statistics: MonitoringActuatorStatistics
 }
 
 export interface ProjectMonitoringActuatorHistory {
-  project_id: number
-  device_id: number
+  project_id: CoreId
+  device_id: CoreId
   range: MonitoringRange
   items: MonitoringActuatorHistory[]
 }

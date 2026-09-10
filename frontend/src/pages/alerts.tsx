@@ -14,7 +14,7 @@ import { StatusBadge } from "@/shared/ui/status-badge"
 import { errorMessage } from "@/api/client"
 
 export function AlertsPage() {
-  const systemId = Number(useParams().systemId); const { can } = useAuth(); const client = useQueryClient(); const [note, setNote] = useState<Record<number, string>>({})
+  const systemId = useParams().systemId ?? ""; const { can } = useAuth(); const client = useQueryClient(); const [note, setNote] = useState<Record<number, string>>({})
   const alerts = useQuery({ queryKey: queryKeys.alerts(systemId), queryFn: () => listAlerts(systemId) })
   const ack = useMutation({ mutationFn: (id: number) => acknowledgeAlert(systemId, id), onSuccess: () => void client.invalidateQueries({ queryKey: queryKeys.alerts(systemId) }) })
   const resolve = useMutation({ mutationFn: (id: number) => resolveAlert(systemId, id, { resolution_note: note[id]?.trim() || "Đã kiểm tra và xử lý từ giao diện vận hành" }), onSuccess: () => void client.invalidateQueries({ queryKey: queryKeys.alerts(systemId) }) })

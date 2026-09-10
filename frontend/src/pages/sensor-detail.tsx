@@ -16,10 +16,10 @@ import { StatusBadge } from "@/shared/ui/status-badge"
 import { errorMessage } from "@/api/client"
 
 export function SensorDetailPage() {
-  const systemId = Number(useParams().systemId); const deviceId = Number(useParams().deviceId); const sensorId = Number(useParams().sensorId); const { can } = useAuth(); const client = useQueryClient()
-  const sensor = useQuery({ queryKey: ["sensor", systemId, deviceId, sensorId], queryFn: () => getSensor(systemId, deviceId, sensorId), enabled: sensorId > 0 })
-  const threshold = useQuery({ queryKey: ["sensor-threshold", systemId, deviceId, sensorId], queryFn: () => getSensorThreshold(systemId, deviceId, sensorId), enabled: sensorId > 0 && can("sensors.thresholds.read") })
-  const telemetry = useQuery({ queryKey: ["sensor-telemetry", systemId, deviceId, sensorId], queryFn: () => getSensorTelemetry(systemId, deviceId, sensorId, { limit: 200 }), enabled: sensorId > 0 && can("sensors.telemetry.read") })
+  const params = useParams(); const systemId = params.systemId ?? ""; const deviceId = params.deviceId ?? ""; const sensorId = params.sensorId ?? ""; const { can } = useAuth(); const client = useQueryClient()
+  const sensor = useQuery({ queryKey: ["sensor", systemId, deviceId, sensorId], queryFn: () => getSensor(systemId, deviceId, sensorId), enabled: Boolean(systemId && deviceId && sensorId) })
+  const threshold = useQuery({ queryKey: ["sensor-threshold", systemId, deviceId, sensorId], queryFn: () => getSensorThreshold(systemId, deviceId, sensorId), enabled: Boolean(sensorId) && can("sensors.thresholds.read") })
+  const telemetry = useQuery({ queryKey: ["sensor-telemetry", systemId, deviceId, sensorId], queryFn: () => getSensorTelemetry(systemId, deviceId, sensorId, { limit: 200 }), enabled: Boolean(sensorId) && can("sensors.telemetry.read") })
   const [draft, setDraft] = useState<ThresholdAlertConfigInput | null>(null)
   const config = draft ?? (threshold.data ? { enabled: threshold.data.enabled, lower_threshold: threshold.data.lower_threshold, upper_threshold: threshold.data.upper_threshold, below_risk_level: threshold.data.below_risk_level, above_risk_level: threshold.data.above_risk_level, below_message: threshold.data.below_message, above_message: threshold.data.above_message } : { enabled: true, lower_threshold: null, upper_threshold: null })
   const save = useMutation({ mutationFn: () => threshold.data ? updateSensorThreshold(systemId, deviceId, sensorId, config) : saveSensorThreshold(systemId, deviceId, sensorId, config), onSuccess: () => { setDraft(null); void client.invalidateQueries({ queryKey: ["sensor-threshold", systemId, deviceId, sensorId] }) } })

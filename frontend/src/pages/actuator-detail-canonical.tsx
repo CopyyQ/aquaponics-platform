@@ -26,10 +26,10 @@ import { Textarea } from "@/shared/ui/textarea"
 
 export function ActuatorDetailPage() {
   const params = useParams()
-  const systemId = Number(params.systemId)
-  const deviceId = Number(params.deviceId)
-  const actuatorId = Number(params.actuatorId)
-  const validIds = systemId > 0 && deviceId > 0 && actuatorId > 0
+  const systemId = params.systemId ?? ""
+  const deviceId = params.deviceId ?? ""
+  const actuatorId = params.actuatorId ?? ""
+  const validIds = Boolean(systemId && deviceId && actuatorId)
   const { can } = useAuth()
   const client = useQueryClient()
   const navigate = useNavigate()
@@ -88,7 +88,7 @@ function Info({ label, value }: { label: string; value: string }) { return <Card
 function HistoryCard({ title, icon: Icon, children }: { title: string; icon: typeof Clock3; children: React.ReactNode }) { return <Card><CardHeader><CardTitle className="flex items-center gap-2"><Icon className="size-5 text-primary" />{title}</CardTitle></CardHeader><CardContent>{children}</CardContent></Card> }
 function TextField({ id, label, value, onChange }: { id: string; label: string; value: string; onChange: (value: string) => void }) { return <div><Label htmlFor={id}>{label}</Label><Input id={id} className="mt-1" value={value} onChange={(event) => onChange(event.target.value)} required /></div> }
 
-function ThresholdCard({ metric, config, loading, canCreate, canUpdate, canDelete, systemId, deviceId, actuatorId }: { metric: ActuatorThresholdMetric; config: ThresholdAlertConfig | null; loading: boolean; canCreate: boolean; canUpdate: boolean; canDelete: boolean; systemId: number; deviceId: number; actuatorId: number }) {
+function ThresholdCard({ metric, config, loading, canCreate, canUpdate, canDelete, systemId, deviceId, actuatorId }: { metric: ActuatorThresholdMetric; config: ThresholdAlertConfig | null; loading: boolean; canCreate: boolean; canUpdate: boolean; canDelete: boolean; systemId: string; deviceId: string; actuatorId: string }) {
   const client = useQueryClient()
   const [draft, setDraft] = useState<ThresholdAlertConfigInput>({ enabled: true, lower_threshold: null, upper_threshold: null })
   useEffect(() => { setDraft(config ? { enabled: config.enabled, lower_threshold: config.lower_threshold, upper_threshold: config.upper_threshold, below_risk_level: config.below_risk_level, above_risk_level: config.above_risk_level, below_message: config.below_message, above_message: config.above_message } : { enabled: true, lower_threshold: null, upper_threshold: null }) }, [config])

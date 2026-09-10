@@ -2,7 +2,7 @@ import { Activity } from "lucide-react"
 import { useEffect, useMemo } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import { useProjectContext } from "@/entities/project/model/project-context"
-import type { MonitoringRange } from "@/entities/telemetry/model/project-monitoring"
+import type { CoreId, MonitoringRange } from "@/entities/telemetry/model/project-monitoring"
 import type { MonitoringDialogTab } from "@/features/view-device-monitoring-history/model/monitoring-dialog.types"
 import { DeviceMonitoringDialog } from "@/features/view-device-monitoring-history/ui/DeviceMonitoringDialog"
 import { normalizeMonitoringSearchParams } from "@/pages/project-monitoring/project-monitoring.types"
@@ -30,7 +30,7 @@ export function ProjectMonitoringPage() {
   }, [params, setParams])
 
   const updateDialog = (changes: Record<string, string | null>) => setParams((current) => { const next = new URLSearchParams(current); Object.entries(changes).forEach(([key, value]) => value === null ? next.delete(key) : next.set(key, value)); return next })
-  const openDialog = (deviceId: number, tab: MonitoringDialogTab, resource?: number) => updateDialog({ monitoringDevice: String(deviceId), monitoringTab: tab, resource: resource ? String(resource) : null })
+  const openDialog = (deviceId: CoreId, tab: MonitoringDialogTab, resource?: CoreId) => updateDialog({ monitoringDevice: String(deviceId), monitoringTab: tab, resource: resource ? String(resource) : null })
 
   if (monitoring.isInitialLoading) return <div className="flex flex-col gap-4" aria-busy="true"><Skeleton className="h-32" /><Skeleton className="h-56" /><Skeleton className="h-96" /><span className="sr-only">Đang tải dữ liệu giám sát</span></div>
   if (monitoring.error) return <EmptyState icon={Activity} title="Không thể tải dữ liệu giám sát" description="Kiểm tra quyền truy cập hoặc thử lại." action={<Button variant="outline" onClick={() => { void monitoring.refetch() }}>Thử lại</Button>} />

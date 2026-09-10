@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 import secrets
+from uuid import UUID
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Response, status
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
@@ -23,6 +24,7 @@ from app.core.security import hash_password
 from app.db.session import get_db
 from app.models.permission import Role
 from app.models.project import Project
+from app.models.project_member import ProjectMember
 from app.models.operational_alert import NotificationDelivery, NotificationOutbox, OperationalIncident
 from app.models.project_settings import (
     ProjectNotificationRecipient,
@@ -48,10 +50,18 @@ from app.services.audit_service import write_audit
 from app.services.monitoring_service import get_project_monitoring_latest, get_project_monitoring_series
 from app.services.permission_service import has_permission
 from app.services.project_lifecycle_service import activate_project, disable_project
+from app.services.aquaponics_system_creation_service import (
+    AquaponicsSystemCreationError,
+    create_aquaponics_system,
+)
+from app.services.project_role_service import remove_project_role_assignments
 from app.services.telegram_notifier import TelegramNotifier
 from app.services.notification_outbox_service import (
     next_notification_generation,
     reconcile_active_incident_notifications,
+)
+from app.services.public_identity_service import (
+    PublicIdentityNotFoundError, get_system_by_public_id, get_user_by_public_id,
 )
 from app.core.enums import MonitoringRange
 
@@ -69,12 +79,12 @@ RISK_DEFAULTS = {
 
 
 class AquaponicsSystemLifecycleRead(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     location: str | None
     description: str | None
-    owner_user_id: int
+    owner_user_id: UUID
     status: str
 
 
@@ -91,7 +101,7 @@ class PublicMonitoringSettingsRead(BaseModel):
 
 class AlertDeliveryHistoryItem(BaseModel):
     id: int
-    system_id: int
+    system_id: UUID
     created_at: datetime
     incident_id: int | None
     alert_id: int | None
@@ -119,6 +129,31 @@ class RoleRead(BaseModel):
     enabled: bool
 
 
+class UserAquaponicsSystemRead(BaseModel):
+    id: UUID
+    code: str
+    name: str
+    owner_user_id: UUID
+    location: str | None
+    status: str
+    role: str
+    relationship: str
+
+
+class UserAquaponicsSystemCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    name: str = Field(min_length=2, max_length=255)
+
+
+class AquaponicsSystemOwnerUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    user_id: UUID
+
+
+def _creation_error(exc: AquaponicsSystemCreationError) -> HTTPException:
+    return HTTPException(exc.status_code, {"code": exc.code, "detail": exc.message})
+
+
 class ManagedUserCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     username: str = Field(min_length=3, max_length=100, pattern=r"^[A-Za-z0-9._-]+$")
@@ -142,7 +177,7 @@ class ManagedUserUpdate(BaseModel):
 
 
 class ManagedUserRead(BaseModel):
-    id: int
+    id: UUID
     username: str
     full_name: str
     email: str
@@ -175,7 +210,7 @@ class AccountLifecycleRequest(BaseModel):
 
 def _managed_user(row: User) -> ManagedUserRead:
     return ManagedUserRead(
-        id=row.id,
+        id=row.public_id,
         username=row.username,
         full_name=row.full_name,
         email=row.email,
@@ -194,8 +229,8 @@ def _managed_user(row: User) -> ManagedUserRead:
     )
 
 
-async def _managed_user_row(db: AsyncSession, user_id: int, *, include_deleted: bool = True) -> User:
-    query = select(User).options(selectinload(User.role)).where(User.id == user_id)
+async def _managed_user_row(db: AsyncSession, user_id: UUID, *, include_deleted: bool = True) -> User:
+    query = select(User).options(selectinload(User.role)).where(User.public_id == user_id)
     if not include_deleted:
         query = query.where(User.is_deleted.is_(False))
     row = await db.scalar(query)
@@ -204,9 +239,23 @@ async def _managed_user_row(db: AsyncSession, user_id: int, *, include_deleted: 
     return row
 
 
+async def _system_row(db: AsyncSession, system_id: UUID, actor: User, *, manage: bool = False) -> Project:
+    try:
+        system = await get_system_by_public_id(db, system_id)
+    except PublicIdentityNotFoundError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    return await require_project_access(db, system.id, actor, manage=manage)
+
+
+def _lifecycle_read(system: Project) -> AquaponicsSystemLifecycleRead:
+    return AquaponicsSystemLifecycleRead(id=system.public_id, code=system.code, name=system.name,
+        location=system.location, description=system.description, owner_user_id=system.owner.public_id,
+        status=system.status.value)
+
+
 @router.post("/aquaponics-systems/{system_id}/lifecycle/disable", response_model=AquaponicsSystemLifecycleRead, tags=["Aquaponics Systems"])
 async def disable_system(
-    system_id: int,
+    system_id: UUID,
     payload: AquaponicsSystemLifecycleRequest,
     db: AsyncSession = Depends(get_db),
     actor: User = Depends(require_permission("aquaponics_systems.manage_all")),
@@ -214,16 +263,22 @@ async def disable_system(
     reason = (payload.reason or "").strip()
     if len(reason) < 3:
         raise HTTPException(422, "Cần nhập lý do ít nhất 3 ký tự")
-    return await disable_project(db, project_id=system_id, reason=reason, actor=actor)
+    system = await _system_row(db, system_id, actor, manage=True)
+    result = await disable_project(db, project_id=system.id, reason=reason, actor=actor)
+    await db.refresh(result, attribute_names=["owner"])
+    return _lifecycle_read(result)
 
 
 @router.post("/aquaponics-systems/{system_id}/lifecycle/activate", response_model=AquaponicsSystemLifecycleRead, tags=["Aquaponics Systems"])
 async def activate_system(
-    system_id: int,
+    system_id: UUID,
     db: AsyncSession = Depends(get_db),
     actor: User = Depends(require_permission("aquaponics_systems.manage_all")),
 ):
-    return await activate_project(db, project_id=system_id, actor=actor)
+    system = await _system_row(db, system_id, actor, manage=True)
+    result = await activate_project(db, project_id=system.id, actor=actor)
+    await db.refresh(result, attribute_names=["owner"])
+    return _lifecycle_read(result)
 
 
 @router.get("/roles", response_model=list[RoleRead], tags=["Roles"])
@@ -233,6 +288,67 @@ async def list_roles(
 ) -> list[RoleRead]:
     rows = (await db.scalars(select(Role).where(Role.enabled.is_(True)).order_by(Role.name))).all()
     return [RoleRead(id=r.id, code=r.code, name=r.name, description=r.description, is_system=r.is_system, enabled=r.enabled) for r in rows]
+
+
+@router.get("/users/{user_id}/aquaponics-systems", response_model=list[UserAquaponicsSystemRead], tags=["Users"])
+async def list_user_aquaponics_systems(
+    user_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(require_permission("users.read")),
+) -> list[UserAquaponicsSystemRead]:
+    user = await _managed_user_row(db, user_id)
+    owned = (await db.scalars(select(Project).options(selectinload(Project.owner)).where(
+        Project.owner_user_id == user.id, Project.is_deleted.is_(False)
+    ).order_by(Project.name))).all()
+    return [UserAquaponicsSystemRead(id=row.public_id, code=row.code, name=row.name,
+        owner_user_id=row.owner.public_id, location=row.location,
+        status=row.status.value, role="OWNER", relationship="OWNER") for row in owned]
+
+
+@router.post("/users/{user_id}/aquaponics-systems", response_model=UserAquaponicsSystemRead, status_code=201, tags=["Users"])
+async def create_user_aquaponics_system(
+    user_id: UUID,
+    payload: UserAquaponicsSystemCreate,
+    db: AsyncSession = Depends(get_db),
+    actor: User = Depends(require_permission("aquaponics_systems.manage_all")),
+) -> UserAquaponicsSystemRead:
+    try:
+        owner = await _managed_user_row(db, user_id, include_deleted=False)
+        system = await create_aquaponics_system(
+            db, name=payload.name, owner_user_id=owner.id, actor_id=actor.id
+        )
+    except AquaponicsSystemCreationError as exc:
+        raise _creation_error(exc) from exc
+    return UserAquaponicsSystemRead(id=system.public_id, code=system.code, name=system.name,
+        owner_user_id=owner.public_id, location=system.location,
+        status=system.status.value, role="OWNER", relationship="OWNER")
+
+
+@router.put("/aquaponics-systems/{system_id}/owner", response_model=AquaponicsSystemLifecycleRead, tags=["Aquaponics Systems"])
+async def transfer_aquaponics_system_owner(
+    system_id: UUID,
+    payload: AquaponicsSystemOwnerUpdate,
+    db: AsyncSession = Depends(get_db),
+    actor: User = Depends(require_permission("aquaponics_systems.manage_all")),
+) -> AquaponicsSystemLifecycleRead:
+    system = await _system_row(db, system_id, actor, manage=True)
+    target = await _managed_user_row(db, payload.user_id, include_deleted=False)
+    if target.status != UserStatus.ACTIVE:
+        raise HTTPException(422, "Tài khoản nhận quyền sở hữu phải đang hoạt động")
+    old_owner_id = system.owner_user_id
+    system.owner_user_id = target.id
+    membership = await db.scalar(select(ProjectMember).where(
+        ProjectMember.project_id == system.id, ProjectMember.user_id == target.id
+    ))
+    if membership is not None:
+        await remove_project_role_assignments(db, user_id=target.id, system_id=system.id)
+        await db.delete(membership)
+    await write_audit(db, user_id=actor.id, project_id=system.id,
+        action="TRANSFER_AQUAPONICS_SYSTEM_OWNER", entity_type="AQUAPONICS_SYSTEM", entity_id=system.id,
+        old_data={"owner_user_id": old_owner_id}, new_data={"owner_user_id": target.id})
+    await db.commit()
+    await db.refresh(system, attribute_names=["owner"])
+    return _lifecycle_read(system)
 
 
 @router.post("/users", response_model=ManagedUserRead, status_code=201, tags=["Users"])
@@ -263,12 +379,12 @@ async def create_user(
     await db.flush()
     await write_audit(db, user_id=actor.id, action="CREATE_USER", entity_type="USER", entity_id=row.id, new_data={"role_id": row.role_id})
     await db.commit()
-    return _managed_user(await _managed_user_row(db, row.id))
+    return _managed_user(await _managed_user_row(db, row.public_id))
 
 
 @router.patch("/users/{user_id}", response_model=ManagedUserRead, tags=["Users"])
 async def update_user(
-    user_id: int,
+    user_id: UUID,
     payload: ManagedUserUpdate,
     db: AsyncSession = Depends(get_db),
     actor: User = Depends(require_permission("users.update")),
@@ -282,12 +398,12 @@ async def update_user(
         setattr(row, key, str(value).strip().lower() if key == "email" and value is not None else value)
     await write_audit(db, user_id=actor.id, action="UPDATE_USER", entity_type="USER", entity_id=row.id, old_data=old, new_data=values)
     await db.commit()
-    return _managed_user(await _managed_user_row(db, row.id))
+    return _managed_user(await _managed_user_row(db, row.public_id))
 
 
 @router.post("/users/{user_id}/password", response_model=MessageResponse, tags=["Users"])
 async def set_user_password(
-    user_id: int,
+    user_id: UUID,
     payload: ManagedPasswordUpdate,
     db: AsyncSession = Depends(get_db),
     actor: User = Depends(require_permission("users.set_password")),
@@ -329,7 +445,7 @@ async def _set_lifecycle(db: AsyncSession, row: User, actor: User, target: UserS
 
 def lifecycle_route(path: str, permission: str, target: UserStatus, action: str, message: str):
     async def endpoint(
-        user_id: int,
+        user_id: UUID,
         payload: AccountLifecycleRequest | None = Body(default=None),
         db: AsyncSession = Depends(get_db),
         actor: User = Depends(require_permission(permission)),
@@ -352,7 +468,7 @@ lifecycle_route("/users/{user_id}/soft-delete", "users.delete", UserStatus.SOFT_
 
 @router.post("/users/{user_id}/force-logout", response_model=MessageResponse, tags=["Users"])
 async def force_logout_user(
-    user_id: int,
+    user_id: UUID,
     db: AsyncSession = Depends(get_db),
     actor: User = Depends(require_permission("users.force_logout")),
 ) -> MessageResponse:
@@ -418,14 +534,14 @@ async def _delivery_settings(db: AsyncSession, system_id: int) -> NotificationSe
 
 
 @router.get("/aquaponics-systems/{system_id}/alert-delivery/settings", response_model=NotificationSettingsRead, tags=["Alert Delivery"])
-async def get_delivery_settings(system_id: int, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.settings.read"))) -> NotificationSettingsRead:
-    await require_project_access(db, system_id, actor)
+async def get_delivery_settings(system_id: UUID, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.settings.read"))) -> NotificationSettingsRead:
+    system_id = (await _system_row(db, system_id, actor)).id
     return await _delivery_settings(db, system_id)
 
 
 @router.put("/aquaponics-systems/{system_id}/alert-delivery/settings", response_model=NotificationSettingsRead, tags=["Alert Delivery"])
-async def update_delivery_settings(system_id: int, payload: NotificationSettingsUpdate, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.settings.update"))) -> NotificationSettingsRead:
-    await require_project_access(db, system_id, actor, manage=True)
+async def update_delivery_settings(system_id: UUID, payload: NotificationSettingsUpdate, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.settings.update"))) -> NotificationSettingsRead:
+    system_id = (await _system_row(db, system_id, actor, manage=True)).id
     item = await db.scalar(select(ProjectNotificationSettings).where(ProjectNotificationSettings.project_id == system_id))
     if item is None:
         item = ProjectNotificationSettings(project_id=system_id)
@@ -471,8 +587,8 @@ async def _recipient(db: AsyncSession, system_id: int, recipient_id: int) -> Pro
 
 
 @router.post("/aquaponics-systems/{system_id}/alert-delivery/recipients", response_model=NotificationRecipientRead, status_code=201, tags=["Alert Delivery"])
-async def add_recipient(system_id: int, payload: NotificationRecipientCreate, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.recipients.create"))) -> ProjectNotificationRecipient:
-    await require_project_access(db, system_id, actor, manage=True)
+async def add_recipient(system_id: UUID, payload: NotificationRecipientCreate, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.recipients.create"))) -> ProjectNotificationRecipient:
+    system_id = (await _system_row(db, system_id, actor, manage=True)).id
     row = ProjectNotificationRecipient(project_id=system_id, **payload.model_dump()); db.add(row)
     try:
         await db.flush()
@@ -490,8 +606,8 @@ async def add_recipient(system_id: int, payload: NotificationRecipientCreate, db
 
 
 @router.patch("/aquaponics-systems/{system_id}/alert-delivery/recipients/{recipient_id}", response_model=NotificationRecipientRead, tags=["Alert Delivery"])
-async def update_recipient(system_id: int, recipient_id: int, payload: NotificationRecipientUpdate, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.recipients.update"))) -> ProjectNotificationRecipient:
-    await require_project_access(db, system_id, actor, manage=True); row = await _recipient(db, system_id, recipient_id)
+async def update_recipient(system_id: UUID, recipient_id: int, payload: NotificationRecipientUpdate, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.recipients.update"))) -> ProjectNotificationRecipient:
+    system_id = (await _system_row(db, system_id, actor, manage=True)).id; row = await _recipient(db, system_id, recipient_id)
     before_enabled, before_chat_id = row.enabled, row.telegram_chat_id
     for field, value in payload.model_dump(exclude_unset=True).items(): setattr(row, field, value)
     try:
@@ -510,21 +626,21 @@ async def update_recipient(system_id: int, recipient_id: int, payload: Notificat
 
 
 @router.get("/aquaponics-systems/{system_id}/alert-delivery/recipients", response_model=list[NotificationRecipientRead], tags=["Alert Delivery"])
-async def list_recipients(system_id: int, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.recipients.read"))) -> list[ProjectNotificationRecipient]:
-    await require_project_access(db, system_id, actor)
+async def list_recipients(system_id: UUID, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.recipients.read"))) -> list[ProjectNotificationRecipient]:
+    system_id = (await _system_row(db, system_id, actor)).id
     return list((await db.scalars(select(ProjectNotificationRecipient).where(
         ProjectNotificationRecipient.project_id == system_id,
     ).order_by(ProjectNotificationRecipient.created_at))).all())
 
 
 @router.delete("/aquaponics-systems/{system_id}/alert-delivery/recipients/{recipient_id}", status_code=204, tags=["Alert Delivery"])
-async def delete_recipient(system_id: int, recipient_id: int, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.recipients.delete"))) -> Response:
-    await require_project_access(db, system_id, actor, manage=True); await db.delete(await _recipient(db, system_id, recipient_id)); await db.commit(); return Response(status_code=204)
+async def delete_recipient(system_id: UUID, recipient_id: int, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.recipients.delete"))) -> Response:
+    system_id = (await _system_row(db, system_id, actor, manage=True)).id; await db.delete(await _recipient(db, system_id, recipient_id)); await db.commit(); return Response(status_code=204)
 
 
 @router.post("/aquaponics-systems/{system_id}/alert-delivery/recipients/{recipient_id}/test", response_model=TestMessageResult, tags=["Alert Delivery"])
-async def test_recipient(system_id: int, recipient_id: int, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.recipients.test"))) -> TestMessageResult:
-    system = await require_project_access(db, system_id, actor, manage=True); row = await _recipient(db, system_id, recipient_id)
+async def test_recipient(system_id: UUID, recipient_id: int, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.recipients.test"))) -> TestMessageResult:
+    system = await _system_row(db, system_id, actor, manage=True); row = await _recipient(db, system.id, recipient_id)
     if not row.enabled: raise HTTPException(409, "Người nhận đang tắt")
     result = await TelegramNotifier().send_message(row.telegram_chat_id, f"✅ Aquaponics Platform\n\nKết nối Telegram thành công.\n\nHệ thống: {system.name}\nNgười nhận: {row.name}")
     if not result.sent: raise HTTPException(503, "Không thể gửi tin nhắn thử qua Telegram")
@@ -532,19 +648,19 @@ async def test_recipient(system_id: int, recipient_id: int, db: AsyncSession = D
 
 
 @router.get("/aquaponics-systems/{system_id}/alert-delivery/history", response_model=list[AlertDeliveryHistoryItem], tags=["Alert Delivery"])
-async def delivery_history(system_id: int, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.history.read"))) -> list[AlertDeliveryHistoryItem]:
-    await require_project_access(db, system_id, actor)
+async def delivery_history(system_id: UUID, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("notifications.history.read"))) -> list[AlertDeliveryHistoryItem]:
+    system = await _system_row(db, system_id, actor); internal_system_id = system.id
     rows = (await db.execute(
         select(NotificationDelivery, NotificationOutbox, OperationalIncident, ProjectNotificationRecipient)
         .join(NotificationOutbox, NotificationOutbox.id == NotificationDelivery.outbox_id)
         .outerjoin(OperationalIncident, OperationalIncident.id == NotificationDelivery.incident_id)
         .outerjoin(ProjectNotificationRecipient, ProjectNotificationRecipient.id == NotificationDelivery.recipient_id)
-        .where(NotificationOutbox.project_id == system_id)
+        .where(NotificationOutbox.project_id == internal_system_id)
         .order_by(NotificationDelivery.created_at.desc())
         .limit(500)
     )).all()
     return [AlertDeliveryHistoryItem(
-        id=delivery.id, system_id=system_id, created_at=delivery.created_at,
+        id=delivery.id, system_id=system.public_id, created_at=delivery.created_at,
         incident_id=incident.id if incident else None, alert_id=incident.id if incident else None,
         event_type=outbox.event_type,
         risk=incident.business_risk_level_snapshot if incident else outbox.payload_snapshot.get("business_risk_level"),
@@ -559,18 +675,18 @@ async def delivery_history(system_id: int, db: AsyncSession = Depends(get_db), a
 
 
 @router.get("/aquaponics-systems/{system_id}/public-monitoring/settings", response_model=PublicMonitoringSettingsRead, tags=["Public Monitoring"])
-async def get_public_settings(system_id: int, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("aquaponics_systems.read"))) -> PublicMonitoringSettingsRead:
-    await require_project_access(db, system_id, actor)
-    row = await db.scalar(select(ProjectPublicSettings).where(ProjectPublicSettings.project_id == system_id))
+async def get_public_settings(system_id: UUID, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("aquaponics_systems.read"))) -> PublicMonitoringSettingsRead:
+    system = await _system_row(db, system_id, actor)
+    row = await db.scalar(select(ProjectPublicSettings).where(ProjectPublicSettings.project_id == system.id))
     return PublicMonitoringSettingsRead(enabled=row.enabled if row else False, remote_monitoring_available=True, public_slug=row.public_slug if row else None)
 
 
 @router.put("/aquaponics-systems/{system_id}/public-monitoring/settings", response_model=PublicMonitoringSettingsRead, tags=["Public Monitoring"])
-async def put_public_settings(system_id: int, payload: PublicSettingsUpdate, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("aquaponics_systems.update"))) -> PublicMonitoringSettingsRead:
-    await require_project_access(db, system_id, actor, manage=True)
-    row = await db.scalar(select(ProjectPublicSettings).where(ProjectPublicSettings.project_id == system_id))
+async def put_public_settings(system_id: UUID, payload: PublicSettingsUpdate, db: AsyncSession = Depends(get_db), actor: User = Depends(require_permission("aquaponics_systems.update"))) -> PublicMonitoringSettingsRead:
+    system = await _system_row(db, system_id, actor, manage=True)
+    row = await db.scalar(select(ProjectPublicSettings).where(ProjectPublicSettings.project_id == system.id))
     if row is None:
-        row = ProjectPublicSettings(project_id=system_id, public_slug=secrets.token_urlsafe(24), enabled=payload.enabled); db.add(row)
+        row = ProjectPublicSettings(project_id=system.id, public_slug=secrets.token_urlsafe(24), enabled=payload.enabled); db.add(row)
     else: row.enabled = payload.enabled
     await db.commit(); return PublicMonitoringSettingsRead(enabled=row.enabled, remote_monitoring_available=True, public_slug=row.public_slug)
 

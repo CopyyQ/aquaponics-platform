@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
+from uuid import UUID, uuid4
 
 from sqlalchemy import BigInteger, DateTime, Enum, ForeignKey, Identity, String, Text
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, SoftDeleteMixin, TimestampMixin
@@ -12,6 +14,7 @@ from app.core.enums import UserRole, UserStatus
 class User(Base, TimestampMixin, SoftDeleteMixin):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    public_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), default=uuid4, unique=True, index=True, nullable=False)
     username: Mapped[str] = mapped_column(String(100), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255))
     full_name: Mapped[str] = mapped_column(String(255))

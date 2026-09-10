@@ -10,9 +10,9 @@ type View = "devices" | "monitoring" | "alerts" | "members" | "activities" | "sc
 const ranges: MonitoringRange[] = ["1h", "6h", "12h", "24h", "30d"]
 
 export function SystemPage() {
-  const systemId = Number(useParams().systemId); const queryClient = useQueryClient(); const { has } = useAuth()
+  const { systemId: routeSystemId } = useParams(); const systemId = routeSystemId ?? ""; const queryClient = useQueryClient(); const { has } = useAuth()
   const [view, setView] = useState<View>("devices"); const [range, setRange] = useState<MonitoringRange>("24h"); const [code, setCode] = useState(""); const [name, setName] = useState("")
-  const system = useQuery({ queryKey: queryKeys.system(systemId), queryFn: () => getSystem(systemId), enabled: systemId > 0 })
+  const system = useQuery({ queryKey: queryKeys.system(systemId), queryFn: () => getSystem(systemId), enabled: Boolean(systemId) })
   const devices = useQuery({ queryKey: queryKeys.devices(systemId), queryFn: () => listDevices(systemId), enabled: view === "devices" })
   const latest = useQuery({ queryKey: queryKeys.monitoringLatest(systemId), queryFn: () => getMonitoringLatest(systemId), enabled: view === "monitoring" })
   const series = useQuery({ queryKey: queryKeys.monitoringSeries(systemId, range), queryFn: () => getMonitoringSeries(systemId, range), enabled: view === "monitoring" })
@@ -23,7 +23,7 @@ export function SystemPage() {
   const settings = useQuery({ queryKey: queryKeys.alertSettings(systemId), queryFn: () => getAlertSettings(systemId), enabled: view === "settings" })
   const creation = useMutation({ mutationFn: () => createDevice(systemId, { code: code.trim().toUpperCase(), name: name.trim() }), onSuccess: async () => { setCode(""); setName(""); await queryClient.invalidateQueries({ queryKey: queryKeys.devices(systemId) }) } })
   const alertChange = useMutation({ mutationFn: ({ id, action }: { id: number; action: "acknowledge" | "resolve" }) => action === "acknowledge" ? acknowledgeAlert(systemId, id) : resolveAlert(systemId, id, { resolution_note: "Đã xử lý từ giao diện" }), onSuccess: async () => queryClient.invalidateQueries({ queryKey: queryKeys.alerts(systemId) }) })
-  const memberChange = useMutation({ mutationFn: ({ userId, role }: { userId: number; role: "VIEWER" | "TECHNICIAN" | "OWNER" }) => updateMember(systemId, userId, { role }), onSuccess: async () => queryClient.invalidateQueries({ queryKey: queryKeys.members(systemId) }) })
+  const memberChange = useMutation({ mutationFn: ({ userId, role }: { userId: string; role: "VIEWER" | "TECHNICIAN" | "OWNER" }) => updateMember(systemId, userId, { role }), onSuccess: async () => queryClient.invalidateQueries({ queryKey: queryKeys.members(systemId) }) })
   const saveSettings = useMutation({ mutationFn: (payload: { enabled?: boolean; in_app_enabled?: boolean; telegram_enabled?: boolean }) => updateAlertSettings(systemId, payload), onSuccess: async () => queryClient.invalidateQueries({ queryKey: queryKeys.alertSettings(systemId) }) })
   const downloadMqtt = async () => { const payload = await exportMqttConfig(systemId); const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `${system.data?.code || "aquaponics"}-mqtt-config.json`; anchor.click(); URL.revokeObjectURL(url) }
   const submit = (event: FormEvent) => { event.preventDefault(); creation.mutate() }

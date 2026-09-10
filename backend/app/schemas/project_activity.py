@@ -1,16 +1,17 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel
 
 
 class AquaponicsSystemActivityActor(BaseModel):
-    id: int
+    id: UUID
     name: str
 
 
 class AquaponicsSystemActivityEntity(BaseModel):
     type: str
-    id: int | None
+    id: UUID | int | None
     name: str
 
 

@@ -9,7 +9,7 @@ import { Wrench } from "lucide-react"
 import { errorMessage } from "@/api/client"
 
 export function DevicesPage() {
-  const systemId = Number(useParams().systemId)
+  const systemId = useParams().systemId ?? ""
   const devices = useQuery({ queryKey: queryKeys.devices(systemId), queryFn: () => listDevices(systemId) })
   if (devices.isLoading) return <Skeleton className="h-96" />
   if (devices.isError) return <EmptyState icon={Wrench} title="Không thể tải thiết bị" description={errorMessage(devices.error)} />

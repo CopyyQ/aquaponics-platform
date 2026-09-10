@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import (
     HTTPAuthorizationCredentials,
@@ -11,6 +13,7 @@ from app.core.enums import UserStatus
 from app.core.security import decode_access_token
 from app.models.user import User
 from app.services.permission_service import has_permission
+from app.services.public_identity_service import PublicIdentityNotFoundError, get_system_by_public_id
 
 
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -157,7 +160,13 @@ def require_permission(permission_code: str):
         db: AsyncSession = Depends(get_db),
     ) -> User:
         raw_system_id = request.path_params.get("system_id")
-        system_id = int(raw_system_id) if raw_system_id is not None else None
+        system_id = None
+        if raw_system_id is not None:
+            try:
+                system = await get_system_by_public_id(db, UUID(str(raw_system_id)))
+            except (ValueError, PublicIdentityNotFoundError) as exc:
+                raise HTTPException(status_code=404, detail="Aquaponics System không tồn tại") from exc
+            system_id = system.id
         if not await has_permission(db, user, permission_code, system_id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

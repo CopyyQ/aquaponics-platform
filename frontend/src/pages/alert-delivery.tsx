@@ -52,7 +52,7 @@ function AlertDeliveryManager({
   showRecipients: boolean
   showHistory: boolean
 }) {
-  const systemId = Number(useParams().systemId)
+  const systemId = useParams().systemId ?? ""
   const client = useQueryClient()
   const { can } = useAuth()
   const [editing, setEditing] = useState<AlertDeliveryRecipient | "new" | null>(null)
@@ -60,12 +60,12 @@ function AlertDeliveryManager({
   const settings = useQuery({
     queryKey: queryKeys.deliverySettings(systemId),
     queryFn: () => getAlertDeliverySettings(systemId),
-    enabled: systemId > 0 && can("notifications.settings.read"),
+    enabled: Boolean(systemId) && can("notifications.settings.read"),
   })
   const history = useQuery({
     queryKey: queryKeys.deliveryHistory(systemId),
     queryFn: () => getAlertDeliveryHistory(systemId),
-    enabled: systemId > 0 && showHistory && can("notifications.history.read"),
+    enabled: Boolean(systemId) && showHistory && can("notifications.history.read"),
   })
   const save = useMutation({
     mutationFn: (next: AlertDeliverySettings) => updateAlertDeliverySettings(systemId, next),
@@ -128,7 +128,7 @@ function Setting({ label, checked, disabled, onChange }: { label: string; checke
   return <div className="flex items-center justify-between gap-4"><p className="font-medium">{label}</p><Switch checked={checked} disabled={disabled} onCheckedChange={onChange} aria-label={label} /></div>
 }
 
-function RecipientRow({ systemId, recipient, refresh, onEdit }: { systemId: number; recipient: AlertDeliveryRecipient; refresh: () => Promise<void>; onEdit: () => void }) {
+function RecipientRow({ systemId, recipient, refresh, onEdit }: { systemId: string; recipient: AlertDeliveryRecipient; refresh: () => Promise<void>; onEdit: () => void }) {
   const { can } = useAuth()
   const update = useMutation({ mutationFn: (enabled: boolean) => updateAlertDeliveryRecipient(systemId, recipient.id, { enabled }), onSuccess: refresh, onError: (error) => toast.error(errorMessage(error)) })
   const remove = useMutation({ mutationFn: () => deleteAlertDeliveryRecipient(systemId, recipient.id), onSuccess: refresh, onError: (error) => toast.error(errorMessage(error)) })
@@ -136,7 +136,7 @@ function RecipientRow({ systemId, recipient, refresh, onEdit }: { systemId: numb
   return <TableRow><TableCell className="font-medium">{recipient.name}</TableCell><TableCell className="font-mono">{recipient.telegram_chat_id}</TableCell><TableCell><Switch checked={recipient.enabled} disabled={!can("notifications.recipients.update") || update.isPending} onCheckedChange={(enabled) => update.mutate(enabled)} aria-label={`${recipient.enabled ? "Tắt" : "Bật"} ${recipient.name}`} /></TableCell><TableCell><div className="flex justify-end gap-2">{can("notifications.recipients.test") ? <Button size="sm" variant="outline" onClick={() => test.mutate()} disabled={!recipient.enabled || test.isPending}><Send />Gửi thử</Button> : null}{can("notifications.recipients.update") ? <Button size="icon" variant="outline" onClick={onEdit} aria-label={`Sửa ${recipient.name}`}><Pencil /></Button> : null}{can("notifications.recipients.delete") ? <Button size="icon" variant="destructive" onClick={() => { if (window.confirm(`Xoá ${recipient.name}?`)) remove.mutate() }} aria-label={`Xoá ${recipient.name}`}><Trash2 /></Button> : null}</div></TableCell></TableRow>
 }
 
-function RecipientDialog({ systemId, value, onClose, onSaved }: { systemId: number; value: AlertDeliveryRecipient | "new" | null; onClose: () => void; onSaved: () => Promise<void> }) {
+function RecipientDialog({ systemId, value, onClose, onSaved }: { systemId: string; value: AlertDeliveryRecipient | "new" | null; onClose: () => void; onSaved: () => Promise<void> }) {
   const source = value && value !== "new" ? value : null
   const [name, setName] = useState(source?.name ?? "")
   const [chatId, setChatId] = useState(source?.telegram_chat_id ?? "")

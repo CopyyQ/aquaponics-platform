@@ -158,11 +158,11 @@ def _default_layout(devices: list[Device]) -> ScadaLayout:
         controller_index += 1
         symbols.append(
             ScadaSymbol(
-                id=f"device-{device.id}",
+                id=f"device-{device.public_id}",
                 type=symbol_type,
                 label=device.name,
                 position=position,
-                binding=ScadaBinding(entity_type="DEVICE", entity_id=device.id),
+                binding=ScadaBinding(entity_type="DEVICE", entity_id=device.public_id),
             )
         )
         for actuator in device.actuators:
@@ -171,11 +171,11 @@ def _default_layout(devices: list[Device]) -> ScadaLayout:
             model_code = actuator.actuator_model.code if actuator.actuator_model else None
             symbols.append(
                 ScadaSymbol(
-                    id=f"actuator-{actuator.id}",
+                    id=f"actuator-{actuator.public_id}",
                     type=_actuator_symbol_type(model_code),
                     label=actuator.name,
                     position=(-5.5 + actuator_index * 3.1, 0, -0.2),
-                    binding=ScadaBinding(entity_type="ACTUATOR", entity_id=actuator.id),
+                    binding=ScadaBinding(entity_type="ACTUATOR", entity_id=actuator.public_id),
                 )
             )
             actuator_index += 1
@@ -192,7 +192,7 @@ def _sensor_runtime(
 ) -> ScadaRuntimeSensor:
     if reading is None:
         return ScadaRuntimeSensor(
-            id=sensor.id,
+            id=sensor.public_id,
             value=None,
             recorded_at=None,
             received_at=None,
@@ -208,7 +208,7 @@ def _sensor_runtime(
     # Threshold state comes from threshold_alert_configs/OperationalIncident.
     quality, reason, _, _ = classify_measurement_quality(sensor.sensor_model.code, reading.value)
     return ScadaRuntimeSensor(
-        id=sensor.id,
+        id=sensor.public_id,
         value=reading.value,
         recorded_at=reading.recorded_at,
         received_at=reading.received_at,
@@ -218,8 +218,8 @@ def _sensor_runtime(
     )
 
 
-def _layout_bindings(layout: ScadaLayout) -> dict[str, set[int]]:
-    result: dict[str, set[int]] = defaultdict(set)
+def _layout_bindings(layout: ScadaLayout) -> dict[str, set[object]]:
+    result: dict[str, set[object]] = defaultdict(set)
     for symbol in layout.symbols:
         if symbol.binding:
             result[symbol.binding.entity_type].add(symbol.binding.entity_id)
@@ -228,9 +228,9 @@ def _layout_bindings(layout: ScadaLayout) -> dict[str, set[int]]:
 
 def _validate_layout(layout: ScadaLayout, devices: list[Device]) -> list[str]:
     valid = {
-        "DEVICE": {device.id for device in devices},
-        "SENSOR": {sensor.id for device in devices for sensor in device.sensors},
-        "ACTUATOR": {actuator.id for device in devices for actuator in device.actuators},
+        "DEVICE": {device.public_id for device in devices},
+        "SENSOR": {sensor.public_id for device in devices for sensor in device.sensors},
+        "ACTUATOR": {actuator.public_id for device in devices for actuator in device.actuators},
     }
     symbol_ids = [symbol.id for symbol in layout.symbols]
     if len(symbol_ids) != len(set(symbol_ids)):
@@ -255,12 +255,32 @@ def _validate_layout(layout: ScadaLayout, devices: list[Device]) -> list[str]:
     for device in devices:
         if not _is_live_device(device):
             continue
-        if device.id not in bindings["DEVICE"]:
+        if device.public_id not in bindings["DEVICE"]:
             warnings.append(f"Device {device.code} chưa được bố trí.")
         for actuator in device.actuators:
-            if _is_live_actuator(actuator, device) and actuator.id not in bindings["ACTUATOR"]:
+            if _is_live_actuator(actuator, device) and actuator.public_id not in bindings["ACTUATOR"]:
                 warnings.append(f"Actuator {actuator.code} chưa được bố trí.")
     return warnings
+
+
+def _public_layout(raw_layout: object, devices: list[Device]) -> ScadaLayout:
+    """Read both historical BIGINT bindings and current public UUID bindings."""
+    data = dict(raw_layout) if isinstance(raw_layout, dict) else {}
+    internal_to_public = {
+        "DEVICE": {item.id: item.public_id for item in devices},
+        "SENSOR": {item.id: item.public_id for device in devices for item in device.sensors},
+        "ACTUATOR": {item.id: item.public_id for device in devices for item in device.actuators},
+    }
+    symbols = []
+    for raw_symbol in data.get("symbols", []):
+        symbol = dict(raw_symbol)
+        binding = symbol.get("binding")
+        if isinstance(binding, dict) and isinstance(binding.get("entity_id"), int):
+            public_id = internal_to_public.get(binding.get("entity_type"), {}).get(binding["entity_id"])
+            if public_id is not None:
+                symbol["binding"] = {**binding, "entity_id": public_id}
+        symbols.append(symbol)
+    return ScadaLayout.model_validate({**data, "symbols": symbols})
 
 
 async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeResponse:
@@ -272,7 +292,7 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
     alerts = await open_project_alerts(db, project.id)
     dashboard = await latest_scada_dashboard(db, project.id, "PUBLISHED")
     layout = (
-        ScadaLayout.model_validate(dashboard.layout)
+        _public_layout(dashboard.layout, devices)
         if dashboard is not None
         else _default_layout(devices)
     )
@@ -319,7 +339,7 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
     for device in devices:
         template = device.device_template
         item = ScadaInventoryDevice(
-            id=device.id,
+            id=device.public_id,
             code=device.code,
             name=device.name,
             device_template_id=device.device_template_id,
@@ -331,7 +351,7 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
         inventory_devices.append(item)
         runtime_devices.append(
             ScadaRuntimeDevice(
-                id=device.id,
+                id=device.public_id,
                 connectivity=item.connectivity,
                 last_seen_at=device.last_seen_at,
             )
@@ -347,7 +367,7 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
                     current_state=f"{len(device.sensors)} phép đo bị ảnh hưởng.",
                     timestamp=device.disabled_at,
                     suggested_action="Kiểm tra lý do vô hiệu hóa trong trang thiết bị.",
-                    device_id=device.id,
+                    device_id=device.public_id,
                 )
             )
         elif item.connectivity == "OFFLINE":
@@ -363,7 +383,7 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
                     current_state=f"{len(affected_sensors)} phép đo gián đoạn, {len(affected_actuators)} cơ cấu không thể điều khiển.",
                     timestamp=device.last_seen_at,
                     suggested_action="Kiểm tra nguồn, mạng LAN và kết nối MQTT của thiết bị.",
-                    device_id=device.id,
+                    device_id=device.public_id,
                 )
             )
 
@@ -371,12 +391,12 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
             enabled = _is_live_sensor(sensor, device)
             inventory_sensors.append(
                 ScadaInventorySensor(
-                    id=sensor.id,
+                    id=sensor.public_id,
                     code=sensor.code,
                     name=sensor.name,
                     sensor_model_code=sensor.sensor_model.code,
                     unit=sensor.sensor_model.unit,
-                    device_id=device.id,
+                    device_id=device.public_id,
                     enabled=enabled,
                 )
             )
@@ -403,8 +423,8 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
                         ),
                         timestamp=alert.started_at,
                         suggested_action="Kiểm tra cảm biến, hiệu chuẩn và ngưỡng cảnh báo.",
-                        device_id=device.id,
-                        sensor_id=sensor.id,
+                        device_id=device.public_id,
+                        sensor_id=sensor.public_id,
                     )
                 )
             elif sensor_state.quality in ("OUT_OF_RANGE", "INVALID"):
@@ -418,8 +438,8 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
                         current_state=f"{sensor_state.value} {sensor.sensor_model.unit}",
                         timestamp=sensor_state.received_at,
                         suggested_action="Kiểm tra cảm biến, hiệu chuẩn và ngưỡng cấu hình.",
-                        device_id=device.id,
-                        sensor_id=sensor.id,
+                        device_id=device.public_id,
+                        sensor_id=sensor.public_id,
                     )
                 )
 
@@ -428,11 +448,11 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
             model_code = actuator.actuator_model.code if actuator.actuator_model else None
             inventory_actuators.append(
                 ScadaInventoryActuator(
-                    id=actuator.id,
+                    id=actuator.public_id,
                     code=actuator.code,
                     name=actuator.name,
                     actuator_model_code=model_code,
-                    device_id=device.id,
+                    device_id=device.public_id,
                     enabled=enabled,
                 )
             )
@@ -447,7 +467,7 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
             command_status = command.status if command else None
             runtime_actuators.append(
                 ScadaRuntimeActuator(
-                    id=actuator.id,
+                    id=actuator.public_id,
                     desired_state=actuator.desired_state,
                     reported_state=actuator.reported_state,
                     synchronization=sync,
@@ -470,8 +490,8 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
                         current_state=f"Mong muốn: {actuator.desired_state}; thực tế: {actuator.reported_state}; ACK: {'đã nhận' if command and command.acknowledged_at else 'chưa nhận'}.",
                         timestamp=command.requested_at if command else actuator.last_command_at,
                         suggested_action="Kiểm tra kết nối Device và cơ cấu chấp hành trước khi gửi lại lệnh.",
-                        device_id=device.id,
-                        actuator_id=actuator.id,
+                        device_id=device.public_id,
+                        actuator_id=actuator.public_id,
                     )
                 )
             elif sync == "OUT_OF_SYNC":
@@ -485,20 +505,20 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
                         current_state=f"Mong muốn: {actuator.desired_state}; thực tế: {actuator.reported_state}.",
                         timestamp=actuator.last_reported_at,
                         suggested_action="Kiểm tra trạng thái reported và kết nối điều khiển.",
-                        device_id=device.id,
-                        actuator_id=actuator.id,
+                        device_id=device.public_id,
+                        actuator_id=actuator.public_id,
                     )
                 )
 
     bindings = _layout_bindings(layout)
     unplaced: list[ScadaUnplacedEntity] = []
     for device in active_devices:
-        if device.id not in bindings["DEVICE"]:
+        if device.public_id not in bindings["DEVICE"]:
             template = device.device_template
             unplaced.append(
                 ScadaUnplacedEntity(
                     entity_type="DEVICE",
-                    entity_id=device.id,
+                    entity_id=device.public_id,
                     name=device.name,
                     code=device.code,
                     suggested_symbol_type="CONTROLLER_DEVICE",
@@ -506,28 +526,28 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
                 )
             )
         for actuator in device.actuators:
-            if _is_live_actuator(actuator, device) and actuator.id not in bindings["ACTUATOR"]:
+            if _is_live_actuator(actuator, device) and actuator.public_id not in bindings["ACTUATOR"]:
                 unplaced.append(
                     ScadaUnplacedEntity(
                         entity_type="ACTUATOR",
-                        entity_id=actuator.id,
+                        entity_id=actuator.public_id,
                         name=actuator.name,
                         code=actuator.code,
-                        parent_device_id=device.id,
+                        parent_device_id=device.public_id,
                         suggested_symbol_type=_actuator_symbol_type(actuator.actuator_model.code if actuator.actuator_model else None),
                         reason="Actuator active chưa có symbol riêng.",
                     )
                 )
-        if device.id not in bindings["DEVICE"]:
+        if device.public_id not in bindings["DEVICE"]:
             for sensor in device.sensors:
-                if _is_live_sensor(sensor, device) and sensor.id not in bindings["SENSOR"]:
+                if _is_live_sensor(sensor, device) and sensor.public_id not in bindings["SENSOR"]:
                     unplaced.append(
                         ScadaUnplacedEntity(
                             entity_type="SENSOR",
-                            entity_id=sensor.id,
+                            entity_id=sensor.public_id,
                             name=sensor.name,
                             code=sensor.code,
-                            parent_device_id=device.id,
+                            parent_device_id=device.public_id,
                             suggested_symbol_type=_sensor_symbol_type(sensor.sensor_model.code),
                             reason="Sensor chưa có symbol và Device cha chưa được bố trí.",
                         )
@@ -543,17 +563,17 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
         }
     )
     sensor_states = {state.id: state for state in runtime_sensors}
-    active_sensor_states = [sensor_states[sensor.id] for sensor in active_sensors]
+    active_sensor_states = [sensor_states[sensor.public_id] for sensor in active_sensors]
     actuator_states = {state.id: state for state in runtime_actuators}
-    active_actuator_states = [actuator_states[item.id] for item in active_actuators]
+    active_actuator_states = [actuator_states[item.public_id] for item in active_actuators]
     connectivities = [_connectivity(device) for device in active_devices]
     alert_runtime = [
         ScadaRuntimeAlert(
             id=alert.id,
             resource_type=(alert.trigger_snapshot or {}).get("resource_type") or ("ACTUATOR" if alert.actuator_id else "SENSOR"),
-            sensor_id=alert.sensor_id,
-            actuator_id=alert.actuator_id,
-            device_id=alert.device_id,
+            sensor_id=sensor_by_id[alert.sensor_id].public_id if alert.sensor_id is not None else None,
+            actuator_id=next((item.public_id for item in all_actuators if item.id == alert.actuator_id), None),
+            device_id=device_by_id[alert.device_id].public_id if alert.device_id is not None else None,
             severity=alert.technical_severity,
             status=alert.status,
             title=str((alert.trigger_snapshot or {}).get("message") or (alert.trigger_snapshot or {}).get("rule_name") or "Cảnh báo vận hành"),
@@ -591,7 +611,7 @@ async def get_scada_runtime(db: AsyncSession, project: Project) -> ScadaRuntimeR
         unplaced_entities=len(unplaced),
     )
     return ScadaRuntimeResponse(
-        aquaponics_system={"id": project.id, "name": project.name, "code": project.code, "status": project.status},
+        aquaponics_system={"id": project.public_id, "name": project.name, "code": project.code, "status": project.status},
         dashboard=dashboard_info,
         layout=layout,
         inventory=ScadaInventory(
@@ -662,8 +682,8 @@ async def publish_scada_draft(
     draft = await latest_scada_dashboard(db, project.id, "DRAFT")
     if draft is None:
         raise ScadaDraftNotFoundError("Chưa có bản nháp SCADA để xuất bản.")
-    layout = ScadaLayout.model_validate(draft.layout)
     devices = await project_scada_devices(db, project.id)
+    layout = _public_layout(draft.layout, devices)
     warnings = _validate_layout(layout, devices)
     published = ScadaDashboard(
         project_id=project.id,

@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
@@ -21,7 +22,7 @@ class MonitoringLatestValue(BaseModel):
 
 
 class MonitoringSensor(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     unit: str
@@ -41,7 +42,7 @@ class MonitoringLatestCommand(BaseModel):
 
 
 class MonitoringActuator(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     actuator_model: str | None
@@ -56,7 +57,7 @@ class MonitoringActuator(BaseModel):
 
 
 class MonitoringDevice(BaseModel):
-    id: int
+    id: UUID
     code: str
     name: str
     is_enabled: bool
@@ -68,7 +69,7 @@ class MonitoringDevice(BaseModel):
 
 
 class MonitoringLatestRead(BaseModel):
-    aquaponics_system_id: int
+    aquaponics_system_id: UUID
     devices: list[MonitoringDevice]
 
 
@@ -243,14 +244,14 @@ class MonitoringDataGap(BaseModel):
 
 
 class MonitoringSensorSeries(BaseModel):
-    sensor_id: int
+    sensor_id: UUID
     unit: str
     points: list[MonitoringSeriesPoint]
     gaps: list[MonitoringDataGap]
 
 
 class MonitoringSeriesRead(BaseModel):
-    aquaponics_system_id: int
+    aquaponics_system_id: UUID
     range: MonitoringRange
     resolution: str
     series: list[MonitoringSensorSeries]
@@ -298,7 +299,7 @@ class ActuatorHistoryStatistics(BaseModel):
 
 
 class MonitoringActuatorHistory(BaseModel):
-    actuator_id: int
+    actuator_id: UUID
     points: list[ActuatorHistoryPoint]
     gaps: list[ActuatorHistoryGap]
     statistics: ActuatorHistoryStatistics
@@ -312,7 +313,7 @@ class ProjectMonitoringActuatorHistoryResponse(BaseModel):
 
 
 class MonitoringActuatorHistoryRead(BaseModel):
-    aquaponics_system_id: int
-    device_id: int
+    aquaponics_system_id: UUID
+    device_id: UUID
     range: MonitoringRange
     items: list[MonitoringActuatorHistory]

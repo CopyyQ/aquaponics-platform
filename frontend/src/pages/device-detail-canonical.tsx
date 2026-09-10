@@ -15,8 +15,8 @@ import { StatusBadge } from "@/shared/ui/status-badge"
 import { errorMessage } from "@/api/client"
 
 export function DeviceDetailCanonicalPage() {
-  const systemId = Number(useParams().systemId); const deviceId = Number(useParams().deviceId); const { can } = useAuth(); const client = useQueryClient()
-  const device = useQuery({ queryKey: queryKeys.device(systemId, deviceId), queryFn: () => getDevice(systemId, deviceId), enabled: systemId > 0 && deviceId > 0 })
+  const params = useParams(); const systemId = params.systemId ?? ""; const deviceId = params.deviceId ?? ""; const { can } = useAuth(); const client = useQueryClient()
+  const device = useQuery({ queryKey: queryKeys.device(systemId, deviceId), queryFn: () => getDevice(systemId, deviceId), enabled: Boolean(systemId && deviceId) })
   const sensorModels = useQuery({ queryKey: queryKeys.sensorModels, queryFn: listSensorModels, enabled: can("sensors.create") })
   const actuatorModels = useQuery({ queryKey: queryKeys.actuatorModels, queryFn: listActuatorModels, enabled: can("actuators.create") })
   const [sensorOpen, setSensorOpen] = useState(false); const [actuatorOpen, setActuatorOpen] = useState(false)

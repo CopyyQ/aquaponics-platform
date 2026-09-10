@@ -14,7 +14,6 @@ import { Skeleton } from "@/shared/ui/skeleton"
 import { StatusBadge } from "@/shared/ui/status-badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs"
 import { UserRound } from "lucide-react"
-import { ProjectFormDialog } from "@/features/manage-projects/components/ProjectFormDialog"
 import { auditActionLabels, auditEntityLabels, formatAuditDetail } from "@/entities/audit/lib/audit-format"
 import { useAuthStore } from "@/features/auth/model/auth-store"
 import { queryKeys } from "@/shared/api/query-keys"
@@ -55,7 +54,7 @@ export function AdminUserDetailPage() {
             ["Lần đăng nhập cuối", formatDateTime(user.data.last_login_at)], ["Ngày tạo", formatDateTime(user.data.created_at)],
           ].map(([label, value]) => <div key={label}><dt className="text-sm text-muted-foreground">{label}</dt><dd className="mt-1 font-medium">{value}</dd></div>)}</dl></CardContent></Card>
         </TabsContent>
-        {operational && projects.data ? <TabsContent value="projects" className="flex flex-col gap-5"><div className="flex justify-end"><ProjectFormDialog userId={userId} /></div><UserProjectsTab projects={projects.data} userId={userId} /></TabsContent> : null}
+        {operational && projects.data ? <TabsContent value="projects" className="flex flex-col gap-5"><UserProjectsTab projects={projects.data} userId={userId} /></TabsContent> : null}
         <TabsContent value="account"><UserAccountSecurityTab user={user.data} /></TabsContent>
         <TabsContent value="activity">
           <Card><CardHeader><CardTitle>Nhật ký hoạt động</CardTitle></CardHeader><CardContent className="flex flex-col gap-3">{activity.isLoading ? <Skeleton className="h-32" /> : activity.data?.length ? activity.data.map((item) => <div key={item.id} className="flex flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-start sm:justify-between"><div className="flex flex-col gap-1"><Badge variant="outline" className="self-start">{auditActionLabels[item.action] ?? "Thao tác hệ thống"}</Badge><p className="text-sm">{auditEntityLabels[item.entity_type] ?? "Đối tượng"}: {item.target_name}</p><p className="text-sm text-muted-foreground">{formatAuditDetail(item)} · Người thực hiện: {item.actor_name}</p></div><time className="whitespace-nowrap text-xs text-muted-foreground">{formatDateTime(item.created_at)}</time></div>) : <p className="py-8 text-center text-sm text-muted-foreground">Chưa có hoạt động.</p>}</CardContent></Card>

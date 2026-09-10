@@ -9,7 +9,7 @@ import { Skeleton } from "@/shared/ui/skeleton"
 import { errorMessage } from "@/api/client"
 
 export function OverviewPage() {
-  const systemId = Number(useParams().systemId)
+  const systemId = useParams().systemId ?? ""
   const { system } = useOutletContext<{ system: AquaponicsSystem }>()
   const devices = useQuery({ queryKey: queryKeys.devices(systemId), queryFn: () => listDevices(systemId) })
   const latest = useQuery({ queryKey: queryKeys.monitoringLatest(systemId), queryFn: () => getMonitoringLatest(systemId) })

@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -66,8 +67,8 @@ class ThresholdAlertConfigUpdate(BaseModel):
 class ThresholdAlertConfigRead(ThresholdAlertConfigWrite):
     model_config = ConfigDict(from_attributes=True)
     id: int
-    sensor_id: int | None
-    actuator_id: int | None
+    sensor_id: UUID | None
+    actuator_id: UUID | None
     metric_type: ThresholdMetricType
     created_at: datetime
     updated_at: datetime

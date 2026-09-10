@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import TYPE_CHECKING
+from uuid import UUID, uuid4
 
 from sqlalchemy import BigInteger, CheckConstraint, DateTime, Enum, Float, ForeignKey, Identity, Index, Integer, String, Text, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
 from app.db.base import Base, SoftDeleteMixin, TimestampMixin
 from app.core.enums import SensorStatus
@@ -28,6 +30,7 @@ class Sensor(Base, TimestampMixin, SoftDeleteMixin):
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    public_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), default=uuid4, unique=True, index=True, nullable=False)
     device_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("devices.id", ondelete="RESTRICT"))
     sensor_model_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("sensor_models.id", ondelete="RESTRICT")

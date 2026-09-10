@@ -29,21 +29,28 @@ async def test_aquaponics_system_device_can_own_sensors_and_actuators() -> None:
         token = create_access_token(str(admin.id), {"role": "ADMIN", "token_version": admin.token_version})
         headers = {"Authorization": f"Bearer {token}"}
 
-    system_id = device_id = 0
+    system_id = device_id = None
     try:
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-            created = await client.post("/api/v1/aquaponics-systems", headers=headers, json={"code": f"AQUA-{suffix}", "name": "Hệ thống regression"})
+            created = await client.post("/api/v1/aquaponics-systems", headers=headers, json={"name": "Hệ thống regression", "owner_user_id": str(admin.public_id)})
             assert created.status_code == 201, created.text
             system_id = created.json()["id"]
+            assert (await client.get(f"/api/v1/aquaponics-systems/{system_id}", headers=headers)).status_code == 200
             device = await client.post(f"/api/v1/aquaponics-systems/{system_id}/devices", headers=headers, json={"code": f"DEVICE-{suffix}", "name": "Aquaponics Controller"})
             assert device.status_code == 201, device.text
             device_id = device.json()["id"]
+            sensor_ids = []
             for index in range(2):
                 response = await client.post(f"/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors", headers=headers, json={"sensor_model_id": sensor_model.id, "code": f"SENSOR-{suffix}-{index}", "name": f"Sensor {index}"})
                 assert response.status_code == 201, response.text
+                sensor_ids.append(response.json()["id"])
+            actuator_ids = []
             for index in range(2):
                 response = await client.post(f"/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators", headers=headers, json={"actuator_model_id": actuator_model.id, "code": f"ACTUATOR-{suffix}-{index}", "name": f"Actuator {index}"})
                 assert response.status_code == 201, response.text
+                actuator_ids.append(response.json()["id"])
+            assert (await client.get(f"/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_ids[0]}", headers=headers)).status_code == 200
+            assert (await client.get(f"/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_ids[0]}", headers=headers)).status_code == 200
             detail = await client.get(f"/api/v1/aquaponics-systems/{system_id}/devices/{device_id}", headers=headers)
             assert detail.status_code == 200, detail.text
             assert len(detail.json()["sensors"]) == 2
@@ -51,11 +58,13 @@ async def test_aquaponics_system_device_can_own_sensors_and_actuators() -> None:
     finally:
         async with AsyncSessionLocal() as db:
             if device_id:
-                await db.execute(delete(Actuator).where(Actuator.device_id == device_id))
-                await db.execute(delete(Sensor).where(Sensor.device_id == device_id))
-                await db.execute(delete(Device).where(Device.id == device_id))
+                internal_device_id = await db.scalar(select(Device.id).where(Device.public_id == device_id))
+                if internal_device_id:
+                    await db.execute(delete(Actuator).where(Actuator.device_id == internal_device_id))
+                    await db.execute(delete(Sensor).where(Sensor.device_id == internal_device_id))
+                    await db.execute(delete(Device).where(Device.id == internal_device_id))
             if system_id:
-                await db.execute(delete(Project).where(Project.id == system_id))
+                await db.execute(delete(Project).where(Project.public_id == system_id))
             await db.commit()
 
 
@@ -70,7 +79,8 @@ async def test_device_template_mapping_and_provisioning_use_code_only() -> None:
         token = create_access_token(str(admin.id), {"role": "ADMIN", "token_version": admin.token_version})
         headers = {"Authorization": f"Bearer {token}"}
 
-    system_id = device_id = template_id = 0
+    system_id = device_id = None
+    template_id = 0
     try:
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
             template = await client.post(
@@ -103,7 +113,7 @@ async def test_device_template_mapping_and_provisioning_use_code_only() -> None:
             system = await client.post(
                 "/api/v1/aquaponics-systems",
                 headers=headers,
-                json={"code": f"AQUA-{suffix}", "name": "Hệ thống template regression"},
+                json={"name": "Hệ thống template regression", "owner_user_id": str(admin.public_id)},
             )
             assert system.status_code == 201, system.text
             system_id = system.json()["id"]
@@ -119,11 +129,13 @@ async def test_device_template_mapping_and_provisioning_use_code_only() -> None:
     finally:
         async with AsyncSessionLocal() as db:
             if device_id:
-                await db.execute(delete(Actuator).where(Actuator.device_id == device_id))
-                await db.execute(delete(Sensor).where(Sensor.device_id == device_id))
-                await db.execute(delete(Device).where(Device.id == device_id))
+                internal_device_id = await db.scalar(select(Device.id).where(Device.public_id == device_id))
+                if internal_device_id:
+                    await db.execute(delete(Actuator).where(Actuator.device_id == internal_device_id))
+                    await db.execute(delete(Sensor).where(Sensor.device_id == internal_device_id))
+                    await db.execute(delete(Device).where(Device.id == internal_device_id))
             if system_id:
-                await db.execute(delete(Project).where(Project.id == system_id))
+                await db.execute(delete(Project).where(Project.public_id == system_id))
             if template_id:
                 await db.execute(delete(DeviceTemplateSensor).where(DeviceTemplateSensor.device_template_id == template_id))
                 await db.execute(delete(DeviceTemplateActuator).where(DeviceTemplateActuator.device_template_id == template_id))

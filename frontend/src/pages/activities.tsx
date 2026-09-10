@@ -11,7 +11,7 @@ import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 
 export function ActivitiesPage() {
-  const systemId = Number(useParams().systemId)
+  const systemId = useParams().systemId ?? ""
   const [page, setPage] = useState(1)
   const [action, setAction] = useState("")
   const [entityType, setEntityType] = useState("")

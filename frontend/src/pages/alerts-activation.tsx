@@ -16,8 +16,8 @@ const statuses: readonly AlertLifecycleStatus[] = ["PENDING", "OPEN", "ACKNOWLED
 function isAlertStatus(value: string): value is AlertLifecycleStatus { return statuses.some((status) => status === value) }
 
 export function AlertsPage() {
-  const systemId = Number(useParams().systemId)
-  const validId = systemId > 0
+  const systemId = useParams().systemId ?? ""
+  const validId = Boolean(systemId)
   const [status, setStatus] = useState<AlertLifecycleStatus | "ALL">("ALL")
   const alerts = useQuery({ queryKey: [...queryKeys.alerts(systemId), status], queryFn: () => listAlerts(systemId, status === "ALL" ? undefined : status), enabled: validId })
   if (!validId) return <EmptyState icon={AlertTriangle} title="Đường dẫn hệ thống không hợp lệ" description="System ID phải là số nguyên dương." />

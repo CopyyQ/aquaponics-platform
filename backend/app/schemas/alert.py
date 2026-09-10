@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -8,9 +9,9 @@ from app.core.enums import AlertDirection, AlertLifecycleStatus, AlertResourceTy
 class AlertRead(BaseModel):
     id: int
     resource_type: AlertResourceType
-    device_id: int | None
-    sensor_id: int | None
-    actuator_id: int | None
+    device_id: UUID | None
+    sensor_id: UUID | None
+    actuator_id: UUID | None
     metric: str
     direction: AlertDirection | None
     alert_type: str
@@ -24,11 +25,11 @@ class AlertRead(BaseModel):
     last_triggered_at: datetime
     occurrence_count: int
     acknowledged_at: datetime | None
-    acknowledged_by: int | None
+    acknowledged_by: UUID | None
     condition_active: bool
     normalized_at: datetime | None
     resolved_at: datetime | None
-    resolved_by_user_id: int | None
+    resolved_by_user_id: UUID | None
     resolved_by_name: str | None
     resolution_note: str | None
     created_at: datetime

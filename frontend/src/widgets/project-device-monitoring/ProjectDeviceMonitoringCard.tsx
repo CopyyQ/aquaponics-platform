@@ -10,6 +10,7 @@ import { electricalQualityLabel } from "@/entities/actuator/lib/actuator-electri
 import { formatSensorValue } from "@/entities/sensor/lib/format-sensor-value"
 import { getSensorDataStatus } from "@/entities/sensor/lib/get-sensor-data-status"
 import type {
+  CoreId,
   MonitoringActuator,
   MonitoringDevice,
   MonitoringSensor,
@@ -152,7 +153,7 @@ export function ProjectDeviceMonitoringCard({
   readOnly = false,
 }: {
   device: MonitoringDevice
-  onOpenMonitoring?: (tab: "sensors" | "actuators", resourceId?: number) => void
+  onOpenMonitoring?: (tab: "sensors" | "actuators", resourceId?: CoreId) => void
   readOnly?: boolean
 }) {
   const [collapsed, setCollapsed] = useState(false)

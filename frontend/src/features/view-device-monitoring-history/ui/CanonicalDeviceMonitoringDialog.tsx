@@ -18,13 +18,13 @@ interface Props {
   actuatorHistory?: MonitoringActuatorHistoryRead
   range: MonitoringRange
   tab?: MonitoringDialogTab
-  resourceId?: number | null
+  resourceId?: string | null
   loading?: boolean
   error?: unknown
   open: boolean
   onOpenChange: (open: boolean) => void
   onTabChange?: (tab: MonitoringDialogTab) => void
-  onResourceChange?: (id: number) => void
+  onResourceChange?: (id: string) => void
   onRangeChange?: (range: MonitoringRange) => void
   renderSeries?: unknown
 }
@@ -45,7 +45,7 @@ export function CanonicalDeviceMonitoringDialog({
   onRangeChange,
 }: Props) {
   const [localTab, setLocalTab] = useState<MonitoringDialogTab>(tab)
-  const [localResourceId, setLocalResourceId] = useState<number | null>(resourceId)
+  const [localResourceId, setLocalResourceId] = useState<string | null>(resourceId)
   const activeTab = onTabChange ? tab : localTab
   const resources = activeTab === "sensors" ? device?.sensors ?? [] : device?.actuators ?? []
   const requestedResourceId = onResourceChange ? resourceId : localResourceId
@@ -65,7 +65,7 @@ export function CanonicalDeviceMonitoringDialog({
     if (onTabChange) onTabChange(next)
     else { setLocalTab(next); setLocalResourceId(null) }
   }
-  const changeResource = (id: number) => {
+  const changeResource = (id: string) => {
     if (onResourceChange) onResourceChange(id)
     else setLocalResourceId(id)
   }

@@ -6,7 +6,7 @@ const labels: Record<string, string> = {
   ADMIN: "Quản trị viên", OWNER: "Chủ hệ thống", VIEWER: "Người xem", WARNING: "Cảnh báo", CRITICAL: "Nghiêm trọng", LOCKED: "Đã khóa", SOFT_DELETED: "Đã xóa mềm",
 }
 
-export function StatusBadge({ value }: { value: string }) {
+export function StatusBadge({ value, className }: { value: string; className?: string }) {
   const variant = value === "ONLINE" || value === "ACTIVE" || value === "RESOLVED" ? "success" : value === "OFFLINE" || value === "CRITICAL" ? "destructive" : value === "WAITING_CONNECTION" || value === "PENDING" || value === "OPEN" ? "warning" : "secondary"
-  return <Badge variant={variant}>{labels[value] ?? value}</Badge>
+  return <Badge variant={variant} className={className}>{labels[value] ?? value}</Badge>
 }

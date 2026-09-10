@@ -26,9 +26,9 @@ import { Textarea } from "@/shared/ui/textarea"
 
 export function DeviceDetailCanonicalPage() {
   const params = useParams()
-  const systemId = Number(params.systemId)
-  const deviceId = Number(params.deviceId)
-  const validIds = systemId > 0 && deviceId > 0
+  const systemId = params.systemId ?? ""
+  const deviceId = params.deviceId ?? ""
+  const validIds = Boolean(systemId && deviceId)
   const { can } = useAuth()
   const client = useQueryClient()
   const navigate = useNavigate()
@@ -73,7 +73,7 @@ export function DeviceDetailCanonicalPage() {
   if (device.isError || !device.data) return <EmptyState icon={Cpu} title="Không thể tải thiết bị" description={errorMessage(device.error)} />
 
   const value = device.data
-  const monitored = monitoring.data?.devices.find((item) => item.id === deviceId)
+  const monitored = monitoring.data?.devices.find((item) => String(item.id) === deviceId)
   const measurementCards = monitored?.sensors.filter((sensor) => sensor.latest !== null) ?? []
 
   return <div className="space-y-6">

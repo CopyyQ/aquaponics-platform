@@ -1,0 +1,13 @@
+{
+  "unknown_properties": [],
+  "canonical_properties": [
+    "aquaponics_system_id",
+    "resource_type",
+    "active_alert",
+    "synchronization_status",
+    "electrical",
+    "range",
+    "series",
+    "aquaponics_system"
+  ]
+}

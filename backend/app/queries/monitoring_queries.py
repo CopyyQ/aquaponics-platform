@@ -116,7 +116,7 @@ async def latest_project_actuator_electrical_rows(db: AsyncSession, project_id: 
         .outerjoin(AlertRule, AlertRule.id == OperationalIncident.rule_id)
         .where(
             OperationalIncident.actuator_id == Actuator.id,
-            OperationalIncident.status.in_(("PENDING", "OPEN", "ACKNOWLEDGED", "NORMALIZED")),
+            OperationalIncident.status.in_(("PENDING", "OPEN", "ACKNOWLEDGED")),
         )
         .order_by(OperationalIncident.started_at.desc())
         .limit(1)

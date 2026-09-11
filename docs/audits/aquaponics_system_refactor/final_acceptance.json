@@ -1,0 +1,30 @@
+{
+  "pytest": {
+    "collected": 29,
+    "passed": 29,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "frontend": {
+    "typecheck": "PASS",
+    "vitest": "PASS",
+    "build": "PASS"
+  },
+  "openapi": {
+    "admin_paths": 0,
+    "project_paths": 0,
+    "overview_operations": 0,
+    "mqtt_export_operations": 1,
+    "duplicate_operation_ids": 0
+  },
+  "database": {
+    "dev_revision": "0045",
+    "rehearsal_revision": "0047"
+  },
+  "full_system_ready": "NO",
+  "blocking_items": [
+    "legacy service-layer role semantics still require permission-by-permission audit",
+    "development migration intentionally pending final acceptance and backup"
+  ]
+}

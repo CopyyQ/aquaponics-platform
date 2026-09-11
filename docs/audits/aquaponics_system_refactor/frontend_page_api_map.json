@@ -1,0 +1,73 @@
+{
+  "pages": [
+    {
+      "route": "/login",
+      "page": "LoginPage",
+      "operations": [
+        "login",
+        "session"
+      ]
+    },
+    {
+      "route": "/profile",
+      "page": "ProfilePage",
+      "operations": [
+        "updateProfile",
+        "changePassword"
+      ]
+    },
+    {
+      "route": "/aquaponics-systems",
+      "page": "SystemsPage",
+      "operations": [
+        "listSystems",
+        "createSystem"
+      ]
+    },
+    {
+      "route": "/aquaponics-systems/:systemId",
+      "page": "SystemPage",
+      "operations": [
+        "getSystem",
+        "listDevices",
+        "monitoring/latest",
+        "monitoring/series",
+        "listAlerts",
+        "listMembers",
+        "listActivities",
+        "scada/runtime",
+        "alerts/settings",
+        "mqtt-config/export"
+      ]
+    },
+    {
+      "route": "/aquaponics-systems/:systemId/devices/:deviceId",
+      "page": "DevicePage",
+      "operations": [
+        "getDevice",
+        "createSensor",
+        "createActuator",
+        "createCommand"
+      ]
+    },
+    {
+      "route": "/catalogs",
+      "page": "CatalogsPage",
+      "operations": [
+        "listDeviceTemplates",
+        "listSensorModels",
+        "listActuatorModels"
+      ]
+    },
+    {
+      "route": "/users",
+      "page": "UsersPage",
+      "operations": [
+        "listUsers"
+      ]
+    }
+  ],
+  "all_network_calls_centralized": true,
+  "query_key_strategy": "queryKeys in api/resources.ts",
+  "invalidation": "mutation success invalidates the affected canonical resource key"
+}

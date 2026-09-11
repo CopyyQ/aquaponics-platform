@@ -1,0 +1,12 @@
+{
+  "development_revision": "0050",
+  "development_migrated": true,
+  "rehearsal_revision": "0050",
+  "orphan_devices": 0,
+  "orphan_sensors": 0,
+  "orphan_actuators": 0,
+  "orphan_telemetry_readings": 0,
+  "orphan_actuator_readings": 0,
+  "invalid_user_roles": 0,
+  "status": "PASS"
+}

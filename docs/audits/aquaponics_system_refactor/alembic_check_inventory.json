@@ -1,0 +1,36 @@
+{
+  "revision": "0050",
+  "real_canonical_drift": [],
+  "archive_tables": [
+    "legacy_actuator_feedback_bindings",
+    "legacy_actuator_model_feedback_definitions",
+    "legacy_alert_rule_evaluator_classifications",
+    "legacy_device_template_classifications",
+    "legacy_sensor_classifications"
+  ],
+  "archive_indexes": [
+    "ix_actuator_feedback_bindings_actuator_id",
+    "ix_actuator_feedback_bindings_model_feedback_id",
+    "ix_actuator_feedback_bindings_sensor_id",
+    "ix_actuator_model_feedback_definitions_actuator_model_id",
+    "ix_actuator_model_feedback_definitions_sensor_model_id"
+  ],
+  "compatibility_indexes": [
+    "ix_projects_code",
+    "ix_projects_disabled_by_user_id",
+    "ix_projects_is_deleted",
+    "ix_projects_owner_user_id",
+    "ix_projects_status",
+    "ix_alert_rule_project_overrides_project_id",
+    "ix_audit_logs_project_id_created_at",
+    "ix_devices_project_id",
+    "ix_notification_outbox_project_id",
+    "ix_operational_incidents_project_status",
+    "ix_project_members_project_id",
+    "ix_project_notification_recipients_project_id",
+    "ix_project_notification_risk_policies_project_id",
+    "ix_project_notification_settings_project_id",
+    "ix_project_public_settings_project_id"
+  ],
+  "name_only_unique_constraints": 7
+}

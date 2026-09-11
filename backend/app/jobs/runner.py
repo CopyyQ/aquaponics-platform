@@ -1,13 +1,15 @@
 import asyncio
 import logging
+from contextlib import suppress
 from datetime import UTC, datetime
 
 from app.core.config import settings
 from app.core.enums import AggregatePeriod
 from app.jobs.actuator_command_timeout import timeout_actuator_commands
-from app.jobs.offline_scanner import scan_offline_state
 from app.jobs.notification_outbox import dispatch_operational_notifications
+from app.jobs.offline_scanner import scan_offline_state
 from app.jobs.project_health_evaluator import evaluate_project_health
+from app.jobs.telegram_bot_worker import run_telegram_bot_loop
 from app.jobs.telemetry_aggregation import aggregate_period
 
 logger = logging.getLogger(__name__)
@@ -30,10 +32,7 @@ async def run_scheduler_cycle(now: datetime | None = None) -> bool:
         await _run_job("offline_scanner", scan_offline_state),
         await _run_job("actuator_command_timeout", timeout_actuator_commands),
         await _run_job("notification_outbox", dispatch_operational_notifications),
-        await _run_job(
-            "telemetry_aggregation_hour",
-            lambda: aggregate_period(AggregatePeriod.HOUR),
-        ),
+        await _run_job("telemetry_aggregation_hour", lambda: aggregate_period(AggregatePeriod.HOUR)),
     ]
     if cycle_time.minute < 2:
         results.append(
@@ -43,28 +42,34 @@ async def run_scheduler_cycle(now: datetime | None = None) -> bool:
             )
         )
     if cycle_time.minute % 5 == 0:
-        results.append(
-            await _run_job("project_health_evaluator", evaluate_project_health)
-        )
+        results.append(await _run_job("project_health_evaluator", evaluate_project_health))
     return all(results)
 
 
 async def background_loop() -> None:
-    while True:
-        started_at = datetime.now(UTC)
-        try:
-            succeeded = await run_scheduler_cycle(started_at)
-            duration_ms = int((datetime.now(UTC) - started_at).total_seconds() * 1000)
-            logger.info(
-                "event=scheduler_cycle_completed succeeded=%s duration_ms=%s",
-                succeeded,
-                duration_ms,
-            )
-        except asyncio.CancelledError:
-            raise
-        except Exception:
-            logger.exception("event=scheduler_cycle_failed")
-        await asyncio.sleep(settings.job_interval_seconds)
+    telegram_task = asyncio.create_task(
+        run_telegram_bot_loop(), name="telegram_bot_long_poll"
+    )
+    try:
+        while True:
+            started_at = datetime.now(UTC)
+            try:
+                succeeded = await run_scheduler_cycle(started_at)
+                duration_ms = int((datetime.now(UTC) - started_at).total_seconds() * 1000)
+                logger.info(
+                    "event=scheduler_cycle_completed succeeded=%s duration_ms=%s",
+                    succeeded,
+                    duration_ms,
+                )
+            except asyncio.CancelledError:
+                raise
+            except Exception:
+                logger.exception("event=scheduler_cycle_failed")
+            await asyncio.sleep(settings.job_interval_seconds)
+    finally:
+        telegram_task.cancel()
+        with suppress(asyncio.CancelledError):
+            await telegram_task
 
 
 def main() -> None:

@@ -1,0 +1,10 @@
+{
+  "development_revision": "0045",
+  "rehearsal_revision": "0047",
+  "roles": 4,
+  "permissions": 67,
+  "role_permission_assignments": 199,
+  "users_without_valid_role": 0,
+  "orphan_rows": 0,
+  "dev_migrated": false
+}

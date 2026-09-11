@@ -1,0 +1,1 @@
+{"mixed_devices":{"source":"devices with Sensors and Actuators","target":"sensor device plus deterministic -ACTUATORS clone","rows":3},"feedback_telemetry":{"target":"actuator_readings","rows":90893},"thresholds":{"target":"threshold_alert_configs","rows":37}}

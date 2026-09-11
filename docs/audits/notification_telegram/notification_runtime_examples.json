@@ -1,0 +1,8 @@
+{
+  "audit_date":"2026-09-07",
+  "read_only":true,
+  "counts":{"operational_incidents":115,"notification_outbox":331,"notification_deliveries":753,"settings":1,"recipients":3,"risk_policies":6},
+  "outbox_status":{"PROCESSED":217,"SKIPPED":114},
+  "delivery_status":{"SENT":639,"SKIPPED":114},
+  "incident_status":{"OPEN":3,"RESOLVED":112}
+}

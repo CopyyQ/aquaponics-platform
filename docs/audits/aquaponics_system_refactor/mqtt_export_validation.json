@@ -1,0 +1,12 @@
+{
+  "export_endpoints": [
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/mqtt-config/export",
+      "method": "GET",
+      "operation_id": "export_mqtt_config_api_v1_aquaponics_systems__system_id__mqtt_config_export_get"
+    }
+  ],
+  "endpoint_count": 1,
+  "system_wide": true,
+  "get_side_effects": false
+}

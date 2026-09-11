@@ -1,0 +1,1 @@
+{"/aquaponics-systems":"aquaponics_systems","/aquaponics-systems/{system_id}/devices":"devices","/aquaponics-systems/{system_id}/devices/{device_id}/sensors":"sensors","/aquaponics-systems/{system_id}/devices/{device_id}/actuators":"actuators","/sensor-models":"sensor_models"}

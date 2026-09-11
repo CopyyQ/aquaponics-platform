@@ -1,0 +1,5 @@
+{
+  "direct_system_role_authorization_matches_in_api_and_services": 0,
+  "authorization_source": "role permissions and resource ownership",
+  "status": "PASS"
+}

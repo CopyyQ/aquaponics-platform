@@ -1,0 +1,7 @@
+{
+  "database": "aquaponics_codex_rbac_final",
+  "revision": "0050",
+  "canonical_api_workflow": "PASS",
+  "permission_revocation_workflow": "PASS",
+  "status": "PASS"
+}

@@ -1,0 +1,8 @@
+[
+  {"table":"operational_incidents","role":"incident snapshot"},
+  {"table":"notification_outbox","role":"logical event queue"},
+  {"table":"notification_deliveries","role":"per-recipient delivery"},
+  {"table":"project_notification_settings","role":"legacy/project policy"},
+  {"table":"project_notification_risk_policies","role":"risk/event policy"},
+  {"table":"project_notification_recipients","role":"Telegram recipients"}
+]

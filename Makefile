@@ -25,6 +25,8 @@ validate: validate-backend validate-frontend
 validate-backend:
 	cd backend && python -m compileall -q app
 	cd backend && python scripts/check_architecture.py
+	cd backend && alembic current
+	cd backend && alembic check
 	cd backend && python -m pytest -q
 
 validate-frontend:

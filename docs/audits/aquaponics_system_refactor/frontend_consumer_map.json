@@ -1,0 +1,246 @@
+{
+  "source": "frontend/src",
+  "network_layer": "frontend/src/api/resources.ts",
+  "consumers": [
+    {
+      "consumer": "LoginPage",
+      "wrapper": "login",
+      "operation_id": "login_api_v1_auth_login_post",
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "permission": "public"
+    },
+    {
+      "consumer": "AuthProvider",
+      "wrapper": "loadSession",
+      "operation_id": "session_api_v1_auth_session_get",
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "permission": "authenticated"
+    },
+    {
+      "consumer": "ProfilePage",
+      "wrapper": "updateProfile",
+      "operation_id": "update_me_api_v1_auth_me_patch",
+      "path": "/api/v1/auth/me",
+      "method": "PATCH",
+      "permission": "authenticated/self"
+    },
+    {
+      "consumer": "ProfilePage",
+      "wrapper": "changePassword",
+      "operation_id": "change_password_api_v1_auth_change_password_post",
+      "path": "/api/v1/auth/change-password",
+      "method": "POST",
+      "permission": "authenticated/self"
+    },
+    {
+      "consumer": "Shell",
+      "wrapper": "logout",
+      "operation_id": "logout_api_v1_auth_logout_post",
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "permission": "authenticated"
+    },
+    {
+      "consumer": "SystemsPage",
+      "wrapper": "listSystems",
+      "operation_id": "list_systems_api_v1_aquaponics_systems_get",
+      "path": "/api/v1/aquaponics-systems",
+      "method": "GET",
+      "permission": "aquaponics_systems.read"
+    },
+    {
+      "consumer": "SystemsPage",
+      "wrapper": "createSystem",
+      "operation_id": "create_system_api_v1_aquaponics_systems_post",
+      "path": "/api/v1/aquaponics-systems",
+      "method": "POST",
+      "permission": "aquaponics_systems.create"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "getSystem",
+      "operation_id": "get_system_api_v1_aquaponics_systems__system_id__get",
+      "path": "/api/v1/aquaponics-systems/{system_id}",
+      "method": "GET",
+      "permission": "aquaponics_systems.read"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "listDevices",
+      "operation_id": "list_devices_api_v1_aquaponics_systems__system_id__devices_get",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices",
+      "method": "GET",
+      "permission": "devices.read"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "createDevice",
+      "operation_id": "create_device_api_v1_aquaponics_systems__system_id__devices_post",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices",
+      "method": "POST",
+      "permission": "devices.create"
+    },
+    {
+      "consumer": "DevicePage",
+      "wrapper": "getDevice",
+      "operation_id": "get_device_api_v1_aquaponics_systems__system_id__devices__device_id__get",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}",
+      "method": "GET",
+      "permission": "devices.read"
+    },
+    {
+      "consumer": "DevicePage",
+      "wrapper": "createSensor",
+      "operation_id": "create_sensor_api_v1_aquaponics_systems__system_id__devices__device_id__sensors_post",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors",
+      "method": "POST",
+      "permission": "sensors.create"
+    },
+    {
+      "consumer": "DevicePage",
+      "wrapper": "createActuator",
+      "operation_id": "create_actuator_api_v1_aquaponics_systems__system_id__devices__device_id__actuators_post",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators",
+      "method": "POST",
+      "permission": "actuators.create"
+    },
+    {
+      "consumer": "DevicePage",
+      "wrapper": "createCommand",
+      "operation_id": "create_actuator_command_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__commands_post",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/commands",
+      "method": "POST",
+      "permission": "actuators.commands.create"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "listAlerts",
+      "operation_id": "list_system_alerts_api_v1_aquaponics_systems__system_id__alerts_get",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts",
+      "method": "GET",
+      "permission": "incidents.read"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "acknowledgeAlert",
+      "operation_id": "acknowledge_system_alert_api_v1_aquaponics_systems__system_id__alerts__alert_id__acknowledge_post",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}/acknowledge",
+      "method": "POST",
+      "permission": "incidents.acknowledge"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "resolveAlert",
+      "operation_id": "resolve_system_alert_api_v1_aquaponics_systems__system_id__alerts__alert_id__resolve_post",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}/resolve",
+      "method": "POST",
+      "permission": "incidents.resolve"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "getMonitoringLatest",
+      "operation_id": "monitoring_latest_api_v1_aquaponics_systems__system_id__monitoring_latest_get",
+      "path": "/api/v1/aquaponics-systems/{system_id}/monitoring/latest",
+      "method": "GET",
+      "permission": "monitoring.read"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "getMonitoringSeries",
+      "operation_id": "monitoring_series_api_v1_aquaponics_systems__system_id__monitoring_series_get",
+      "path": "/api/v1/aquaponics-systems/{system_id}/monitoring/series",
+      "method": "GET",
+      "permission": "monitoring.read"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "listMembers",
+      "operation_id": "list_members_api_v1_aquaponics_systems__system_id__members_get",
+      "path": "/api/v1/aquaponics-systems/{system_id}/members",
+      "method": "GET",
+      "permission": "aquaponics_systems.read"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "updateMember",
+      "operation_id": "update_member_api_v1_aquaponics_systems__system_id__members__user_id__patch",
+      "path": "/api/v1/aquaponics-systems/{system_id}/members/{user_id}",
+      "method": "PATCH",
+      "permission": "aquaponics_systems.manage_members"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "listActivities",
+      "operation_id": "activities_api_v1_aquaponics_systems__system_id__activities_get",
+      "path": "/api/v1/aquaponics-systems/{system_id}/activities",
+      "method": "GET",
+      "permission": "aquaponics_systems.read"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "getScadaRuntime",
+      "operation_id": "scada_runtime_api_v1_aquaponics_systems__system_id__scada_runtime_get",
+      "path": "/api/v1/aquaponics-systems/{system_id}/scada/runtime",
+      "method": "GET",
+      "permission": "scada.read"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "getAlertSettings",
+      "operation_id": "get_alert_settings_api_v1_aquaponics_systems__system_id__alerts_settings_get",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/settings",
+      "method": "GET",
+      "permission": "incidents.read"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "updateAlertSettings",
+      "operation_id": "put_alert_settings_api_v1_aquaponics_systems__system_id__alerts_settings_put",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/settings",
+      "method": "PUT",
+      "permission": "incidents.manage_settings"
+    },
+    {
+      "consumer": "SystemPage",
+      "wrapper": "exportMqttConfig",
+      "operation_id": "export_mqtt_config_api_v1_aquaponics_systems__system_id__mqtt_config_export_get",
+      "path": "/api/v1/aquaponics-systems/{system_id}/mqtt-config/export",
+      "method": "GET",
+      "permission": "mqtt_config.export"
+    },
+    {
+      "consumer": "DevicePage/CatalogsPage",
+      "wrapper": "listSensorModels",
+      "operation_id": "list_sensor_models_api_v1_sensor_models_get",
+      "path": "/api/v1/sensor-models",
+      "method": "GET",
+      "permission": "sensor_models.read"
+    },
+    {
+      "consumer": "DevicePage/CatalogsPage",
+      "wrapper": "listActuatorModels",
+      "operation_id": "list_actuator_models_api_v1_actuator_models_get",
+      "path": "/api/v1/actuator-models",
+      "method": "GET",
+      "permission": "actuator_models.read"
+    },
+    {
+      "consumer": "CatalogsPage",
+      "wrapper": "listDeviceTemplates",
+      "operation_id": "list_device_templates_api_v1_device_templates_get",
+      "path": "/api/v1/device-templates",
+      "method": "GET",
+      "permission": "device_templates.read"
+    },
+    {
+      "consumer": "UsersPage",
+      "wrapper": "listUsers",
+      "operation_id": "list_users_api_v1_users_get",
+      "path": "/api/v1/users",
+      "method": "GET",
+      "permission": "users.read"
+    }
+  ]
+}

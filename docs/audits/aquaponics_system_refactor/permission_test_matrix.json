@@ -1,0 +1,1 @@
+{"cases":["admin_all_permissions","owner_operational_permissions","technician_operational_permissions","viewer_read_only","role_permission_revocation","session_reflects_database_changes"]}

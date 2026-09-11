@@ -1,0 +1,7 @@
+[
+  {"path":"/projects/{project_id}/notification-settings","methods":["GET","PUT"]},
+  {"path":"/projects/{project_id}/notification-recipients","methods":["POST"]},
+  {"path":"/projects/{project_id}/notification-recipients/{recipient_id}","methods":["PATCH","DELETE"]},
+  {"path":"/projects/{project_id}/notification-recipients/{recipient_id}/test","methods":["POST"]},
+  {"path":"/admin/notification-deliveries/history","methods":["GET"]}
+]

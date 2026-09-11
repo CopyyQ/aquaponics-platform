@@ -1,0 +1,5 @@
+[
+  {"file":"backend/app/services/project_notification_service.py","symbol":"BUSINESS_ALERT_RULES","classification":"legacy business notification catalogue","risk":"high"},
+  {"file":"backend/app/services/notification_outbox_service.py","symbol":"RISK_LABELS and feedback-role formatting","classification":"presentation plus legacy path","risk":"medium"},
+  {"file":"backend/app/api/v1/project_notifications.py","symbol":"RISK_DEFAULTS","classification":"policy defaults","risk":"medium"}
+]

@@ -1,0 +1,339 @@
+{
+  "permissions": [
+    {
+      "code": "users.read",
+      "resource": "users",
+      "action": "read"
+    },
+    {
+      "code": "users.create",
+      "resource": "users",
+      "action": "create"
+    },
+    {
+      "code": "users.update",
+      "resource": "users",
+      "action": "update"
+    },
+    {
+      "code": "users.delete",
+      "resource": "users",
+      "action": "delete"
+    },
+    {
+      "code": "users.force_logout",
+      "resource": "users",
+      "action": "force_logout"
+    },
+    {
+      "code": "users.set_password",
+      "resource": "users",
+      "action": "set_password"
+    },
+    {
+      "code": "users.lock",
+      "resource": "users",
+      "action": "lock"
+    },
+    {
+      "code": "users.unlock",
+      "resource": "users",
+      "action": "unlock"
+    },
+    {
+      "code": "aquaponics_systems.read",
+      "resource": "aquaponics_systems",
+      "action": "read"
+    },
+    {
+      "code": "aquaponics_systems.create",
+      "resource": "aquaponics_systems",
+      "action": "create"
+    },
+    {
+      "code": "aquaponics_systems.update",
+      "resource": "aquaponics_systems",
+      "action": "update"
+    },
+    {
+      "code": "aquaponics_systems.delete",
+      "resource": "aquaponics_systems",
+      "action": "delete"
+    },
+    {
+      "code": "aquaponics_systems.manage_members",
+      "resource": "aquaponics_systems",
+      "action": "manage_members"
+    },
+    {
+      "code": "aquaponics_systems.read_all",
+      "resource": "aquaponics_systems",
+      "action": "read_all"
+    },
+    {
+      "code": "aquaponics_systems.manage_all",
+      "resource": "aquaponics_systems",
+      "action": "manage_all"
+    },
+    {
+      "code": "devices.read",
+      "resource": "devices",
+      "action": "read"
+    },
+    {
+      "code": "devices.create",
+      "resource": "devices",
+      "action": "create"
+    },
+    {
+      "code": "devices.update",
+      "resource": "devices",
+      "action": "update"
+    },
+    {
+      "code": "devices.delete",
+      "resource": "devices",
+      "action": "delete"
+    },
+    {
+      "code": "sensors.read",
+      "resource": "sensors",
+      "action": "read"
+    },
+    {
+      "code": "sensors.create",
+      "resource": "sensors",
+      "action": "create"
+    },
+    {
+      "code": "sensors.update",
+      "resource": "sensors",
+      "action": "update"
+    },
+    {
+      "code": "sensors.delete",
+      "resource": "sensors",
+      "action": "delete"
+    },
+    {
+      "code": "sensors.telemetry.read",
+      "resource": "sensors",
+      "action": "telemetry.read"
+    },
+    {
+      "code": "sensors.thresholds.read",
+      "resource": "sensors",
+      "action": "thresholds.read"
+    },
+    {
+      "code": "sensors.thresholds.create",
+      "resource": "sensors",
+      "action": "thresholds.create"
+    },
+    {
+      "code": "sensors.thresholds.update",
+      "resource": "sensors",
+      "action": "thresholds.update"
+    },
+    {
+      "code": "sensors.thresholds.delete",
+      "resource": "sensors",
+      "action": "thresholds.delete"
+    },
+    {
+      "code": "actuators.read",
+      "resource": "actuators",
+      "action": "read"
+    },
+    {
+      "code": "actuators.create",
+      "resource": "actuators",
+      "action": "create"
+    },
+    {
+      "code": "actuators.update",
+      "resource": "actuators",
+      "action": "update"
+    },
+    {
+      "code": "actuators.delete",
+      "resource": "actuators",
+      "action": "delete"
+    },
+    {
+      "code": "actuators.commands.read",
+      "resource": "actuators",
+      "action": "commands.read"
+    },
+    {
+      "code": "actuators.commands.create",
+      "resource": "actuators",
+      "action": "commands.create"
+    },
+    {
+      "code": "actuators.readings.read",
+      "resource": "actuators",
+      "action": "readings.read"
+    },
+    {
+      "code": "actuators.thresholds.read",
+      "resource": "actuators",
+      "action": "thresholds.read"
+    },
+    {
+      "code": "actuators.thresholds.create",
+      "resource": "actuators",
+      "action": "thresholds.create"
+    },
+    {
+      "code": "actuators.thresholds.update",
+      "resource": "actuators",
+      "action": "thresholds.update"
+    },
+    {
+      "code": "actuators.thresholds.delete",
+      "resource": "actuators",
+      "action": "thresholds.delete"
+    },
+    {
+      "code": "sensor_models.read",
+      "resource": "sensor_models",
+      "action": "read"
+    },
+    {
+      "code": "sensor_models.create",
+      "resource": "sensor_models",
+      "action": "create"
+    },
+    {
+      "code": "sensor_models.update",
+      "resource": "sensor_models",
+      "action": "update"
+    },
+    {
+      "code": "sensor_models.delete",
+      "resource": "sensor_models",
+      "action": "delete"
+    },
+    {
+      "code": "actuator_models.read",
+      "resource": "actuator_models",
+      "action": "read"
+    },
+    {
+      "code": "actuator_models.create",
+      "resource": "actuator_models",
+      "action": "create"
+    },
+    {
+      "code": "actuator_models.update",
+      "resource": "actuator_models",
+      "action": "update"
+    },
+    {
+      "code": "actuator_models.delete",
+      "resource": "actuator_models",
+      "action": "delete"
+    },
+    {
+      "code": "device_templates.read",
+      "resource": "device_templates",
+      "action": "read"
+    },
+    {
+      "code": "device_templates.create",
+      "resource": "device_templates",
+      "action": "create"
+    },
+    {
+      "code": "device_templates.update",
+      "resource": "device_templates",
+      "action": "update"
+    },
+    {
+      "code": "device_templates.delete",
+      "resource": "device_templates",
+      "action": "delete"
+    },
+    {
+      "code": "monitoring.read",
+      "resource": "monitoring",
+      "action": "read"
+    },
+    {
+      "code": "incidents.read",
+      "resource": "incidents",
+      "action": "read"
+    },
+    {
+      "code": "incidents.acknowledge",
+      "resource": "incidents",
+      "action": "acknowledge"
+    },
+    {
+      "code": "incidents.resolve",
+      "resource": "incidents",
+      "action": "resolve"
+    },
+    {
+      "code": "notifications.settings.read",
+      "resource": "notifications",
+      "action": "settings.read"
+    },
+    {
+      "code": "notifications.settings.update",
+      "resource": "notifications",
+      "action": "settings.update"
+    },
+    {
+      "code": "notifications.recipients.read",
+      "resource": "notifications",
+      "action": "recipients.read"
+    },
+    {
+      "code": "notifications.recipients.create",
+      "resource": "notifications",
+      "action": "recipients.create"
+    },
+    {
+      "code": "notifications.recipients.update",
+      "resource": "notifications",
+      "action": "recipients.update"
+    },
+    {
+      "code": "notifications.recipients.delete",
+      "resource": "notifications",
+      "action": "recipients.delete"
+    },
+    {
+      "code": "notifications.recipients.test",
+      "resource": "notifications",
+      "action": "recipients.test"
+    },
+    {
+      "code": "notifications.history.read",
+      "resource": "notifications",
+      "action": "history.read"
+    },
+    {
+      "code": "mqtt_config.export",
+      "resource": "mqtt_config",
+      "action": "export"
+    },
+    {
+      "code": "scada.read",
+      "resource": "scada",
+      "action": "read"
+    },
+    {
+      "code": "scada.update",
+      "resource": "scada",
+      "action": "update"
+    },
+    {
+      "code": "activities.read",
+      "resource": "activities",
+      "action": "read"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "legacy_router_modules": [],
+  "canonical_router_registered": true,
+  "unmigrated_http_consumers": 0,
+  "service_role_semantics_pending": true
+}

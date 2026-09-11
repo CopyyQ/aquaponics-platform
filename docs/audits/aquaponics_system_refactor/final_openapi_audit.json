@@ -1,0 +1,26 @@
+{
+  "path_count": 45,
+  "operation_count": 82,
+  "admin_paths": [],
+  "project_paths": [],
+  "overview_operations": [],
+  "mqtt_export_operations": [
+    "/api/v1/aquaponics-systems/{system_id}/mqtt-config/export"
+  ],
+  "public_notification_operations": [],
+  "duplicate_operation_ids": [],
+  "forbidden_terms": {
+    "SENSOR_DEVICE": 0,
+    "ACTUATOR_DEVICE": 0,
+    "ENERGY_MONITOR": 0,
+    "ACTUATOR_FEEDBACK": 0,
+    "feedback_role": 0,
+    "device_kind": 0,
+    "system_role": 0,
+    "Project": 0,
+    "project_id": 0,
+    "/admin": 0,
+    "/projects": 0,
+    "overview": 0
+  }
+}

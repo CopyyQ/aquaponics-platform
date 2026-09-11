@@ -1,0 +1,7 @@
+[
+  {"file":"backend/app/services/telegram_notifier.py","role":"Telegram HTTP sender","runtime":true},
+  {"file":"backend/app/services/notification_outbox_service.py","role":"outbox worker and message renderer","runtime":true},
+  {"file":"backend/app/services/project_notification_service.py","role":"legacy/direct notification path and hard-coded catalogue","runtime":true},
+  {"file":"backend/app/services/project_activity_service.py","role":"direct activity Telegram path","runtime":true},
+  {"file":"backend/app/api/v1/project_notifications.py","role":"settings, recipients and direct test send","runtime":true}
+]

@@ -1,0 +1,134 @@
+[
+  {
+    "label": "Hệ thống",
+    "icon": "Gauge",
+    "route": "/aquaponics-systems",
+    "permission": "aquaponics_systems.read",
+    "visible_to": "session with permission",
+    "target_exists": true,
+    "target_works": true,
+    "canonical": true,
+    "classification": "ACTIVE"
+  },
+  {
+    "label": "Danh mục",
+    "icon": "Boxes",
+    "route": "/catalogs",
+    "permission": "device_templates.read",
+    "visible_to": "session with permission",
+    "target_exists": true,
+    "target_works": true,
+    "canonical": true,
+    "classification": "ACTIVE"
+  },
+  {
+    "label": "Người dùng",
+    "icon": "Users",
+    "route": "/users",
+    "permission": "users.read",
+    "visible_to": "session with permission",
+    "target_exists": true,
+    "target_works": true,
+    "canonical": true,
+    "classification": "ACTIVE"
+  },
+  {
+    "label": "Hồ sơ",
+    "icon": "UserRound",
+    "route": "/profile",
+    "permission": null,
+    "visible_to": "authenticated session",
+    "target_exists": true,
+    "target_works": true,
+    "canonical": true,
+    "classification": "ACTIVE"
+  },
+  {
+    "label": "overview",
+    "icon": null,
+    "route": "/aquaponics-systems/:systemId/overview",
+    "permission": "aquaponics_systems.read",
+    "visible_to": "session with permission",
+    "target_exists": true,
+    "target_works": true,
+    "canonical": true,
+    "classification": "ACTIVE_SYSTEM_TAB"
+  },
+  {
+    "label": "scada",
+    "icon": null,
+    "route": "/aquaponics-systems/:systemId/scada",
+    "permission": "scada.read",
+    "visible_to": "session with permission",
+    "target_exists": true,
+    "target_works": true,
+    "canonical": true,
+    "classification": "ACTIVE_SYSTEM_TAB"
+  },
+  {
+    "label": "monitoring",
+    "icon": null,
+    "route": "/aquaponics-systems/:systemId/monitoring",
+    "permission": "monitoring.read",
+    "visible_to": "session with permission",
+    "target_exists": true,
+    "target_works": true,
+    "canonical": true,
+    "classification": "ACTIVE_SYSTEM_TAB"
+  },
+  {
+    "label": "devices",
+    "icon": null,
+    "route": "/aquaponics-systems/:systemId/devices",
+    "permission": "devices.read",
+    "visible_to": "session with permission",
+    "target_exists": true,
+    "target_works": true,
+    "canonical": true,
+    "classification": "ACTIVE_SYSTEM_TAB"
+  },
+  {
+    "label": "alerts",
+    "icon": null,
+    "route": "/aquaponics-systems/:systemId/alerts",
+    "permission": "incidents.read",
+    "visible_to": "session with permission",
+    "target_exists": true,
+    "target_works": true,
+    "canonical": true,
+    "classification": "ACTIVE_SYSTEM_TAB"
+  },
+  {
+    "label": "members",
+    "icon": null,
+    "route": "/aquaponics-systems/:systemId/members",
+    "permission": "aquaponics_systems.read",
+    "visible_to": "session with permission",
+    "target_exists": true,
+    "target_works": true,
+    "canonical": true,
+    "classification": "ACTIVE_SYSTEM_TAB"
+  },
+  {
+    "label": "activities",
+    "icon": null,
+    "route": "/aquaponics-systems/:systemId/activities",
+    "permission": "activities.read",
+    "visible_to": "session with permission",
+    "target_exists": true,
+    "target_works": true,
+    "canonical": true,
+    "classification": "ACTIVE_SYSTEM_TAB"
+  },
+  {
+    "label": "settings",
+    "icon": null,
+    "route": "/aquaponics-systems/:systemId/settings",
+    "permission": "aquaponics_systems.read",
+    "visible_to": "session with permission",
+    "target_exists": true,
+    "target_works": true,
+    "canonical": true,
+    "classification": "ACTIVE_SYSTEM_TAB"
+  }
+]

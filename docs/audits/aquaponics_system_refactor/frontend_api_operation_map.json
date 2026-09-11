@@ -1,0 +1,1162 @@
+{
+  "source": "http://127.0.0.1:8000/openapi.json",
+  "generated_at": "2026-09-08T02:59:32.624157+00:00",
+  "operation_count": 82,
+  "classification_counts": {
+    "USED": 30,
+    "NOT_USED_BY_FE": 29,
+    "INTERNAL/DEVICE_ONLY": 23,
+    "MISSING_FE_MAPPING": 0,
+    "STALE_FE_MAPPING": 0
+  },
+  "operations": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "operation_id": "login_api_v1_auth_login_post",
+      "tags": [
+        "Authentication"
+      ],
+      "request_schema": "LoginRequest",
+      "classification": "USED",
+      "frontend_wrapper": "login",
+      "consumer": "LoginPage",
+      "permission": "public",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "operation_id": "session_api_v1_auth_session_get",
+      "tags": [
+        "Authentication"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "loadSession",
+      "consumer": "AuthProvider",
+      "permission": "authenticated",
+      "current_status": "mapped"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/auth/me",
+      "operation_id": "update_me_api_v1_auth_me_patch",
+      "tags": [
+        "Authentication"
+      ],
+      "request_schema": "UserSelfUpdate",
+      "classification": "USED",
+      "frontend_wrapper": "updateProfile",
+      "consumer": "ProfilePage",
+      "permission": "authenticated/self",
+      "current_status": "mapped"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/change-password",
+      "operation_id": "change_password_api_v1_auth_change_password_post",
+      "tags": [
+        "Authentication"
+      ],
+      "request_schema": "ChangePasswordRequest",
+      "classification": "USED",
+      "frontend_wrapper": "changePassword",
+      "consumer": "ProfilePage",
+      "permission": "authenticated/self",
+      "current_status": "mapped"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "operation_id": "logout_api_v1_auth_logout_post",
+      "tags": [
+        "Authentication"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "logout",
+      "consumer": "Shell",
+      "permission": "authenticated",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems",
+      "operation_id": "list_systems_api_v1_aquaponics_systems_get",
+      "tags": [
+        "Aquaponics Systems"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "listSystems",
+      "consumer": "SystemsPage",
+      "permission": "aquaponics_systems.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems",
+      "operation_id": "create_system_api_v1_aquaponics_systems_post",
+      "tags": [
+        "Aquaponics Systems"
+      ],
+      "request_schema": "AquaponicsSystemCreate",
+      "classification": "USED",
+      "frontend_wrapper": "createSystem",
+      "consumer": "SystemsPage",
+      "permission": "aquaponics_systems.create",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}",
+      "operation_id": "get_system_api_v1_aquaponics_systems__system_id__get",
+      "tags": [
+        "Aquaponics Systems"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "getSystem",
+      "consumer": "SystemPage",
+      "permission": "aquaponics_systems.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}",
+      "operation_id": "update_system_api_v1_aquaponics_systems__system_id__patch",
+      "tags": [
+        "Aquaponics Systems"
+      ],
+      "request_schema": "AquaponicsSystemUpdate",
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}",
+      "operation_id": "delete_system_api_v1_aquaponics_systems__system_id__delete",
+      "tags": [
+        "Aquaponics Systems"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices",
+      "operation_id": "list_devices_api_v1_aquaponics_systems__system_id__devices_get",
+      "tags": [
+        "Devices"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "listDevices",
+      "consumer": "SystemPage",
+      "permission": "devices.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices",
+      "operation_id": "create_device_api_v1_aquaponics_systems__system_id__devices_post",
+      "tags": [
+        "Devices"
+      ],
+      "request_schema": "DeviceInput",
+      "classification": "USED",
+      "frontend_wrapper": "createDevice",
+      "consumer": "SystemPage",
+      "permission": "devices.create",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}",
+      "operation_id": "get_device_api_v1_aquaponics_systems__system_id__devices__device_id__get",
+      "tags": [
+        "Devices"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "getDevice",
+      "consumer": "DevicePage",
+      "permission": "devices.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}",
+      "operation_id": "update_device_api_v1_aquaponics_systems__system_id__devices__device_id__patch",
+      "tags": [
+        "Devices"
+      ],
+      "request_schema": "DeviceUpdate",
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}",
+      "operation_id": "delete_device_api_v1_aquaponics_systems__system_id__devices__device_id__delete",
+      "tags": [
+        "Devices"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors",
+      "operation_id": "list_sensors_api_v1_aquaponics_systems__system_id__devices__device_id__sensors_get",
+      "tags": [
+        "Sensors"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors",
+      "operation_id": "create_sensor_api_v1_aquaponics_systems__system_id__devices__device_id__sensors_post",
+      "tags": [
+        "Sensors"
+      ],
+      "request_schema": "SensorInput",
+      "classification": "USED",
+      "frontend_wrapper": "createSensor",
+      "consumer": "DevicePage",
+      "permission": "sensors.create",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}",
+      "operation_id": "get_sensor_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__get",
+      "tags": [
+        "Sensors"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}",
+      "operation_id": "update_sensor_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__patch",
+      "tags": [
+        "Sensors"
+      ],
+      "request_schema": "SensorUpdate",
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}",
+      "operation_id": "delete_sensor_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__delete",
+      "tags": [
+        "Sensors"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators",
+      "operation_id": "list_actuators_api_v1_aquaponics_systems__system_id__devices__device_id__actuators_get",
+      "tags": [
+        "Actuators"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators",
+      "operation_id": "create_actuator_api_v1_aquaponics_systems__system_id__devices__device_id__actuators_post",
+      "tags": [
+        "Actuators"
+      ],
+      "request_schema": "ActuatorInput",
+      "classification": "USED",
+      "frontend_wrapper": "createActuator",
+      "consumer": "DevicePage",
+      "permission": "actuators.create",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}",
+      "operation_id": "get_actuator_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__get",
+      "tags": [
+        "Actuators"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}",
+      "operation_id": "update_actuator_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__patch",
+      "tags": [
+        "Actuators"
+      ],
+      "request_schema": "ActuatorUpdate",
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}",
+      "operation_id": "delete_actuator_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__delete",
+      "tags": [
+        "Actuators"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/threshold-alert",
+      "operation_id": "get_sensor_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__threshold_alert_get",
+      "tags": [
+        "Sensors"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/threshold-alert",
+      "operation_id": "create_sensor_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__threshold_alert_post",
+      "tags": [
+        "Sensors"
+      ],
+      "request_schema": "ThresholdAlertConfigCreate",
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/threshold-alert",
+      "operation_id": "update_sensor_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__threshold_alert_patch",
+      "tags": [
+        "Sensors"
+      ],
+      "request_schema": "ThresholdAlertConfigUpdate",
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/threshold-alert",
+      "operation_id": "delete_sensor_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__threshold_alert_delete",
+      "tags": [
+        "Sensors"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/telemetry",
+      "operation_id": "sensor_telemetry_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__telemetry_get",
+      "tags": [
+        "Sensors"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/mqtt-config/export",
+      "operation_id": "export_mqtt_config_api_v1_aquaponics_systems__system_id__mqtt_config_export_get",
+      "tags": [
+        "Aquaponics Systems"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "exportMqttConfig",
+      "consumer": "SystemPage",
+      "permission": "mqtt_config.export",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/readings",
+      "operation_id": "actuator_readings_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__readings_get",
+      "tags": [
+        "Actuators"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/commands",
+      "operation_id": "actuator_commands_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__commands_get",
+      "tags": [
+        "Actuators"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/commands",
+      "operation_id": "create_actuator_command_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__commands_post",
+      "tags": [
+        "Actuators"
+      ],
+      "request_schema": "ActuatorCommandCreate",
+      "classification": "USED",
+      "frontend_wrapper": "createCommand",
+      "consumer": "DevicePage",
+      "permission": "actuators.commands.create",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/threshold-alerts/{metric}",
+      "operation_id": "get_actuator_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__threshold_alerts__metric__get",
+      "tags": [
+        "Actuators"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/threshold-alerts/{metric}",
+      "operation_id": "create_actuator_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__threshold_alerts__metric__post",
+      "tags": [
+        "Actuators"
+      ],
+      "request_schema": "ThresholdAlertConfigCreate",
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/threshold-alerts/{metric}",
+      "operation_id": "update_actuator_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__threshold_alerts__metric__patch",
+      "tags": [
+        "Actuators"
+      ],
+      "request_schema": "ThresholdAlertConfigUpdate",
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/threshold-alerts/{metric}",
+      "operation_id": "delete_actuator_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__threshold_alerts__metric__delete",
+      "tags": [
+        "Actuators"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts",
+      "operation_id": "list_system_alerts_api_v1_aquaponics_systems__system_id__alerts_get",
+      "tags": [
+        "Alerts"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "listAlerts",
+      "consumer": "SystemPage",
+      "permission": "incidents.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}",
+      "operation_id": "get_system_alert_api_v1_aquaponics_systems__system_id__alerts__alert_id__get",
+      "tags": [
+        "Alerts"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}/acknowledge",
+      "operation_id": "acknowledge_system_alert_api_v1_aquaponics_systems__system_id__alerts__alert_id__acknowledge_post",
+      "tags": [
+        "Alerts"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "acknowledgeAlert",
+      "consumer": "SystemPage",
+      "permission": "incidents.acknowledge",
+      "current_status": "mapped"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}/resolve",
+      "operation_id": "resolve_system_alert_api_v1_aquaponics_systems__system_id__alerts__alert_id__resolve_post",
+      "tags": [
+        "Alerts"
+      ],
+      "request_schema": "AlertResolutionRequest",
+      "classification": "USED",
+      "frontend_wrapper": "resolveAlert",
+      "consumer": "SystemPage",
+      "permission": "incidents.resolve",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/sensor-models",
+      "operation_id": "list_sensor_models_api_v1_sensor_models_get",
+      "tags": [
+        "Sensor Models"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "listSensorModels",
+      "consumer": "DevicePage/CatalogsPage",
+      "permission": "sensor_models.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/sensor-models",
+      "operation_id": "create_sensor_model_api_v1_sensor_models_post",
+      "tags": [
+        "Sensor Models"
+      ],
+      "request_schema": "SensorModelCreate",
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/sensor-models/{model_id}",
+      "operation_id": "get_sensor_model_api_v1_sensor_models__model_id__get",
+      "tags": [
+        "Sensor Models"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/sensor-models/{model_id}",
+      "operation_id": "update_sensor_model_api_v1_sensor_models__model_id__patch",
+      "tags": [
+        "Sensor Models"
+      ],
+      "request_schema": "SensorModelUpdate",
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/sensor-models/{model_id}",
+      "operation_id": "delete_sensor_model_api_v1_sensor_models__model_id__delete",
+      "tags": [
+        "Sensor Models"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "operation_id": "list_users_api_v1_users_get",
+      "tags": [
+        "Users"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "listUsers",
+      "consumer": "UsersPage",
+      "permission": "users.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/{user_id}",
+      "operation_id": "get_user_api_v1_users__user_id__get",
+      "tags": [
+        "Users"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/device-templates",
+      "operation_id": "list_device_templates_api_v1_device_templates_get",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "listDeviceTemplates",
+      "consumer": "CatalogsPage",
+      "permission": "device_templates.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/device-templates",
+      "operation_id": "create_device_template_api_v1_device_templates_post",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": "DeviceTemplateCreate",
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/device-templates/{template_id}",
+      "operation_id": "get_device_template_api_v1_device_templates__template_id__get",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/device-templates/{template_id}",
+      "operation_id": "update_device_template_api_v1_device_templates__template_id__patch",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": "DeviceTemplateUpdate",
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/device-templates/{template_id}",
+      "operation_id": "delete_device_template_api_v1_device_templates__template_id__delete",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/device-templates/{template_id}/sensors",
+      "operation_id": "list_template_sensors_api_v1_device_templates__template_id__sensors_get",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/device-templates/{template_id}/sensors",
+      "operation_id": "add_template_sensor_api_v1_device_templates__template_id__sensors_post",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": "TemplateSensorSlotCreate",
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/device-templates/{template_id}/sensors/{mapping_id}",
+      "operation_id": "get_template_sensor_api_v1_device_templates__template_id__sensors__mapping_id__get",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/device-templates/{template_id}/sensors/{mapping_id}",
+      "operation_id": "update_template_sensor_api_v1_device_templates__template_id__sensors__mapping_id__patch",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": "TemplateSensorSlotUpdate",
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/device-templates/{template_id}/sensors/{mapping_id}",
+      "operation_id": "delete_template_sensor_api_v1_device_templates__template_id__sensors__mapping_id__delete",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/device-templates/{template_id}/actuators",
+      "operation_id": "list_template_actuators_api_v1_device_templates__template_id__actuators_get",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/device-templates/{template_id}/actuators",
+      "operation_id": "add_template_actuator_api_v1_device_templates__template_id__actuators_post",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": "TemplateActuatorSlotCreate",
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/device-templates/{template_id}/actuators/{mapping_id}",
+      "operation_id": "get_template_actuator_api_v1_device_templates__template_id__actuators__mapping_id__get",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/device-templates/{template_id}/actuators/{mapping_id}",
+      "operation_id": "update_template_actuator_api_v1_device_templates__template_id__actuators__mapping_id__patch",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": "TemplateActuatorSlotUpdate",
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/device-templates/{template_id}/actuators/{mapping_id}",
+      "operation_id": "delete_template_actuator_api_v1_device_templates__template_id__actuators__mapping_id__delete",
+      "tags": [
+        "Device Templates"
+      ],
+      "request_schema": null,
+      "classification": "INTERNAL/DEVICE_ONLY",
+      "frontend_wrapper": null,
+      "consumer": "Device detail capability (available in resources)",
+      "permission": "device-scoped permission",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/actuator-models",
+      "operation_id": "list_actuator_models_api_v1_actuator_models_get",
+      "tags": [
+        "Actuator Models"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "listActuatorModels",
+      "consumer": "DevicePage/CatalogsPage",
+      "permission": "actuator_models.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/actuator-models",
+      "operation_id": "create_actuator_model_api_v1_actuator_models_post",
+      "tags": [
+        "Actuator Models"
+      ],
+      "request_schema": "ActuatorModelCreate",
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/actuator-models/{model_id}",
+      "operation_id": "get_actuator_model_api_v1_actuator_models__model_id__get",
+      "tags": [
+        "Actuator Models"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/actuator-models/{model_id}",
+      "operation_id": "update_actuator_model_api_v1_actuator_models__model_id__patch",
+      "tags": [
+        "Actuator Models"
+      ],
+      "request_schema": "ActuatorModelUpdate",
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/actuator-models/{model_id}",
+      "operation_id": "delete_actuator_model_api_v1_actuator_models__model_id__delete",
+      "tags": [
+        "Actuator Models"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/monitoring/latest",
+      "operation_id": "monitoring_latest_api_v1_aquaponics_systems__system_id__monitoring_latest_get",
+      "tags": [
+        "Monitoring"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "getMonitoringLatest",
+      "consumer": "SystemPage",
+      "permission": "monitoring.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/monitoring/series",
+      "operation_id": "monitoring_series_api_v1_aquaponics_systems__system_id__monitoring_series_get",
+      "tags": [
+        "Monitoring"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "getMonitoringSeries",
+      "consumer": "SystemPage",
+      "permission": "monitoring.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/members",
+      "operation_id": "list_members_api_v1_aquaponics_systems__system_id__members_get",
+      "tags": [
+        "Members"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "listMembers",
+      "consumer": "SystemPage",
+      "permission": "aquaponics_systems.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/members",
+      "operation_id": "add_member_api_v1_aquaponics_systems__system_id__members_post",
+      "tags": [
+        "Members"
+      ],
+      "request_schema": "AquaponicsSystemMemberCreate",
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}/members/{user_id}",
+      "operation_id": "update_member_api_v1_aquaponics_systems__system_id__members__user_id__patch",
+      "tags": [
+        "Members"
+      ],
+      "request_schema": "AquaponicsSystemMemberUpdate",
+      "classification": "USED",
+      "frontend_wrapper": "updateMember",
+      "consumer": "SystemPage",
+      "permission": "aquaponics_systems.manage_members",
+      "current_status": "mapped"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}/members/{user_id}",
+      "operation_id": "remove_member_api_v1_aquaponics_systems__system_id__members__user_id__delete",
+      "tags": [
+        "Members"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/activities",
+      "operation_id": "activities_api_v1_aquaponics_systems__system_id__activities_get",
+      "tags": [
+        "Activities"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "listActivities",
+      "consumer": "SystemPage",
+      "permission": "aquaponics_systems.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/scada/runtime",
+      "operation_id": "scada_runtime_api_v1_aquaponics_systems__system_id__scada_runtime_get",
+      "tags": [
+        "SCADA"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "getScadaRuntime",
+      "consumer": "SystemPage",
+      "permission": "scada.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/aquaponics-systems/{system_id}/scada/layout/draft",
+      "operation_id": "scada_draft_api_v1_aquaponics_systems__system_id__scada_layout_draft_put",
+      "tags": [
+        "SCADA"
+      ],
+      "request_schema": "ScadaLayout",
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/scada/layout/publish",
+      "operation_id": "scada_publish_api_v1_aquaponics_systems__system_id__scada_layout_publish_post",
+      "tags": [
+        "SCADA"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/settings",
+      "operation_id": "get_alert_settings_api_v1_aquaponics_systems__system_id__alerts_settings_get",
+      "tags": [
+        "Alerts"
+      ],
+      "request_schema": null,
+      "classification": "USED",
+      "frontend_wrapper": "getAlertSettings",
+      "consumer": "SystemPage",
+      "permission": "incidents.read",
+      "current_status": "mapped"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/settings",
+      "operation_id": "put_alert_settings_api_v1_aquaponics_systems__system_id__alerts_settings_put",
+      "tags": [
+        "Alerts"
+      ],
+      "request_schema": "AlertSettingsUpdate",
+      "classification": "USED",
+      "frontend_wrapper": "updateAlertSettings",
+      "consumer": "SystemPage",
+      "permission": "incidents.manage_settings",
+      "current_status": "mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "operation_id": "health_health_get",
+      "tags": [
+        "System"
+      ],
+      "request_schema": null,
+      "classification": "NOT_USED_BY_FE",
+      "frontend_wrapper": null,
+      "consumer": "No active page consumer; typed wrapper remains available",
+      "permission": "endpoint policy",
+      "current_status": "available-but-not-rendered"
+    }
+  ]
+}

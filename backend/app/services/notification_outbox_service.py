@@ -8,6 +8,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
+from app.models.actuator import Actuator
 from app.models.device import Device
 from app.models.operational_alert import (
     NotificationDelivery,
@@ -19,6 +20,7 @@ from app.models.project_settings import (
     ProjectNotificationRiskPolicy,
     ProjectNotificationSettings,
 )
+from app.models.telemetry import TelemetryReading
 from app.services.telegram_notifier import TelegramNotifier
 
 RISK_LABELS = {"EXTREME": "CỰC CAO", "VERY_HIGH": "RẤT CAO", "HIGH": "CAO", "MEDIUM": "TRUNG BÌNH", "LOW_MEDIUM": "THẤP–TRUNG BÌNH", "LOW": "THẤP"}
@@ -34,6 +36,17 @@ RISK_SETTING_FIELDS = {
 QUALITY_LABELS = {"VALID": "Hợp lệ", "OUT_OF_RANGE": "Ngoài phạm vi", "INVALID": "Không hợp lệ", "UNVALIDATED": "Chưa được xác thực", "STALE": "Dữ liệu cũ", "NO_DATA": "Không có dữ liệu"}
 COMMAND_LABELS = {"ACKNOWLEDGED": "Đã xác nhận", "FAILED": "Thất bại", "TIMEOUT": "Hết thời gian chờ", "PUBLISHED": "Đã gửi lệnh", "PENDING": "Đang chờ gửi"}
 OPERATOR_LABELS = {"LT": "<", "LTE": "≤", "GT": ">", "GTE": "≥", "EQ": "=", "OUTSIDE": "ngoài"}
+
+TELEGRAM_PUSH_INCIDENT_EVENTS = {"OPEN", "RECOVERED"}
+
+
+def telegram_action_keyboard(project_id: int) -> dict:
+    return {
+        "inline_keyboard": [[
+            {"text": "🚨 Cảnh báo hiện tại", "callback_data": f"a:{project_id}"},
+            {"text": "📊 Tình trạng hệ thống", "callback_data": f"s:{project_id}"},
+        ]]
+    }
 
 
 def _event_heading(event: str, risk: str, *, canonical: bool) -> str:
@@ -112,8 +125,38 @@ def format_operational_message(payload: dict) -> str:
     return "\n".join(lines)
 
 
+def format_recovered_operational_message(payload: dict) -> str:
+    resource = str(payload.get("resource_name") or payload.get("sensor_name") or payload.get("actuator_name") or "Thiết bị")
+    lines = [
+        "✅ ĐÃ TRỞ VỀ BÌNH THƯỜNG — HỆ THỐNG AQUAPONICS",
+        "",
+        f"HỆ THỐNG: {payload.get('project_name', '—')}",
+        f"THIẾT BỊ: {payload.get('device_name', '—')}",
+        f"NGUỒN: {resource}",
+    ]
+    if payload.get("value") is not None:
+        lines.append(f"Giá trị hiện tại: {_number(payload['value'])} {payload.get('unit') or ''}".strip())
+    if payload.get("voltage_v") is not None:
+        lines.append(f"Điện áp hiện tại: {_number(payload['voltage_v'])} V")
+    if payload.get("current_a") is not None:
+        lines.append(f"Dòng điện hiện tại: {_number(payload['current_a'])} A")
+    if payload.get("reported_state") is not None:
+        lines.append(f"Trạng thái hiện tại: {'Bật' if payload['reported_state'] else 'Tắt'}")
+    if isinstance(payload.get("lower"), (float, int)) and isinstance(payload.get("upper"), (float, int)):
+        lines.append(f"Khoảng bình thường: {_number(payload['lower'])} – {_number(payload['upper'])} {payload.get('unit') or ''}".strip())
+    elif payload.get("threshold") is not None:
+        direction = str(payload.get("threshold_direction") or "")
+        operator = "<" if direction == "BELOW" else ">" if direction == "ABOVE" else ""
+        lines.append(f"Điều kiện cảnh báo trước đó: {operator} {_number(payload['threshold'])} {payload.get('unit') or ''}".strip())
+    lines.append(f"Phục hồi lúc: {_display_datetime(payload.get('recorded_at'))}")
+    lines.append(f"Sự cố kéo dài: {_duration(payload.get('duration_seconds'))}")
+    return "\n".join(lines)
+
+
 def format_canonical_operational_message(payload: dict) -> str:
     event = str(payload.get("event_type") or "OPEN")
+    if event == "RECOVERED":
+        return format_recovered_operational_message(payload)
     risk = str(payload.get("business_risk_level") or "MEDIUM")
     direction = str(payload.get("threshold_direction") or "")
     resource = str(payload.get("resource_name") or "Thiết bị")
@@ -187,7 +230,7 @@ async def evaluate_notification_policy(
     if not settings.telegram_enabled:
         return "TELEGRAM_DISABLED"
     if source_type != "INCIDENT":
-        return None
+        return "PUSH_ONLY_ALERT_LIFECYCLE"
     policy = await db.scalar(select(ProjectNotificationRiskPolicy).where(
         ProjectNotificationRiskPolicy.project_id == project_id,
         ProjectNotificationRiskPolicy.risk_level == risk,
@@ -195,14 +238,12 @@ async def evaluate_notification_policy(
     risk_allowed = policy.telegram_enabled if policy else _risk_enabled(settings, risk or "")
     if not risk_allowed:
         return "RISK_DISABLED"
+    if event_type not in TELEGRAM_PUSH_INCIDENT_EVENTS:
+        return "EVENT_DISABLED"
     event_allowed = {
         "OPEN": policy.notify_on_open if policy else settings.notify_alert_opened,
-        "ACTIVE_SYNC": policy.notify_on_open if policy else settings.notify_alert_opened,
-        "ESCALATED": policy.notify_on_escalation if policy else settings.notify_alert_escalated,
-        "REMINDER": policy.reminder_enabled if policy else settings.notify_alert_reminder,
         "RECOVERED": policy.notify_on_recovery if policy else settings.notify_alert_recovered,
-        "RESOLVED": policy.notify_on_resolved if policy else settings.notify_alert_resolved,
-    }.get(event_type, False)
+    }[event_type]
     return None if event_allowed else "EVENT_DISABLED"
 
 
@@ -336,6 +377,33 @@ def _payload_at_delivery(outbox: NotificationOutbox, incident: OperationalIncide
     return payload
 
 
+async def _hydrate_recovery_payload(
+    db: AsyncSession, incident: OperationalIncident, payload: dict
+) -> dict:
+    hydrated = dict(payload)
+    if incident.sensor_id is not None:
+        reading = await db.scalar(
+            select(TelemetryReading)
+            .where(TelemetryReading.sensor_id == incident.sensor_id)
+            .order_by(TelemetryReading.recorded_at.desc(), TelemetryReading.id.desc())
+            .limit(1)
+        )
+        if reading is not None:
+            hydrated["value"] = reading.value
+            hydrated["recorded_at"] = reading.recorded_at.isoformat()
+            hydrated["received_at"] = reading.received_at.isoformat()
+    if incident.actuator_id is not None:
+        actuator = await db.get(Actuator, incident.actuator_id)
+        if actuator is not None:
+            hydrated["voltage_v"] = actuator.voltage_v
+            hydrated["current_a"] = actuator.current_a
+            hydrated["reported_state"] = actuator.reported_state
+            hydrated["desired_state"] = actuator.desired_state
+            if actuator.last_reported_at is not None:
+                hydrated["recorded_at"] = actuator.last_reported_at.isoformat()
+    return hydrated
+
+
 def _delivery_identity(outbox: NotificationOutbox, incident: OperationalIncident | None) -> str:
     if incident is None:
         return f"{outbox.source_type.lower()}:{outbox.idempotency_key}"
@@ -443,6 +511,13 @@ async def process_notification_outbox(db: AsyncSession, *, notifier: TelegramNot
         defensive_deduplication = outbox.event_type in {"OPEN", "RECOVERED", "RESOLVED", "ESCALATED"}
         duplicate_for_all = bool(recipients) and defensive_deduplication
         payload = _payload_at_delivery(outbox, incident, now) if incident else {**outbox.payload_snapshot, "event_type": outbox.event_type}
+        if incident is not None and outbox.event_type == "RECOVERED":
+            payload = await _hydrate_recovery_payload(db, incident, payload)
+        reply_markup = (
+            telegram_action_keyboard(project_id)
+            if incident is not None and outbox.event_type in TELEGRAM_PUSH_INCIDENT_EVENTS
+            else None
+        )
         for recipient in recipients:
             if defensive_deduplication:
                 prior_sent = await db.scalar(
@@ -469,7 +544,9 @@ async def process_notification_outbox(db: AsyncSession, *, notifier: TelegramNot
             delivery.attempt_count += 1
             delivery.last_attempt_at = now
             message = format_project_activity_message(payload) if outbox.source_type == "PROJECT_ACTIVITY" else format_operational_message(payload)
-            result = await notifier.send_message(recipient.telegram_chat_id, message)
+            result = await notifier.send_message(
+                recipient.telegram_chat_id, message, reply_markup=reply_markup
+            )
             if result.sent:
                 delivery.status = "SENT"
                 delivery.sent_at = now

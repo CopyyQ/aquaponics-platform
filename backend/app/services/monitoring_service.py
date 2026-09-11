@@ -12,12 +12,9 @@ from app.models.alert import SensorAlert
 from app.models.operational_alert import AlertRule, OperationalIncident
 from app.models.project_member import ProjectMember
 from app.models.sensor import Sensor
-from app.models.threshold_alert_config import ThresholdAlertConfig
 from app.models.device import Device
-from app.models.project import Project
-from app.models.actuator import Actuator
 from app.services.measurement_quality import classify_measurement_quality
-from app.services.threshold_alert_config_service import evaluate_threshold
+from app.services.sensor_threshold_config import evaluate_sensor_threshold, resolve_sensor_threshold_config
 from app.queries.monitoring_queries import (
     device_actuator_history_rows,
     latest_project_actuator_electrical_rows,
@@ -31,17 +28,6 @@ from app.queries.monitoring_queries import (
 # thresholds. These are conservative catalog fallbacks until a model-specific
 def _quality(model_code: str, value: float | None) -> tuple[str, str | None, float | None, float | None]:
     return classify_measurement_quality(model_code, value)
-
-
-async def _sensor_threshold_map(db: AsyncSession, rows: list[tuple]) -> dict[int, ThresholdAlertConfig]:
-    sensor_ids = {sensor.id for _, sensor, model, *_ in rows if sensor is not None and model is not None}
-    if not sensor_ids:
-        return {}
-    configs = list((await db.scalars(select(ThresholdAlertConfig).where(
-        ThresholdAlertConfig.sensor_id.in_(sensor_ids),
-        ThresholdAlertConfig.metric_type == "SENSOR_VALUE",
-    ))).all())
-    return {config.sensor_id: config for config in configs if config.sensor_id is not None}
 
 
 def _actuator_sync(desired: bool | None, reported: bool | None, command: str | None) -> str:
@@ -113,7 +99,6 @@ async def get_project_monitoring_summary(
     now = datetime.now(timezone.utc)
     stale_seconds = settings.device_offline_seconds
     rows = await latest_project_sensor_rows(db, project_id)
-    threshold_by_sensor = await _sensor_threshold_map(db, rows)
     alert_rows = (
         await db.execute(
             select(SensorAlert, Sensor, Device)
@@ -142,7 +127,7 @@ async def get_project_monitoring_summary(
             .outerjoin(AlertRule, AlertRule.id == OperationalIncident.rule_id)
             .where(
                 OperationalIncident.project_id == project_id,
-                OperationalIncident.status.in_(("PENDING", "OPEN", "ACKNOWLEDGED", "NORMALIZED")),
+                OperationalIncident.status.in_(("PENDING", "OPEN", "ACKNOWLEDGED")),
             )
             .order_by(OperationalIncident.started_at.asc(), OperationalIncident.id.asc())
         )
@@ -172,8 +157,8 @@ async def get_project_monitoring_summary(
         })
         if sensor is None or model is None:
             continue
-        threshold_config = threshold_by_sensor.get(sensor.id)
-        threshold_evaluation = evaluate_threshold(float(value) if value is not None else None, threshold_config)
+        threshold_config = resolve_sensor_threshold_config(sensor, model)
+        threshold_evaluation = evaluate_sensor_threshold(float(value) if value is not None else None, threshold_config)
         device_item["sensor_count"] += 1
         has_latest = value is not None and recorded_at is not None
         freshness_at = received_at or recorded_at
@@ -403,7 +388,7 @@ def _actuator_electrical_payload(rows: list, now: datetime) -> dict:
             "quality": quality, "freshness": freshness,
             "recorded_at": recorded_at, "received_at": received_at,
             "lower_threshold": lower, "upper_threshold": upper,
-            "threshold_source": "ACTUATOR_OVERRIDE" if lower is not None or upper is not None else "NONE", "threshold_status": threshold_status,
+            "threshold_source": "ACTUATOR" if lower is not None or upper is not None else "NONE", "threshold_status": threshold_status,
         }
 
     current = metric("current", "A")
@@ -419,10 +404,6 @@ def _actuator_electrical_payload(rows: list, now: datetime) -> dict:
         "configured": current["configured"], "sensor_id": current["sensor_id"],
         "current_a": current["value"], "quality": current["quality"], "freshness": current["freshness"],
         "recorded_at": current["recorded_at"], "received_at": current["received_at"],
-        # Operating-current limits are not the same concept as Alert thresholds.
-        # The canonical actuator model currently has no independent running-current profile,
-        # so keep these explicitly unconfigured rather than leaking Alert thresholds into it.
-        "minimum_running_current_a": None, "maximum_running_current_a": None,
         "current_lower_threshold": current["lower_threshold"], "current_upper_threshold": current["upper_threshold"],
         "active_incident": incident,
     }
@@ -491,16 +472,14 @@ def sensor_connection_status(
 
 
 async def get_project_monitoring_latest(db: AsyncSession, project_id: int) -> dict:
-    project_public_id = await db.scalar(select(Project.public_id).where(Project.id == project_id))
     now = datetime.now(timezone.utc)
     rows = await latest_project_sensor_rows(db, project_id)
-    threshold_by_sensor = await _sensor_threshold_map(db, rows)
     devices: dict[int, dict] = {}
     for device, sensor, model, value, recorded_at, received_at in rows:
         device_payload = devices.setdefault(
             device.id,
             {
-                "id": device.public_id,
+                "id": device.id,
                 "code": device.code,
                 "name": device.name,
                 "is_enabled": device.is_enabled,
@@ -513,15 +492,15 @@ async def get_project_monitoring_latest(db: AsyncSession, project_id: int) -> di
         )
         if sensor is None or model is None:
             continue
-        threshold_config = threshold_by_sensor.get(sensor.id)
-        threshold_evaluation = evaluate_threshold(
+        threshold_config = resolve_sensor_threshold_config(sensor, model)
+        threshold_evaluation = evaluate_sensor_threshold(
             float(value) if value is not None else None, threshold_config
         )
         has_telemetry = value is not None and recorded_at is not None
         freshness = "NO_DATA" if not has_telemetry else "STALE" if (now - (received_at or recorded_at)).total_seconds() > settings.device_offline_seconds else "FRESH"
         device_payload["sensors"].append(
             {
-                "id": sensor.public_id,
+                "id": sensor.id,
                 "code": sensor.code,
                 "name": sensor.name,
                 "unit": model.unit,
@@ -550,10 +529,10 @@ async def get_project_monitoring_latest(db: AsyncSession, project_id: int) -> di
                     if has_telemetry
                     else None
                 ),
-                "lower_threshold": threshold_config.lower_threshold if threshold_config else None,
-                "upper_threshold": threshold_config.upper_threshold if threshold_config else None,
+                "lower_threshold": threshold_config.lower_threshold,
+                "upper_threshold": threshold_config.upper_threshold,
                 "threshold_state": threshold_evaluation.state,
-                "alerts_enabled": bool(threshold_config.enabled) if threshold_config else False,
+                "alerts_enabled": threshold_config.alerts_enabled,
             }
         )
     actuator_rows = await latest_project_actuator_rows(db, project_id)
@@ -571,7 +550,7 @@ async def get_project_monitoring_latest(db: AsyncSession, project_id: int) -> di
         active_incident = electrical.pop("active_incident")
         device_payload["actuators"].append(
             {
-                "id": actuator.public_id,
+                "id": actuator.id,
                 "code": actuator.code,
                 "name": actuator.name,
                 "actuator_model": actuator.actuator_model.name if actuator.actuator_model else None,
@@ -589,7 +568,7 @@ async def get_project_monitoring_latest(db: AsyncSession, project_id: int) -> di
                 "active_incident": active_incident,
             }
         )
-    return {"project_id": project_public_id, "devices": list(devices.values())}
+    return {"project_id": project_id, "devices": list(devices.values())}
 
 
 async def get_project_monitoring_series(
@@ -604,10 +583,6 @@ async def get_project_monitoring_series(
     end = now or datetime.now(timezone.utc)
     start = end - config.duration
     sensor_rows = await project_sensor_metadata_rows(db, project_id, device_id)
-    sensor_public_ids = dict((await db.execute(select(Sensor.id, Sensor.public_id).where(
-        Sensor.id.in_([sensor_id for sensor_id, _ in sensor_rows])
-    ))).all()) if sensor_rows else {}
-    project_public_id = await db.scalar(select(Project.public_id).where(Project.id == project_id))
     sensor_units = {sensor_id: unit for sensor_id, unit in sensor_rows}
     rows = await project_series_rows(
         db,
@@ -625,12 +600,12 @@ async def get_project_monitoring_series(
         for sensor_id, sensor_points in points.items()
     }
     return {
-        "project_id": project_public_id,
+        "project_id": project_id,
         "range": monitoring_range,
         "resolution": config.resolution,
         "series": [
             {
-                "sensor_id": sensor_public_ids[sensor_id],
+                "sensor_id": sensor_id,
                 "unit": unit,
                 "points": points[sensor_id],
                 "gaps": gaps_by_sensor.get(sensor_id, []),
@@ -854,27 +829,25 @@ async def get_device_actuator_history(
         )
     actuator_rows = await latest_project_actuator_rows(db, project_id)
     actuator_ids = [
-        (actuator.id, actuator.public_id)
+        actuator.id
         for row_device_id, actuator, _, _ in actuator_rows
         if row_device_id == device_id
     ]
     items = []
-    for actuator_id, actuator_public_id in actuator_ids:
+    for actuator_id in actuator_ids:
         points = points_by_actuator[actuator_id]
         gaps, statistics = _actuator_history_payload(points, start=start, end=end)
         items.append(
             {
-                "actuator_id": actuator_public_id,
+                "actuator_id": actuator_id,
                 "points": points,
                 "gaps": gaps,
                 "statistics": statistics,
             }
         )
-    project_public_id = await db.scalar(select(Project.public_id).where(Project.id == project_id))
-    device_public_id = await db.scalar(select(Device.public_id).where(Device.id == device_id, Device.project_id == project_id))
     return {
-        "project_id": project_public_id,
-        "device_id": device_public_id,
+        "project_id": project_id,
+        "device_id": device_id,
         "range": monitoring_range,
         "items": items,
     }

@@ -1,0 +1,1763 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net">
+  <diagram name="Aquaponics ERD" id="aquaponics-erd">
+    <mxGraphModel grid="1" gridSize="10" page="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="actuator_commands" value="actuator_commands" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="40" width="490" height="370" />
+        </mxCell>
+        <mxCell id="actuator_commands.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_commands.actuator_id" value="FK  actuator_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_commands.desired_state" value="—  desired_state : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_commands.reported_state" value="—  reported_state : BOOLEAN NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_commands.status" value="—  status : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_commands.requested_by_user_id" value="FK  requested_by_user_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_commands.requested_at" value="—  requested_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_commands.acknowledged_at" value="—  acknowledged_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_commands.published_at" value="—  published_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_commands.failed_at" value="—  failed_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_commands.timed_out_at" value="—  timed_out_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_commands.failure_reason" value="—  failure_reason : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_commands.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_commands.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_commands">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings" value="actuator_feedback_bindings" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="640" y="40" width="490" height="394" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.actuator_id" value="FK  actuator_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.sensor_id" value="FK  sensor_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.feedback_role" value="—  feedback_role : VARCHAR(40) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.model_feedback_id" value="FK  model_feedback_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.value_key" value="—  value_key : VARCHAR(80) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.unit" value="—  unit : VARCHAR(50) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.data_type" value="—  data_type : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.lower_threshold" value="—  lower_threshold : FLOAT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.upper_threshold" value="—  upper_threshold : FLOAT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.is_enabled" value="—  is_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.created_by" value="FK  created_by : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.updated_by" value="FK  updated_by : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_feedback_bindings.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_feedback_bindings">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions" value="actuator_model_feedback_definitions" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1240" y="40" width="490" height="370" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.actuator_model_id" value="FK  actuator_model_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.feedback_role" value="—  feedback_role : VARCHAR(40) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.sensor_model_id" value="FK  sensor_model_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.value_key" value="—  value_key : VARCHAR(80) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.unit" value="—  unit : VARCHAR(50) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.data_type" value="—  data_type : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.default_lower_threshold" value="—  default_lower_threshold : FLOAT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.default_upper_threshold" value="—  default_upper_threshold : FLOAT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.is_required" value="—  is_required : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.is_enabled" value="—  is_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.display_order" value="—  display_order : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_model_feedback_definitions.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_model_feedback_definitions">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_models" value="actuator_models" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1840" y="40" width="490" height="322" />
+        </mxCell>
+        <mxCell id="actuator_models.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_models">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_models.code" value="UK  code : VARCHAR(80) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_models">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_models.name" value="—  name : VARCHAR(255) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_models">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_models.description" value="—  description : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_models">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_models.data_type" value="—  data_type : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_models">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_models.default_state" value="—  default_state : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_models">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_models.is_active" value="—  is_active : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_models">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_models.sort_order" value="—  sort_order : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_models">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_models.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_models">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_models.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_models">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_models.is_deleted" value="—  is_deleted : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_models">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_models.deleted_at" value="—  deleted_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_models">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_state_history" value="actuator_state_history" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="2440" y="40" width="490" height="178" />
+        </mxCell>
+        <mxCell id="actuator_state_history.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_state_history">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_state_history.actuator_id" value="FK  actuator_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_state_history">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_state_history.state" value="—  state : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_state_history">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_state_history.recorded_at" value="—  recorded_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_state_history">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_state_history.source" value="—  source : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_state_history">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuator_state_history.command_id" value="FK  command_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuator_state_history">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators" value="actuators" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="2440" y="318" width="490" height="610" />
+        </mxCell>
+        <mxCell id="actuators.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.device_id" value="FK  device_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.actuator_model_id" value="FK  actuator_model_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.sequence_number" value="—  sequence_number : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.code" value="—  code : VARCHAR(80) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.name" value="—  name : VARCHAR(255) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.location" value="—  location : VARCHAR(255) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.notes" value="—  notes : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.is_enabled" value="—  is_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.desired_state" value="—  desired_state : BOOLEAN NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.reported_state" value="—  reported_state : BOOLEAN NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.last_command_at" value="—  last_command_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.reported_state_at" value="—  reported_state_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.last_reported_at" value="—  last_reported_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.disabled_at" value="—  disabled_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.disabled_by_user_id" value="FK  disabled_by_user_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="394" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.disabled_reason" value="—  disabled_reason : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="418" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.removed_at" value="—  removed_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="442" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.removed_by_user_id" value="FK  removed_by_user_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="466" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.removed_reason" value="—  removed_reason : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="490" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="514" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="538" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.is_deleted" value="—  is_deleted : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="562" width="490" height="24" />
+        </mxCell>
+        <mxCell id="actuators.deleted_at" value="—  deleted_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="actuators">
+          <mxGeometry as="geometry" x="0" y="586" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_model_profiles" value="alert_rule_actuator_model_profiles" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1840" y="462" width="490" height="82" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_model_profiles.profile_id" value="PK,FK  profile_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_actuator_model_profiles">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_model_profiles.actuator_model_id" value="PK,FK  actuator_model_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_actuator_model_profiles">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_models" value="alert_rule_actuator_models" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="510" width="490" height="82" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_models.rule_id" value="PK,FK  rule_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_actuator_models">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_models.actuator_model_id" value="PK,FK  actuator_model_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_actuator_models">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_overrides" value="alert_rule_actuator_overrides" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1240" y="510" width="490" height="202" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_overrides.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_actuator_overrides">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_overrides.rule_id" value="FK  rule_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_actuator_overrides">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_overrides.actuator_id" value="FK  actuator_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_actuator_overrides">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_overrides.config" value="—  config : JSONB NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_actuator_overrides">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_overrides.is_enabled" value="—  is_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_actuator_overrides">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_overrides.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_actuator_overrides">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_actuator_overrides.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_actuator_overrides">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_profiles" value="alert_rule_profiles" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="640" y="534" width="490" height="226" />
+        </mxCell>
+        <mxCell id="alert_rule_profiles.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_profiles">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_profiles.rule_id" value="FK  rule_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_profiles">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_profiles.code" value="UK  code : VARCHAR(100) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_profiles">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_profiles.name" value="—  name : VARCHAR(255) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_profiles">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_profiles.config" value="—  config : JSONB NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_profiles">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_profiles.is_enabled" value="—  is_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_profiles">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_profiles.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_profiles">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_profiles.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_profiles">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_project_overrides" value="alert_rule_project_overrides" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1840" y="644" width="490" height="202" />
+        </mxCell>
+        <mxCell id="alert_rule_project_overrides.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_project_overrides">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_project_overrides.rule_id" value="FK  rule_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_project_overrides">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_project_overrides.project_id" value="FK  project_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_project_overrides">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_project_overrides.config" value="—  config : JSONB NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_project_overrides">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_project_overrides.is_enabled" value="—  is_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_project_overrides">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_project_overrides.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_project_overrides">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_project_overrides.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_project_overrides">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions" value="alert_rule_revisions" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="692" width="490" height="418" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.rule_id" value="FK  rule_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.revision" value="—  revision : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.business_risk_level" value="—  business_risk_level : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.condition_schema_version" value="—  condition_schema_version : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.condition_config" value="—  condition_config : JSONB NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.message_template" value="—  message_template : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.consequence" value="—  consequence : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.recommended_action" value="—  recommended_action : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.source_reference" value="—  source_reference : VARCHAR(255) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.source_order" value="—  source_order : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.status" value="—  status : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.created_by" value="FK  created_by : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.published_by" value="FK  published_by : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_revisions.published_at" value="—  published_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_revisions">
+          <mxGeometry as="geometry" x="0" y="394" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_model_profiles" value="alert_rule_sensor_model_profiles" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1240" y="812" width="490" height="82" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_model_profiles.profile_id" value="PK,FK  profile_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_sensor_model_profiles">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_model_profiles.sensor_model_id" value="PK,FK  sensor_model_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_sensor_model_profiles">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_models" value="alert_rule_sensor_models" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="640" y="860" width="490" height="82" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_models.rule_id" value="PK,FK  rule_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_sensor_models">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_models.sensor_model_id" value="PK,FK  sensor_model_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_sensor_models">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_overrides" value="alert_rule_sensor_overrides" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1840" y="946" width="490" height="202" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_overrides.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_sensor_overrides">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_overrides.rule_id" value="FK  rule_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_sensor_overrides">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_overrides.sensor_id" value="FK  sensor_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_sensor_overrides">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_overrides.config" value="—  config : JSONB NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_sensor_overrides">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_overrides.is_enabled" value="—  is_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_sensor_overrides">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_overrides.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_sensor_overrides">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rule_sensor_overrides.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rule_sensor_overrides">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rules" value="alert_rules" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1240" y="994" width="490" height="250" />
+        </mxCell>
+        <mxCell id="alert_rules.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rules">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rules.code" value="UK  code : VARCHAR(100) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rules">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rules.name" value="—  name : VARCHAR(255) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rules">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rules.target_type" value="—  target_type : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rules">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rules.evaluator_type" value="—  evaluator_type : VARCHAR(50) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rules">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rules.is_enabled" value="—  is_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rules">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rules.current_revision_id" value="FK  current_revision_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rules">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rules.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rules">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="alert_rules.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="alert_rules">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="audit_logs" value="audit_logs" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="2440" y="1028" width="490" height="274" />
+        </mxCell>
+        <mxCell id="audit_logs.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="audit_logs">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="audit_logs.user_id" value="FK  user_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="audit_logs">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="audit_logs.project_id" value="FK  project_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="audit_logs">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="audit_logs.action" value="—  action : VARCHAR(120) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="audit_logs">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="audit_logs.entity_type" value="—  entity_type : VARCHAR(120) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="audit_logs">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="audit_logs.entity_id" value="—  entity_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="audit_logs">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="audit_logs.description" value="—  description : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="audit_logs">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="audit_logs.old_data" value="—  old_data : JSONB NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="audit_logs">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="audit_logs.new_data" value="—  new_data : JSONB NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="audit_logs">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="audit_logs.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="audit_logs">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_credentials" value="device_credentials" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="640" y="1042" width="490" height="274" />
+        </mxCell>
+        <mxCell id="device_credentials.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_credentials">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_credentials.device_id" value="FK  device_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_credentials">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_credentials.version" value="—  version : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_credentials">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_credentials.secret_encrypted" value="—  secret_encrypted : TEXT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_credentials">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_credentials.issued_at" value="—  issued_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_credentials">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_credentials.expires_at" value="—  expires_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_credentials">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_credentials.last_used_at" value="—  last_used_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_credentials">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_credentials.revoked_at" value="—  revoked_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_credentials">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_credentials.created_by" value="FK  created_by : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_credentials">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_credentials.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_credentials">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators" value="device_template_actuators" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="1210" width="490" height="442" />
+        </mxCell>
+        <mxCell id="device_template_actuators.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.device_template_id" value="FK  device_template_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.actuator_model_id" value="FK  actuator_model_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.code" value="—  code : VARCHAR(80) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.default_name" value="—  default_name : VARCHAR(255) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.default_location" value="—  default_location : VARCHAR(255) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.default_notes" value="—  default_notes : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.actuator_type" value="—  actuator_type : VARCHAR(40) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.default_state" value="—  default_state : BOOLEAN NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.command_capability" value="—  command_capability : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.monitor_current" value="—  monitor_current : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.electrical_profile_id" value="FK  electrical_profile_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.sort_order" value="—  sort_order : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.is_required" value="—  is_required : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.is_enabled" value="—  is_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="394" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_actuators.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_actuators">
+          <mxGeometry as="geometry" x="0" y="418" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors" value="device_template_sensors" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1840" y="1248" width="490" height="394" />
+        </mxCell>
+        <mxCell id="device_template_sensors.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.device_template_id" value="FK  device_template_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.sensor_model_id" value="FK  sensor_model_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.display_name" value="—  display_name : VARCHAR(255) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.default_location" value="—  default_location : VARCHAR(255) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.default_lower_threshold" value="—  default_lower_threshold : FLOAT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.default_upper_threshold" value="—  default_upper_threshold : FLOAT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.default_warning_enabled" value="—  default_warning_enabled : BOOLEAN NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.default_below_threshold_message" value="—  default_below_threshold_message : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.default_above_threshold_message" value="—  default_above_threshold_message : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.default_alert_risk_level" value="—  default_alert_risk_level : VARCHAR(30) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.sort_order" value="—  sort_order : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.is_required" value="—  is_required : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_template_sensors.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_template_sensors">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_templates" value="device_templates" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1240" y="1344" width="490" height="322" />
+        </mxCell>
+        <mxCell id="device_templates.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_templates">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_templates.code" value="UK  code : VARCHAR(80) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_templates">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_templates.name" value="—  name : VARCHAR(255) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_templates">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_templates.description" value="—  description : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_templates">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_templates.notes" value="—  notes : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_templates">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_templates.device_kind" value="—  device_kind : VARCHAR(40) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_templates">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_templates.nominal_output_voltage_v" value="—  nominal_output_voltage_v : FLOAT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_templates">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_templates.is_active" value="—  is_active : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_templates">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_templates.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_templates">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_templates.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_templates">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_templates.is_deleted" value="—  is_deleted : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_templates">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="device_templates.deleted_at" value="—  deleted_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="device_templates">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices" value="devices" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="2440" y="1402" width="490" height="466" />
+        </mxCell>
+        <mxCell id="devices.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.project_id" value="FK  project_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.device_template_id" value="FK  device_template_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.code" value="UK  code : VARCHAR(80) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.name" value="—  name : VARCHAR(255) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.description" value="—  description : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.location" value="—  location : VARCHAR(255) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.status" value="—  status : device_status NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.last_seen_at" value="—  last_seen_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.disconnected_at" value="—  disconnected_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.is_enabled" value="—  is_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.disabled_at" value="—  disabled_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.disabled_by_user_id" value="FK  disabled_by_user_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.disabled_reason" value="—  disabled_reason : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="394" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.is_deleted" value="—  is_deleted : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="418" width="490" height="24" />
+        </mxCell>
+        <mxCell id="devices.deleted_at" value="—  deleted_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="devices">
+          <mxGeometry as="geometry" x="0" y="442" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries" value="notification_deliveries" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="640" y="1416" width="490" height="442" />
+        </mxCell>
+        <mxCell id="notification_deliveries.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.outbox_id" value="FK  outbox_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.incident_id" value="FK  incident_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.channel" value="—  channel : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.recipient_id" value="FK  recipient_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.recipient_reference" value="—  recipient_reference : VARCHAR(120) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.idempotency_key" value="UK  idempotency_key : VARCHAR(240) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.status" value="—  status : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.attempt_count" value="—  attempt_count : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.last_attempt_at" value="—  last_attempt_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.next_retry_at" value="—  next_retry_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.sent_at" value="—  sent_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.failed_at" value="—  failed_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.error_category" value="—  error_category : VARCHAR(60) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.provider_message_id" value="—  provider_message_id : VARCHAR(120) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="394" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_deliveries.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_deliveries">
+          <mxGeometry as="geometry" x="0" y="418" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_outbox" value="notification_outbox" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1840" y="1742" width="490" height="322" />
+        </mxCell>
+        <mxCell id="notification_outbox.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_outbox">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_outbox.incident_id" value="FK  incident_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_outbox">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_outbox.event_type" value="—  event_type : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_outbox">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_outbox.idempotency_key" value="UK  idempotency_key : VARCHAR(200) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_outbox">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_outbox.payload_snapshot" value="—  payload_snapshot : JSONB NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_outbox">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_outbox.status" value="—  status : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_outbox">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_outbox.available_at" value="—  available_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_outbox">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_outbox.attempt_count" value="—  attempt_count : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_outbox">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_outbox.last_attempt_at" value="—  last_attempt_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_outbox">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_outbox.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_outbox">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_outbox.processed_at" value="—  processed_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_outbox">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="notification_outbox.skip_reason" value="—  skip_reason : VARCHAR(120) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="notification_outbox">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents" value="operational_incidents" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="1752" width="490" height="610" />
+        </mxCell>
+        <mxCell id="operational_incidents.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.project_id" value="FK  project_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.rule_id" value="FK  rule_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.rule_revision_id" value="FK  rule_revision_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.device_id" value="FK  device_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.sensor_id" value="FK  sensor_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.actuator_id" value="FK  actuator_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.context_key" value="—  context_key : VARCHAR(160) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.status" value="—  status : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.technical_severity" value="—  technical_severity : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.business_risk_level_snapshot" value="—  business_risk_level_snapshot : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.started_at" value="—  started_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.opened_at" value="—  opened_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.acknowledged_at" value="—  acknowledged_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.normalized_at" value="—  normalized_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.resolved_at" value="—  resolved_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="394" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.last_triggered_at" value="—  last_triggered_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="418" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.occurrence_count" value="—  occurrence_count : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="442" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.trigger_snapshot" value="—  trigger_snapshot : JSONB NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="466" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.acknowledged_by" value="FK  acknowledged_by : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="490" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.resolved_by" value="FK  resolved_by : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="514" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.resolution_note" value="—  resolution_note : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="538" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="562" width="490" height="24" />
+        </mxCell>
+        <mxCell id="operational_incidents.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="operational_incidents">
+          <mxGeometry as="geometry" x="0" y="586" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_members" value="project_members" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1240" y="1766" width="490" height="202" />
+        </mxCell>
+        <mxCell id="project_members.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_members">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_members.project_id" value="FK  project_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_members">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_members.user_id" value="FK  user_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_members">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_members.role" value="—  role : VARCHAR(20) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_members">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_members.created_by" value="FK  created_by : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_members">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_members.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_members">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_members.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_members">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_recipients" value="project_notification_recipients" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="640" y="1958" width="490" height="202" />
+        </mxCell>
+        <mxCell id="project_notification_recipients.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_recipients">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_recipients.project_id" value="FK  project_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_recipients">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_recipients.name" value="—  name : VARCHAR(120) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_recipients">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_recipients.telegram_chat_id" value="—  telegram_chat_id : VARCHAR(64) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_recipients">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_recipients.enabled" value="—  enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_recipients">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_recipients.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_recipients">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_recipients.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_recipients">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies" value="project_notification_risk_policies" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="2440" y="1968" width="490" height="394" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.project_id" value="FK  project_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.risk_level" value="—  risk_level : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.telegram_enabled" value="—  telegram_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.notify_on_open" value="—  notify_on_open : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.notify_on_escalation" value="—  notify_on_escalation : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.notify_on_recovery" value="—  notify_on_recovery : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.notify_on_resolved" value="—  notify_on_resolved : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.reminder_enabled" value="—  reminder_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.initial_reminder_seconds" value="—  initial_reminder_seconds : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.repeat_interval_seconds" value="—  repeat_interval_seconds : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.max_reminders" value="—  max_reminders : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.stop_reminders_on_ack" value="—  stop_reminders_on_ack : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_risk_policies.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_risk_policies">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings" value="project_notification_settings" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1240" y="2068" width="490" height="586" />
+        </mxCell>
+        <mxCell id="project_notification_settings.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.project_id" value="FK,UK  project_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.telegram_enabled" value="—  telegram_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.notify_alert_opened" value="—  notify_alert_opened : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.notify_alert_resolved" value="—  notify_alert_resolved : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.notify_alert_recovered" value="—  notify_alert_recovered : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.notify_alert_escalated" value="—  notify_alert_escalated : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.notify_alert_reminder" value="—  notify_alert_reminder : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.reminder_interval_minutes" value="—  reminder_interval_minutes : INTEGER NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.minimum_business_risk_level" value="—  minimum_business_risk_level : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.risk_extreme_enabled" value="—  risk_extreme_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.risk_very_high_enabled" value="—  risk_very_high_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.risk_high_enabled" value="—  risk_high_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.risk_medium_enabled" value="—  risk_medium_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.risk_low_medium_enabled" value="—  risk_low_medium_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.risk_low_enabled" value="—  risk_low_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="394" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.last_health_status" value="—  last_health_status : VARCHAR(30) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="418" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.last_health_fingerprint" value="—  last_health_fingerprint : VARCHAR(64) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="442" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.last_health_snapshot" value="—  last_health_snapshot : JSONB NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="466" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.last_health_evaluated_at" value="—  last_health_evaluated_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="490" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.last_health_notified_at" value="—  last_health_notified_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="514" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="538" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_notification_settings.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_notification_settings">
+          <mxGeometry as="geometry" x="0" y="562" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_public_settings" value="project_public_settings" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1840" y="2164" width="490" height="178" />
+        </mxCell>
+        <mxCell id="project_public_settings.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_public_settings">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_public_settings.project_id" value="FK,UK  project_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_public_settings">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_public_settings.enabled" value="—  enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_public_settings">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_public_settings.public_slug" value="UK  public_slug : VARCHAR(120) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_public_settings">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_public_settings.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_public_settings">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="project_public_settings.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="project_public_settings">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects" value="projects" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="640" y="2260" width="490" height="370" />
+        </mxCell>
+        <mxCell id="projects.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects.owner_user_id" value="FK  owner_user_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects.code" value="UK  code : VARCHAR(80) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects.name" value="—  name : VARCHAR(255) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects.location" value="—  location : VARCHAR(255) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects.description" value="—  description : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects.status" value="—  status : project_status NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects.disabled_at" value="—  disabled_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects.disabled_by_user_id" value="FK  disabled_by_user_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects.disabled_reason" value="—  disabled_reason : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects.is_deleted" value="—  is_deleted : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="projects.deleted_at" value="—  deleted_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="projects">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="scada_dashboards" value="scada_dashboards" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1840" y="2442" width="490" height="274" />
+        </mxCell>
+        <mxCell id="scada_dashboards.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="scada_dashboards">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="scada_dashboards.project_id" value="FK  project_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="scada_dashboards">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="scada_dashboards.status" value="—  status : VARCHAR(20) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="scada_dashboards">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="scada_dashboards.version" value="—  version : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="scada_dashboards">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="scada_dashboards.schema_version" value="—  schema_version : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="scada_dashboards">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="scada_dashboards.layout" value="—  layout : JSONB NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="scada_dashboards">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="scada_dashboards.created_by_user_id" value="FK  created_by_user_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="scada_dashboards">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="scada_dashboards.published_at" value="—  published_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="scada_dashboards">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="scada_dashboards.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="scada_dashboards">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="scada_dashboards.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="scada_dashboards">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts" value="sensor_alerts" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="2462" width="490" height="490" />
+        </mxCell>
+        <mxCell id="sensor_alerts.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.sensor_id" value="FK  sensor_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.alert_type" value="—  alert_type : alert_type NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.severity" value="—  severity : alert_severity NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.status" value="—  status : alert_status NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.message" value="—  message : TEXT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.trigger_value" value="—  trigger_value : FLOAT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.started_at" value="—  started_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.last_triggered_at" value="—  last_triggered_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.occurrence_count" value="—  occurrence_count : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.acknowledged_at" value="—  acknowledged_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.acknowledged_by" value="FK  acknowledged_by : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.condition_active" value="—  condition_active : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.normalized_at" value="—  normalized_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.resolved_at" value="—  resolved_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.resolved_by_user_id" value="FK  resolved_by_user_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="394" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.resolution_note" value="—  resolution_note : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="418" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="442" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_alerts.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_alerts">
+          <mxGeometry as="geometry" x="0" y="466" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models" value="sensor_models" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="2440" y="2462" width="490" height="514" />
+        </mxCell>
+        <mxCell id="sensor_models.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.code" value="UK  code : VARCHAR(80) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.name" value="—  name : VARCHAR(255) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.unit" value="—  unit : VARCHAR(50) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.value_type" value="—  value_type : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.chart_type" value="—  chart_type : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.measurement_semantics" value="—  measurement_semantics : VARCHAR(20) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.description" value="—  description : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.default_lower_threshold" value="—  default_lower_threshold : FLOAT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.default_upper_threshold" value="—  default_upper_threshold : FLOAT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.default_warning_enabled" value="—  default_warning_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.default_below_threshold_message" value="—  default_below_threshold_message : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.default_above_threshold_message" value="—  default_above_threshold_message : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.default_alert_risk_level" value="—  default_alert_risk_level : VARCHAR(30) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.is_visible" value="—  is_visible : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.is_active" value="—  is_active : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="394" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="418" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="442" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.is_deleted" value="—  is_deleted : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="466" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensor_models.deleted_at" value="—  deleted_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensor_models">
+          <mxGeometry as="geometry" x="0" y="490" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors" value="sensors" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="640" y="2730" width="490" height="634" />
+        </mxCell>
+        <mxCell id="sensors.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.device_id" value="FK  device_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.sensor_model_id" value="FK  sensor_model_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.code" value="—  code : VARCHAR(80) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.name" value="—  name : VARCHAR(255) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.purpose" value="—  purpose : sensor_purpose NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.installation_location" value="—  installation_location : VARCHAR(255) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.description" value="—  description : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.status" value="—  status : sensor_status NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.last_seen_at" value="—  last_seen_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.warning_enabled" value="—  warning_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.lower_threshold" value="—  lower_threshold : FLOAT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.upper_threshold" value="—  upper_threshold : FLOAT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.below_threshold_message" value="—  below_threshold_message : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.above_threshold_message" value="—  above_threshold_message : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.alert_risk_level" value="—  alert_risk_level : VARCHAR(30) NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="394" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.alert_delay_seconds" value="—  alert_delay_seconds : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="418" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.is_enabled" value="—  is_enabled : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="442" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.disabled_at" value="—  disabled_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="466" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.disabled_by_user_id" value="FK  disabled_by_user_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="490" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.disabled_reason" value="—  disabled_reason : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="514" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="538" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="562" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.is_deleted" value="—  is_deleted : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="586" width="490" height="24" />
+        </mxCell>
+        <mxCell id="sensors.deleted_at" value="—  deleted_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="sensors">
+          <mxGeometry as="geometry" x="0" y="610" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_aggregates" value="telemetry_aggregates" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1240" y="2754" width="490" height="250" />
+        </mxCell>
+        <mxCell id="telemetry_aggregates.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_aggregates">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_aggregates.sensor_id" value="FK  sensor_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_aggregates">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_aggregates.period" value="—  period : aggregate_period NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_aggregates">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_aggregates.bucket_time" value="—  bucket_time : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_aggregates">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_aggregates.min_value" value="—  min_value : FLOAT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_aggregates">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_aggregates.max_value" value="—  max_value : FLOAT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_aggregates">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_aggregates.avg_value" value="—  avg_value : FLOAT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_aggregates">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_aggregates.record_count" value="—  record_count : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_aggregates">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_aggregates.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_aggregates">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_readings" value="telemetry_readings" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1840" y="2816" width="490" height="154" />
+        </mxCell>
+        <mxCell id="telemetry_readings.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_readings">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_readings.sensor_id" value="FK  sensor_id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_readings">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_readings.recorded_at" value="—  recorded_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_readings">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_readings.received_at" value="—  received_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_readings">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="telemetry_readings.value" value="—  value : FLOAT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="telemetry_readings">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users" value="users" style="swimlane;html=1;startSize=34;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="3052" width="490" height="610" />
+        </mxCell>
+        <mxCell id="users.id" value="PK,UK  id : BIGINT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="34" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.username" value="UK  username : VARCHAR(100) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="58" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.password_hash" value="—  password_hash : VARCHAR(255) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="82" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.full_name" value="—  full_name : VARCHAR(255) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="106" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.email" value="UK  email : VARCHAR(255) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="130" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.phone_number" value="UK  phone_number : VARCHAR(30) NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="154" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.address" value="—  address : TEXT NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="178" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.system_role" value="—  system_role : user_system_role NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="202" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.status" value="—  status : user_status NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="226" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.must_change_password" value="—  must_change_password : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="250" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.token_version" value="—  token_version : INTEGER NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="274" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.disabled_at" value="—  disabled_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="298" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.disabled_by_user_id" value="FK  disabled_by_user_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="322" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.disabled_reason" value="—  disabled_reason : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="346" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.locked_at" value="—  locked_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="370" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.locked_by_user_id" value="FK  locked_by_user_id : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="394" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.locked_reason" value="—  locked_reason : TEXT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="418" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.last_login_at" value="—  last_login_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="442" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.password_changed_at" value="—  password_changed_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="466" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.created_by" value="FK  created_by : BIGINT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="490" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.created_at" value="—  created_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="514" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.updated_at" value="—  updated_at : TIMESTAMP WITH TIME ZONE NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="538" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.is_deleted" value="—  is_deleted : BOOLEAN NOT NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="562" width="490" height="24" />
+        </mxCell>
+        <mxCell id="users.deleted_at" value="—  deleted_at : TIMESTAMP WITH TIME ZONE NULL" style="text;html=0;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;overflow=hidden;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="586" width="490" height="24" />
+        </mxCell>
+        <mxCell id="edge_0" value="actuator_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="actuators.id" target="actuator_commands.actuator_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_1" value="requested_by_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="actuator_commands.requested_by_user_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_2" value="actuator_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="actuators.id" target="actuator_feedback_bindings.actuator_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_3" value="created_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="actuator_feedback_bindings.created_by">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_4" value="model_feedback_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="actuator_model_feedback_definitions.id" target="actuator_feedback_bindings.model_feedback_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_5" value="sensor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="sensors.id" target="actuator_feedback_bindings.sensor_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_6" value="updated_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="actuator_feedback_bindings.updated_by">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_7" value="actuator_model_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="actuator_models.id" target="actuator_model_feedback_definitions.actuator_model_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_8" value="sensor_model_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="sensor_models.id" target="actuator_model_feedback_definitions.sensor_model_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_9" value="actuator_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="actuators.id" target="actuator_state_history.actuator_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_10" value="command_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="actuator_commands.id" target="actuator_state_history.command_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_11" value="actuator_model_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="actuator_models.id" target="actuators.actuator_model_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_12" value="device_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="devices.id" target="actuators.device_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_13" value="disabled_by_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="actuators.disabled_by_user_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_14" value="removed_by_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="actuators.removed_by_user_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_15" value="actuator_model_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="actuator_models.id" target="alert_rule_actuator_model_profiles.actuator_model_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_16" value="profile_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="alert_rule_profiles.id" target="alert_rule_actuator_model_profiles.profile_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_17" value="actuator_model_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="actuator_models.id" target="alert_rule_actuator_models.actuator_model_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_18" value="rule_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="alert_rules.id" target="alert_rule_actuator_models.rule_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_19" value="actuator_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="actuators.id" target="alert_rule_actuator_overrides.actuator_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_20" value="rule_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="alert_rules.id" target="alert_rule_actuator_overrides.rule_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_21" value="rule_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="alert_rules.id" target="alert_rule_profiles.rule_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_22" value="project_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="projects.id" target="alert_rule_project_overrides.project_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_23" value="rule_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="alert_rules.id" target="alert_rule_project_overrides.rule_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_24" value="created_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="alert_rule_revisions.created_by">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_25" value="published_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="alert_rule_revisions.published_by">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_26" value="rule_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="alert_rules.id" target="alert_rule_revisions.rule_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_27" value="profile_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="alert_rule_profiles.id" target="alert_rule_sensor_model_profiles.profile_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_28" value="sensor_model_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="sensor_models.id" target="alert_rule_sensor_model_profiles.sensor_model_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_29" value="rule_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="alert_rules.id" target="alert_rule_sensor_models.rule_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_30" value="sensor_model_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="sensor_models.id" target="alert_rule_sensor_models.sensor_model_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_31" value="rule_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="alert_rules.id" target="alert_rule_sensor_overrides.rule_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_32" value="sensor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="sensors.id" target="alert_rule_sensor_overrides.sensor_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_33" value="current_revision_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="alert_rule_revisions.id" target="alert_rules.current_revision_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_34" value="project_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="projects.id" target="audit_logs.project_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_35" value="user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="audit_logs.user_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_36" value="created_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="device_credentials.created_by">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_37" value="device_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="devices.id" target="device_credentials.device_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_38" value="actuator_model_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="actuator_models.id" target="device_template_actuators.actuator_model_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_39" value="device_template_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="device_templates.id" target="device_template_actuators.device_template_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_40" value="electrical_profile_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="alert_rule_profiles.id" target="device_template_actuators.electrical_profile_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_41" value="device_template_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="device_templates.id" target="device_template_sensors.device_template_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_42" value="sensor_model_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="sensor_models.id" target="device_template_sensors.sensor_model_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_43" value="device_template_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="device_templates.id" target="devices.device_template_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_44" value="disabled_by_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="devices.disabled_by_user_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_45" value="project_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="projects.id" target="devices.project_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_46" value="incident_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="operational_incidents.id" target="notification_deliveries.incident_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_47" value="outbox_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="notification_outbox.id" target="notification_deliveries.outbox_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_48" value="recipient_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="project_notification_recipients.id" target="notification_deliveries.recipient_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_49" value="incident_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="operational_incidents.id" target="notification_outbox.incident_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_50" value="acknowledged_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="operational_incidents.acknowledged_by">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_51" value="actuator_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="actuators.id" target="operational_incidents.actuator_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_52" value="device_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="devices.id" target="operational_incidents.device_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_53" value="project_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="projects.id" target="operational_incidents.project_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_54" value="resolved_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="operational_incidents.resolved_by">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_55" value="rule_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="alert_rules.id" target="operational_incidents.rule_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_56" value="rule_revision_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="alert_rule_revisions.id" target="operational_incidents.rule_revision_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_57" value="sensor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="sensors.id" target="operational_incidents.sensor_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_58" value="created_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="project_members.created_by">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_59" value="project_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="projects.id" target="project_members.project_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_60" value="user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="project_members.user_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_61" value="project_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="projects.id" target="project_notification_recipients.project_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_62" value="project_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="projects.id" target="project_notification_risk_policies.project_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_63" value="project_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToOne;fontSize=10;" edge="1" parent="1" source="projects.id" target="project_notification_settings.project_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_64" value="project_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToOne;fontSize=10;" edge="1" parent="1" source="projects.id" target="project_public_settings.project_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_65" value="disabled_by_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="projects.disabled_by_user_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_66" value="owner_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="projects.owner_user_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_67" value="created_by_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="scada_dashboards.created_by_user_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_68" value="project_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="projects.id" target="scada_dashboards.project_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_69" value="acknowledged_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="sensor_alerts.acknowledged_by">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_70" value="resolved_by_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="sensor_alerts.resolved_by_user_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_71" value="sensor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="sensors.id" target="sensor_alerts.sensor_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_72" value="device_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="devices.id" target="sensors.device_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_73" value="disabled_by_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="sensors.disabled_by_user_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_74" value="sensor_model_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="sensor_models.id" target="sensors.sensor_model_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_75" value="sensor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="sensors.id" target="telemetry_aggregates.sensor_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_76" value="sensor_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="sensors.id" target="telemetry_readings.sensor_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_77" value="created_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="users.created_by">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_78" value="disabled_by_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="users.disabled_by_user_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge_79" value="locked_by_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToMany;fontSize=10;" edge="1" parent="1" source="users.id" target="users.locked_by_user_id">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,16 @@
+{
+  "roles": [
+    {
+      "code": "ADMIN"
+    },
+    {
+      "code": "OWNER"
+    },
+    {
+      "code": "TECHNICIAN"
+    },
+    {
+      "code": "VIEWER"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "active_roots": ["frontend/src", "frontend/e2e"],
+  "legacy_matches": 0,
+  "canonical_api_root": "/aquaponics-systems",
+  "status": "PASS"
+}

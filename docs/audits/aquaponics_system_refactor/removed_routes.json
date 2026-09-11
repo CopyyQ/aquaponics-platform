@@ -1,0 +1,11 @@
+{
+  "prefixes": [
+    "/admin",
+    "/projects",
+    "/overview",
+    "/devices",
+    "/sensors",
+    "/telemetry"
+  ],
+  "enforced_by_router_exclusion": true
+}

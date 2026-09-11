@@ -1,0 +1,496 @@
+{
+  "relationships": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "resource": "Authentication",
+      "parent": "global"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "resource": "Authentication",
+      "parent": "global"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/auth/me",
+      "resource": "Authentication",
+      "parent": "global"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/change-password",
+      "resource": "Authentication",
+      "parent": "global"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "resource": "Authentication",
+      "parent": "global"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems",
+      "resource": "Aquaponics Systems",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems",
+      "resource": "Aquaponics Systems",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}",
+      "resource": "Aquaponics Systems",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}",
+      "resource": "Aquaponics Systems",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}",
+      "resource": "Aquaponics Systems",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices",
+      "resource": "Devices",
+      "parent": "devices"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices",
+      "resource": "Devices",
+      "parent": "devices"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}",
+      "resource": "Devices",
+      "parent": "devices"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}",
+      "resource": "Devices",
+      "parent": "devices"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}",
+      "resource": "Devices",
+      "parent": "devices"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors",
+      "resource": "Sensors",
+      "parent": "sensors"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors",
+      "resource": "Sensors",
+      "parent": "sensors"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}",
+      "resource": "Sensors",
+      "parent": "sensors"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}",
+      "resource": "Sensors",
+      "parent": "sensors"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}",
+      "resource": "Sensors",
+      "parent": "sensors"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators",
+      "resource": "Actuators",
+      "parent": "actuators"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators",
+      "resource": "Actuators",
+      "parent": "actuators"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}",
+      "resource": "Actuators",
+      "parent": "actuators"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}",
+      "resource": "Actuators",
+      "parent": "actuators"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}",
+      "resource": "Actuators",
+      "parent": "actuators"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/threshold-alert",
+      "resource": "Sensors",
+      "parent": "sensors"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/threshold-alert",
+      "resource": "Sensors",
+      "parent": "sensors"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/threshold-alert",
+      "resource": "Sensors",
+      "parent": "sensors"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/threshold-alert",
+      "resource": "Sensors",
+      "parent": "sensors"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/telemetry",
+      "resource": "Sensors",
+      "parent": "sensors"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/mqtt-config/export",
+      "resource": "Aquaponics Systems",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/readings",
+      "resource": "Actuators",
+      "parent": "actuators"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/commands",
+      "resource": "Actuators",
+      "parent": "actuators"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/commands",
+      "resource": "Actuators",
+      "parent": "actuators"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/threshold-alerts/{metric}",
+      "resource": "Actuators",
+      "parent": "actuators"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/threshold-alerts/{metric}",
+      "resource": "Actuators",
+      "parent": "actuators"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/threshold-alerts/{metric}",
+      "resource": "Actuators",
+      "parent": "actuators"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/threshold-alerts/{metric}",
+      "resource": "Actuators",
+      "parent": "actuators"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts",
+      "resource": "Alerts",
+      "parent": "alerts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}",
+      "resource": "Alerts",
+      "parent": "alerts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}/acknowledge",
+      "resource": "Alerts",
+      "parent": "alerts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}/resolve",
+      "resource": "Alerts",
+      "parent": "alerts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/sensor-models",
+      "resource": "Sensor Models",
+      "parent": "global"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/sensor-models",
+      "resource": "Sensor Models",
+      "parent": "global"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/sensor-models/{model_id}",
+      "resource": "Sensor Models",
+      "parent": "global"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/sensor-models/{model_id}",
+      "resource": "Sensor Models",
+      "parent": "global"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/sensor-models/{model_id}",
+      "resource": "Sensor Models",
+      "parent": "global"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "resource": "Users",
+      "parent": "global"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/{user_id}",
+      "resource": "Users",
+      "parent": "global"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/device-templates",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/device-templates",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/device-templates/{template_id}",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/device-templates/{template_id}",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/device-templates/{template_id}",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/device-templates/{template_id}/sensors",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/device-templates/{template_id}/sensors",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/device-templates/{template_id}/sensors/{mapping_id}",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/device-templates/{template_id}/sensors/{mapping_id}",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/device-templates/{template_id}/sensors/{mapping_id}",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/device-templates/{template_id}/actuators",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/device-templates/{template_id}/actuators",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/device-templates/{template_id}/actuators/{mapping_id}",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/device-templates/{template_id}/actuators/{mapping_id}",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/device-templates/{template_id}/actuators/{mapping_id}",
+      "resource": "Device Templates",
+      "parent": "device-templates"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/actuator-models",
+      "resource": "Actuator Models",
+      "parent": "global"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/actuator-models",
+      "resource": "Actuator Models",
+      "parent": "global"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/actuator-models/{model_id}",
+      "resource": "Actuator Models",
+      "parent": "global"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/actuator-models/{model_id}",
+      "resource": "Actuator Models",
+      "parent": "global"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/actuator-models/{model_id}",
+      "resource": "Actuator Models",
+      "parent": "global"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/monitoring/latest",
+      "resource": "Monitoring",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/monitoring/series",
+      "resource": "Monitoring",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/members",
+      "resource": "Members",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/members",
+      "resource": "Members",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/aquaponics-systems/{system_id}/members/{user_id}",
+      "resource": "Members",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/aquaponics-systems/{system_id}/members/{user_id}",
+      "resource": "Members",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/activities",
+      "resource": "Activities",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/scada/runtime",
+      "resource": "SCADA",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/aquaponics-systems/{system_id}/scada/layout/draft",
+      "resource": "SCADA",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aquaponics-systems/{system_id}/scada/layout/publish",
+      "resource": "SCADA",
+      "parent": "aquaponics-systems"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/settings",
+      "resource": "Alerts",
+      "parent": "alerts"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/settings",
+      "resource": "Alerts",
+      "parent": "alerts"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "resource": "System",
+      "parent": "global"
+    }
+  ]
+}

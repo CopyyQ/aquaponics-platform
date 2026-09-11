@@ -1,0 +1,25 @@
+{
+  "terms": {
+    "/projects": 0,
+    "/admin": 0,
+    "/overview": 0,
+    "/notifications": 0,
+    "/notification-settings": 0,
+    "/notification-recipients": 0,
+    "/notification-history": 0,
+    "/operational-incidents": 0,
+    "/incidents": 0,
+    "/device-config": 0,
+    "monitoring/summary": 0,
+    "active_incident": 0,
+    "OperationalIncident": 0,
+    "NotificationRecipient": 0,
+    "SENSOR_DEVICE": 0,
+    "ACTUATOR_DEVICE": 0,
+    "ENERGY_MONITOR": 0,
+    "device_kind": 0,
+    "system_role": 0,
+    "GET /auth/me": 0
+  },
+  "active_source_files": 16
+}

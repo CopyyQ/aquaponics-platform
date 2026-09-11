@@ -1,0 +1,18 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://127.0.0.1:3000",
+      "localStorage": [
+        {
+          "name": "aquaponics_theme",
+          "value": "system"
+        },
+        {
+          "name": "aquaponics_access_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzg2OTQxMDAwLCJleHAiOjE3ODY5Njk4MDAsInJvbGUiOiJBRE1JTiIsInRva2VuX3ZlcnNpb24iOjU2fQ.-SW4tRoxAA_k7N_uxe0CIDAxAFAaN-F1BHZZwVhAxEQ"
+        }
+      ]
+    }
+  ]
+}

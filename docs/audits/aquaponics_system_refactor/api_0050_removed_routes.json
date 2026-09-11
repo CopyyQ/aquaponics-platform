@@ -1,0 +1,10 @@
+{
+  "removed_route_families": [
+    "/admin/**",
+    "/projects/**",
+    "/overview/**",
+    "/notifications/**",
+    "/monitoring/summary",
+    "/auth/me (GET)"
+  ]
+}

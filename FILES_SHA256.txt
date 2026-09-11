@@ -1,0 +1,2 @@
+ba07fb3e5073c43defda59215aaae815794159c356530be2927233c7e85122bb  frontend/src/features/view-device-monitoring-history/ui/CanonicalDeviceMonitoringDialog.tsx
+07977f5a43db6919c35c071bc7d517e4c424344f16b6d3b8073bd91337e7a8d7  frontend/src/widgets/canonical-monitoring/MonitoringDashboard.tsx

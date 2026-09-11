@@ -1,0 +1,1 @@
+{"rehearsal_database":"aquaponics_canonical_rehearsal","revision":"0045","canonical_tables":["devices","sensors","actuators","actuator_readings","threshold_alert_configs","operational_incidents","notification_outbox"]}

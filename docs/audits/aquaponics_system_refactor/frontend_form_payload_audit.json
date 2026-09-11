@@ -1,0 +1,361 @@
+{
+  "unknown_fields": [],
+  "payloads": [
+    {
+      "operation_id": "login_api_v1_auth_login_post",
+      "frontend_wrapper": "login",
+      "schema": "LoginRequest",
+      "fields": [
+        "password",
+        "username"
+      ]
+    },
+    {
+      "operation_id": "update_me_api_v1_auth_me_patch",
+      "frontend_wrapper": "updateProfile",
+      "schema": "UserSelfUpdate",
+      "fields": [
+        "address",
+        "email",
+        "full_name",
+        "phone_number"
+      ]
+    },
+    {
+      "operation_id": "change_password_api_v1_auth_change_password_post",
+      "frontend_wrapper": "changePassword",
+      "schema": "ChangePasswordRequest",
+      "fields": [
+        "confirm_password",
+        "current_password",
+        "new_password"
+      ]
+    },
+    {
+      "operation_id": "create_system_api_v1_aquaponics_systems_post",
+      "frontend_wrapper": "createSystem",
+      "schema": "AquaponicsSystemCreate",
+      "fields": [
+        "code",
+        "description",
+        "location",
+        "name"
+      ]
+    },
+    {
+      "operation_id": "update_system_api_v1_aquaponics_systems__system_id__patch",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "AquaponicsSystemUpdate",
+      "fields": [
+        "code",
+        "description",
+        "location",
+        "name"
+      ]
+    },
+    {
+      "operation_id": "create_device_api_v1_aquaponics_systems__system_id__devices_post",
+      "frontend_wrapper": "createDevice",
+      "schema": "DeviceInput",
+      "fields": [
+        "code",
+        "description",
+        "device_template_id",
+        "location",
+        "name"
+      ]
+    },
+    {
+      "operation_id": "update_device_api_v1_aquaponics_systems__system_id__devices__device_id__patch",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "DeviceUpdate",
+      "fields": [
+        "code",
+        "description",
+        "device_template_id",
+        "is_enabled",
+        "location",
+        "name"
+      ]
+    },
+    {
+      "operation_id": "create_sensor_api_v1_aquaponics_systems__system_id__devices__device_id__sensors_post",
+      "frontend_wrapper": "createSensor",
+      "schema": "SensorInput",
+      "fields": [
+        "code",
+        "description",
+        "installation_location",
+        "name",
+        "sensor_model_id"
+      ]
+    },
+    {
+      "operation_id": "update_sensor_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__patch",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "SensorUpdate",
+      "fields": [
+        "code",
+        "description",
+        "installation_location",
+        "is_enabled",
+        "name",
+        "sensor_model_id"
+      ]
+    },
+    {
+      "operation_id": "create_actuator_api_v1_aquaponics_systems__system_id__devices__device_id__actuators_post",
+      "frontend_wrapper": "createActuator",
+      "schema": "ActuatorInput",
+      "fields": [
+        "actuator_model_id",
+        "code",
+        "location",
+        "name",
+        "notes"
+      ]
+    },
+    {
+      "operation_id": "update_actuator_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__patch",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "ActuatorUpdate",
+      "fields": [
+        "actuator_model_id",
+        "code",
+        "is_enabled",
+        "location",
+        "name",
+        "notes"
+      ]
+    },
+    {
+      "operation_id": "create_sensor_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__threshold_alert_post",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "ThresholdAlertConfigCreate",
+      "fields": [
+        "above_message",
+        "above_risk_level",
+        "below_message",
+        "below_risk_level",
+        "enabled",
+        "lower_threshold",
+        "upper_threshold"
+      ]
+    },
+    {
+      "operation_id": "update_sensor_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__threshold_alert_patch",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "ThresholdAlertConfigUpdate",
+      "fields": [
+        "above_message",
+        "above_risk_level",
+        "below_message",
+        "below_risk_level",
+        "enabled",
+        "lower_threshold",
+        "upper_threshold"
+      ]
+    },
+    {
+      "operation_id": "create_actuator_command_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__commands_post",
+      "frontend_wrapper": "createCommand",
+      "schema": "ActuatorCommandCreate",
+      "fields": [
+        "desired_state"
+      ]
+    },
+    {
+      "operation_id": "create_actuator_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__threshold_alerts__metric__post",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "ThresholdAlertConfigCreate",
+      "fields": [
+        "above_message",
+        "above_risk_level",
+        "below_message",
+        "below_risk_level",
+        "enabled",
+        "lower_threshold",
+        "upper_threshold"
+      ]
+    },
+    {
+      "operation_id": "update_actuator_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__threshold_alerts__metric__patch",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "ThresholdAlertConfigUpdate",
+      "fields": [
+        "above_message",
+        "above_risk_level",
+        "below_message",
+        "below_risk_level",
+        "enabled",
+        "lower_threshold",
+        "upper_threshold"
+      ]
+    },
+    {
+      "operation_id": "resolve_system_alert_api_v1_aquaponics_systems__system_id__alerts__alert_id__resolve_post",
+      "frontend_wrapper": "resolveAlert",
+      "schema": "AlertResolutionRequest",
+      "fields": [
+        "resolution_note"
+      ]
+    },
+    {
+      "operation_id": "create_sensor_model_api_v1_sensor_models_post",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "SensorModelCreate",
+      "fields": [
+        "chart_type",
+        "code",
+        "description",
+        "is_active",
+        "measurement_semantics",
+        "name",
+        "unit",
+        "value_type"
+      ]
+    },
+    {
+      "operation_id": "update_sensor_model_api_v1_sensor_models__model_id__patch",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "SensorModelUpdate",
+      "fields": [
+        "chart_type",
+        "description",
+        "is_active",
+        "measurement_semantics",
+        "name",
+        "unit",
+        "value_type"
+      ]
+    },
+    {
+      "operation_id": "create_device_template_api_v1_device_templates_post",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "DeviceTemplateCreate",
+      "fields": [
+        "code",
+        "description",
+        "name"
+      ]
+    },
+    {
+      "operation_id": "update_device_template_api_v1_device_templates__template_id__patch",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "DeviceTemplateUpdate",
+      "fields": [
+        "description",
+        "is_active",
+        "name"
+      ]
+    },
+    {
+      "operation_id": "add_template_sensor_api_v1_device_templates__template_id__sensors_post",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "TemplateSensorSlotCreate",
+      "fields": [
+        "is_required",
+        "sensor_model_id",
+        "slot_code",
+        "sort_order"
+      ]
+    },
+    {
+      "operation_id": "update_template_sensor_api_v1_device_templates__template_id__sensors__mapping_id__patch",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "TemplateSensorSlotUpdate",
+      "fields": [
+        "is_required",
+        "sensor_model_id",
+        "slot_code",
+        "sort_order"
+      ]
+    },
+    {
+      "operation_id": "add_template_actuator_api_v1_device_templates__template_id__actuators_post",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "TemplateActuatorSlotCreate",
+      "fields": [
+        "actuator_model_id",
+        "code",
+        "is_required",
+        "sort_order"
+      ]
+    },
+    {
+      "operation_id": "update_template_actuator_api_v1_device_templates__template_id__actuators__mapping_id__patch",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "TemplateActuatorSlotUpdate",
+      "fields": [
+        "actuator_model_id",
+        "code",
+        "is_required",
+        "sort_order"
+      ]
+    },
+    {
+      "operation_id": "create_actuator_model_api_v1_actuator_models_post",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "ActuatorModelCreate",
+      "fields": [
+        "code",
+        "data_type",
+        "default_state",
+        "description",
+        "name",
+        "sort_order"
+      ]
+    },
+    {
+      "operation_id": "update_actuator_model_api_v1_actuator_models__model_id__patch",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "ActuatorModelUpdate",
+      "fields": [
+        "data_type",
+        "default_state",
+        "description",
+        "is_active",
+        "name",
+        "sort_order"
+      ]
+    },
+    {
+      "operation_id": "add_member_api_v1_aquaponics_systems__system_id__members_post",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "AquaponicsSystemMemberCreate",
+      "fields": [
+        "role",
+        "user_id"
+      ]
+    },
+    {
+      "operation_id": "update_member_api_v1_aquaponics_systems__system_id__members__user_id__patch",
+      "frontend_wrapper": "updateMember",
+      "schema": "AquaponicsSystemMemberUpdate",
+      "fields": [
+        "role"
+      ]
+    },
+    {
+      "operation_id": "scada_draft_api_v1_aquaponics_systems__system_id__scada_layout_draft_put",
+      "frontend_wrapper": "typed resource wrapper",
+      "schema": "ScadaLayout",
+      "fields": [
+        "camera",
+        "connections",
+        "schema_version",
+        "symbols"
+      ]
+    },
+    {
+      "operation_id": "put_alert_settings_api_v1_aquaponics_systems__system_id__alerts_settings_put",
+      "frontend_wrapper": "updateAlertSettings",
+      "schema": "AlertSettingsUpdate",
+      "fields": [
+        "enabled",
+        "in_app_enabled",
+        "telegram_enabled"
+      ]
+    }
+  ]
+}

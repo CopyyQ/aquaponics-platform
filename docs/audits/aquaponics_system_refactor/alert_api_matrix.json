@@ -1,0 +1,38 @@
+{
+  "routes": [
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts",
+      "method": "GET",
+      "operation_id": "list_system_alerts_api_v1_aquaponics_systems__system_id__alerts_get"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}",
+      "method": "GET",
+      "operation_id": "get_system_alert_api_v1_aquaponics_systems__system_id__alerts__alert_id__get"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}/acknowledge",
+      "method": "POST",
+      "operation_id": "acknowledge_system_alert_api_v1_aquaponics_systems__system_id__alerts__alert_id__acknowledge_post"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}/resolve",
+      "method": "POST",
+      "operation_id": "resolve_system_alert_api_v1_aquaponics_systems__system_id__alerts__alert_id__resolve_post"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/settings",
+      "method": "GET",
+      "operation_id": "get_alert_settings_api_v1_aquaponics_systems__system_id__alerts_settings_get"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/settings",
+      "method": "PUT",
+      "operation_id": "put_alert_settings_api_v1_aquaponics_systems__system_id__alerts_settings_put"
+    }
+  ],
+  "delivery_channels": [
+    "IN_APP",
+    "TELEGRAM"
+  ]
+}

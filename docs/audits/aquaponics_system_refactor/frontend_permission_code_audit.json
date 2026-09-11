@@ -1,0 +1,532 @@
+{
+  "authority": "backend/alembic/versions/0047_permission_rbac.py and GET /api/v1/auth/session effective permissions",
+  "backend_codes": [
+    "activities.read",
+    "actuator_models.create",
+    "actuator_models.delete",
+    "actuator_models.read",
+    "actuator_models.update",
+    "actuators.commands.create",
+    "actuators.commands.read",
+    "actuators.create",
+    "actuators.delete",
+    "actuators.read",
+    "actuators.readings.read",
+    "actuators.thresholds.create",
+    "actuators.thresholds.delete",
+    "actuators.thresholds.read",
+    "actuators.thresholds.update",
+    "actuators.update",
+    "aquaponics_systems.create",
+    "aquaponics_systems.delete",
+    "aquaponics_systems.manage_all",
+    "aquaponics_systems.manage_members",
+    "aquaponics_systems.read",
+    "aquaponics_systems.read_all",
+    "aquaponics_systems.update",
+    "device_templates.create",
+    "device_templates.delete",
+    "device_templates.read",
+    "device_templates.update",
+    "devices.create",
+    "devices.delete",
+    "devices.read",
+    "devices.update",
+    "incidents.acknowledge",
+    "incidents.read",
+    "incidents.resolve",
+    "monitoring.read",
+    "mqtt_config.export",
+    "scada.read",
+    "scada.update",
+    "sensor_models.create",
+    "sensor_models.delete",
+    "sensor_models.read",
+    "sensor_models.update",
+    "sensors.create",
+    "sensors.delete",
+    "sensors.read",
+    "sensors.telemetry.read",
+    "sensors.thresholds.create",
+    "sensors.thresholds.delete",
+    "sensors.thresholds.read",
+    "sensors.thresholds.update",
+    "sensors.update",
+    "users.create",
+    "users.delete",
+    "users.force_logout",
+    "users.lock",
+    "users.read",
+    "users.set_password",
+    "users.unlock",
+    "users.update"
+  ],
+  "frontend_codes": [
+    "activities.read",
+    "actuator_models.create",
+    "actuator_models.delete",
+    "actuator_models.update",
+    "actuators.commands.create",
+    "actuators.commands.read",
+    "actuators.create",
+    "actuators.delete",
+    "actuators.readings.read",
+    "actuators.thresholds.create",
+    "actuators.thresholds.delete",
+    "actuators.thresholds.read",
+    "actuators.thresholds.update",
+    "actuators.update",
+    "aquaponics_systems.create",
+    "aquaponics_systems.delete",
+    "aquaponics_systems.manage_members",
+    "aquaponics_systems.read",
+    "aquaponics_systems.update",
+    "device_templates.create",
+    "device_templates.delete",
+    "device_templates.read",
+    "device_templates.update",
+    "devices.create",
+    "devices.delete",
+    "devices.read",
+    "devices.update",
+    "incidents.acknowledge",
+    "incidents.read",
+    "incidents.resolve",
+    "monitoring.read",
+    "mqtt_config.export",
+    "scada.read",
+    "scada.update",
+    "sensor_models.create",
+    "sensor_models.delete",
+    "sensor_models.update",
+    "sensors.create",
+    "sensors.delete",
+    "sensors.telemetry.read",
+    "sensors.thresholds.create",
+    "sensors.thresholds.delete",
+    "sensors.thresholds.read",
+    "sensors.thresholds.update",
+    "sensors.update",
+    "users.read"
+  ],
+  "unknown_codes": [],
+  "unknown_active_codes": [],
+  "occurrences": [
+    {
+      "code": "activities.read",
+      "file": "frontend/src/app/layouts/aquaponics-system-layout.tsx",
+      "active": true
+    },
+    {
+      "code": "aquaponics_systems.read",
+      "file": "frontend/src/app/layouts/aquaponics-system-layout.tsx",
+      "active": true
+    },
+    {
+      "code": "devices.read",
+      "file": "frontend/src/app/layouts/aquaponics-system-layout.tsx",
+      "active": true
+    },
+    {
+      "code": "incidents.read",
+      "file": "frontend/src/app/layouts/aquaponics-system-layout.tsx",
+      "active": true
+    },
+    {
+      "code": "monitoring.read",
+      "file": "frontend/src/app/layouts/aquaponics-system-layout.tsx",
+      "active": true
+    },
+    {
+      "code": "scada.read",
+      "file": "frontend/src/app/layouts/aquaponics-system-layout.tsx",
+      "active": true
+    },
+    {
+      "code": "aquaponics_systems.read",
+      "file": "frontend/src/app/navigation/navigation-items.ts",
+      "active": true
+    },
+    {
+      "code": "device_templates.read",
+      "file": "frontend/src/app/navigation/navigation-items.ts",
+      "active": true
+    },
+    {
+      "code": "users.read",
+      "file": "frontend/src/app/navigation/navigation-items.ts",
+      "active": true
+    },
+    {
+      "code": "device_templates.read",
+      "file": "frontend/src/app/shell.tsx",
+      "active": false
+    },
+    {
+      "code": "users.read",
+      "file": "frontend/src/app/shell.tsx",
+      "active": false
+    },
+    {
+      "code": "actuators.commands.create",
+      "file": "frontend/src/pages/actuator-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "actuators.commands.read",
+      "file": "frontend/src/pages/actuator-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "actuators.delete",
+      "file": "frontend/src/pages/actuator-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "actuators.readings.read",
+      "file": "frontend/src/pages/actuator-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "actuators.thresholds.create",
+      "file": "frontend/src/pages/actuator-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "actuators.thresholds.delete",
+      "file": "frontend/src/pages/actuator-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "actuators.thresholds.read",
+      "file": "frontend/src/pages/actuator-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "actuators.thresholds.update",
+      "file": "frontend/src/pages/actuator-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "actuators.update",
+      "file": "frontend/src/pages/actuator-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "actuators.commands.create",
+      "file": "frontend/src/pages/actuator-detail.tsx",
+      "active": false
+    },
+    {
+      "code": "actuators.commands.read",
+      "file": "frontend/src/pages/actuator-detail.tsx",
+      "active": false
+    },
+    {
+      "code": "actuators.readings.read",
+      "file": "frontend/src/pages/actuator-detail.tsx",
+      "active": false
+    },
+    {
+      "code": "actuators.thresholds.create",
+      "file": "frontend/src/pages/actuator-detail.tsx",
+      "active": false
+    },
+    {
+      "code": "actuators.thresholds.read",
+      "file": "frontend/src/pages/actuator-detail.tsx",
+      "active": false
+    },
+    {
+      "code": "actuators.thresholds.update",
+      "file": "frontend/src/pages/actuator-detail.tsx",
+      "active": false
+    },
+    {
+      "code": "incidents.acknowledge",
+      "file": "frontend/src/pages/alert-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "incidents.resolve",
+      "file": "frontend/src/pages/alert-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "incidents.acknowledge",
+      "file": "frontend/src/pages/alerts.tsx",
+      "active": false
+    },
+    {
+      "code": "incidents.resolve",
+      "file": "frontend/src/pages/alerts.tsx",
+      "active": false
+    },
+    {
+      "code": "actuator_models.create",
+      "file": "frontend/src/pages/catalogs-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "actuator_models.delete",
+      "file": "frontend/src/pages/catalogs-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "actuator_models.update",
+      "file": "frontend/src/pages/catalogs-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "device_templates.create",
+      "file": "frontend/src/pages/catalogs-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "device_templates.delete",
+      "file": "frontend/src/pages/catalogs-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "device_templates.update",
+      "file": "frontend/src/pages/catalogs-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "sensor_models.create",
+      "file": "frontend/src/pages/catalogs-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "sensor_models.delete",
+      "file": "frontend/src/pages/catalogs-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "sensor_models.update",
+      "file": "frontend/src/pages/catalogs-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "actuator_models.create",
+      "file": "frontend/src/pages/catalogs-canonical.tsx",
+      "active": false
+    },
+    {
+      "code": "device_templates.create",
+      "file": "frontend/src/pages/catalogs-canonical.tsx",
+      "active": false
+    },
+    {
+      "code": "sensor_models.create",
+      "file": "frontend/src/pages/catalogs-canonical.tsx",
+      "active": false
+    },
+    {
+      "code": "actuators.create",
+      "file": "frontend/src/pages/device-detail-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "devices.delete",
+      "file": "frontend/src/pages/device-detail-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "devices.update",
+      "file": "frontend/src/pages/device-detail-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "monitoring.read",
+      "file": "frontend/src/pages/device-detail-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "mqtt_config.export",
+      "file": "frontend/src/pages/device-detail-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "sensors.create",
+      "file": "frontend/src/pages/device-detail-activation.tsx",
+      "active": true
+    },
+    {
+      "code": "actuators.create",
+      "file": "frontend/src/pages/device-detail-canonical.tsx",
+      "active": false
+    },
+    {
+      "code": "sensors.create",
+      "file": "frontend/src/pages/device-detail-canonical.tsx",
+      "active": false
+    },
+    {
+      "code": "actuators.commands.create",
+      "file": "frontend/src/pages/device.tsx",
+      "active": false
+    },
+    {
+      "code": "actuators.create",
+      "file": "frontend/src/pages/device.tsx",
+      "active": false
+    },
+    {
+      "code": "sensors.create",
+      "file": "frontend/src/pages/device.tsx",
+      "active": false
+    },
+    {
+      "code": "devices.create",
+      "file": "frontend/src/pages/devices-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "aquaponics_systems.manage_members",
+      "file": "frontend/src/pages/members.tsx",
+      "active": true
+    },
+    {
+      "code": "scada.update",
+      "file": "frontend/src/pages/scada.tsx",
+      "active": true
+    },
+    {
+      "code": "sensors.delete",
+      "file": "frontend/src/pages/sensor-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "sensors.telemetry.read",
+      "file": "frontend/src/pages/sensor-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "sensors.thresholds.create",
+      "file": "frontend/src/pages/sensor-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "sensors.thresholds.delete",
+      "file": "frontend/src/pages/sensor-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "sensors.thresholds.read",
+      "file": "frontend/src/pages/sensor-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "sensors.thresholds.update",
+      "file": "frontend/src/pages/sensor-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "sensors.update",
+      "file": "frontend/src/pages/sensor-detail-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "sensors.telemetry.read",
+      "file": "frontend/src/pages/sensor-detail.tsx",
+      "active": false
+    },
+    {
+      "code": "sensors.thresholds.create",
+      "file": "frontend/src/pages/sensor-detail.tsx",
+      "active": false
+    },
+    {
+      "code": "sensors.thresholds.delete",
+      "file": "frontend/src/pages/sensor-detail.tsx",
+      "active": false
+    },
+    {
+      "code": "sensors.thresholds.read",
+      "file": "frontend/src/pages/sensor-detail.tsx",
+      "active": false
+    },
+    {
+      "code": "sensors.thresholds.update",
+      "file": "frontend/src/pages/sensor-detail.tsx",
+      "active": false
+    },
+    {
+      "code": "aquaponics_systems.delete",
+      "file": "frontend/src/pages/settings-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "aquaponics_systems.update",
+      "file": "frontend/src/pages/settings-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "aquaponics_systems.update",
+      "file": "frontend/src/pages/settings.tsx",
+      "active": false
+    },
+    {
+      "code": "aquaponics_systems.manage_members",
+      "file": "frontend/src/pages/system.tsx",
+      "active": false
+    },
+    {
+      "code": "aquaponics_systems.read",
+      "file": "frontend/src/pages/system.tsx",
+      "active": false
+    },
+    {
+      "code": "devices.create",
+      "file": "frontend/src/pages/system.tsx",
+      "active": false
+    },
+    {
+      "code": "devices.read",
+      "file": "frontend/src/pages/system.tsx",
+      "active": false
+    },
+    {
+      "code": "incidents.acknowledge",
+      "file": "frontend/src/pages/system.tsx",
+      "active": false
+    },
+    {
+      "code": "incidents.read",
+      "file": "frontend/src/pages/system.tsx",
+      "active": false
+    },
+    {
+      "code": "incidents.resolve",
+      "file": "frontend/src/pages/system.tsx",
+      "active": false
+    },
+    {
+      "code": "monitoring.read",
+      "file": "frontend/src/pages/system.tsx",
+      "active": false
+    },
+    {
+      "code": "mqtt_config.export",
+      "file": "frontend/src/pages/system.tsx",
+      "active": false
+    },
+    {
+      "code": "scada.read",
+      "file": "frontend/src/pages/system.tsx",
+      "active": false
+    },
+    {
+      "code": "aquaponics_systems.create",
+      "file": "frontend/src/pages/systems-canonical.tsx",
+      "active": true
+    },
+    {
+      "code": "aquaponics_systems.create",
+      "file": "frontend/src/pages/systems.tsx",
+      "active": false
+    }
+  ],
+  "public_domain_note": "Public UI uses Alert; current internal RBAC codes remain incidents.*."
+}

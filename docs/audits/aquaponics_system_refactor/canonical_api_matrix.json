@@ -1,0 +1,743 @@
+{
+  "operations": [
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "operation_id": "login_api_v1_auth_login_post",
+      "tags": [
+        "Authentication"
+      ],
+      "summary": "Login"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "operation_id": "session_api_v1_auth_session_get",
+      "tags": [
+        "Authentication"
+      ],
+      "summary": "Session"
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "method": "PATCH",
+      "operation_id": "update_me_api_v1_auth_me_patch",
+      "tags": [
+        "Authentication"
+      ],
+      "summary": "Update Me"
+    },
+    {
+      "path": "/api/v1/auth/change-password",
+      "method": "POST",
+      "operation_id": "change_password_api_v1_auth_change_password_post",
+      "tags": [
+        "Authentication"
+      ],
+      "summary": "Change Password"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "operation_id": "logout_api_v1_auth_logout_post",
+      "tags": [
+        "Authentication"
+      ],
+      "summary": "Logout"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems",
+      "method": "GET",
+      "operation_id": "list_systems_api_v1_aquaponics_systems_get",
+      "tags": [
+        "Aquaponics Systems"
+      ],
+      "summary": "List Systems"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems",
+      "method": "POST",
+      "operation_id": "create_system_api_v1_aquaponics_systems_post",
+      "tags": [
+        "Aquaponics Systems"
+      ],
+      "summary": "Create System"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}",
+      "method": "GET",
+      "operation_id": "get_system_api_v1_aquaponics_systems__system_id__get",
+      "tags": [
+        "Aquaponics Systems"
+      ],
+      "summary": "Get System"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}",
+      "method": "PATCH",
+      "operation_id": "update_system_api_v1_aquaponics_systems__system_id__patch",
+      "tags": [
+        "Aquaponics Systems"
+      ],
+      "summary": "Update System"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}",
+      "method": "DELETE",
+      "operation_id": "delete_system_api_v1_aquaponics_systems__system_id__delete",
+      "tags": [
+        "Aquaponics Systems"
+      ],
+      "summary": "Delete System"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices",
+      "method": "GET",
+      "operation_id": "list_devices_api_v1_aquaponics_systems__system_id__devices_get",
+      "tags": [
+        "Devices"
+      ],
+      "summary": "List Devices"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices",
+      "method": "POST",
+      "operation_id": "create_device_api_v1_aquaponics_systems__system_id__devices_post",
+      "tags": [
+        "Devices"
+      ],
+      "summary": "Create Device"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}",
+      "method": "GET",
+      "operation_id": "get_device_api_v1_aquaponics_systems__system_id__devices__device_id__get",
+      "tags": [
+        "Devices"
+      ],
+      "summary": "Get Device"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}",
+      "method": "PATCH",
+      "operation_id": "update_device_api_v1_aquaponics_systems__system_id__devices__device_id__patch",
+      "tags": [
+        "Devices"
+      ],
+      "summary": "Update Device"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}",
+      "method": "DELETE",
+      "operation_id": "delete_device_api_v1_aquaponics_systems__system_id__devices__device_id__delete",
+      "tags": [
+        "Devices"
+      ],
+      "summary": "Delete Device"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors",
+      "method": "GET",
+      "operation_id": "list_sensors_api_v1_aquaponics_systems__system_id__devices__device_id__sensors_get",
+      "tags": [
+        "Sensors"
+      ],
+      "summary": "List Sensors"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors",
+      "method": "POST",
+      "operation_id": "create_sensor_api_v1_aquaponics_systems__system_id__devices__device_id__sensors_post",
+      "tags": [
+        "Sensors"
+      ],
+      "summary": "Create Sensor"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}",
+      "method": "GET",
+      "operation_id": "get_sensor_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__get",
+      "tags": [
+        "Sensors"
+      ],
+      "summary": "Get Sensor"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}",
+      "method": "PATCH",
+      "operation_id": "update_sensor_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__patch",
+      "tags": [
+        "Sensors"
+      ],
+      "summary": "Update Sensor"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}",
+      "method": "DELETE",
+      "operation_id": "delete_sensor_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__delete",
+      "tags": [
+        "Sensors"
+      ],
+      "summary": "Delete Sensor"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators",
+      "method": "GET",
+      "operation_id": "list_actuators_api_v1_aquaponics_systems__system_id__devices__device_id__actuators_get",
+      "tags": [
+        "Actuators"
+      ],
+      "summary": "List Actuators"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators",
+      "method": "POST",
+      "operation_id": "create_actuator_api_v1_aquaponics_systems__system_id__devices__device_id__actuators_post",
+      "tags": [
+        "Actuators"
+      ],
+      "summary": "Create Actuator"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}",
+      "method": "GET",
+      "operation_id": "get_actuator_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__get",
+      "tags": [
+        "Actuators"
+      ],
+      "summary": "Get Actuator"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}",
+      "method": "PATCH",
+      "operation_id": "update_actuator_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__patch",
+      "tags": [
+        "Actuators"
+      ],
+      "summary": "Update Actuator"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}",
+      "method": "DELETE",
+      "operation_id": "delete_actuator_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__delete",
+      "tags": [
+        "Actuators"
+      ],
+      "summary": "Delete Actuator"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/threshold-alert",
+      "method": "GET",
+      "operation_id": "get_sensor_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__threshold_alert_get",
+      "tags": [
+        "Sensors"
+      ],
+      "summary": "Get Sensor Threshold"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/threshold-alert",
+      "method": "POST",
+      "operation_id": "create_sensor_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__threshold_alert_post",
+      "tags": [
+        "Sensors"
+      ],
+      "summary": "Create Sensor Threshold"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/threshold-alert",
+      "method": "PATCH",
+      "operation_id": "update_sensor_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__threshold_alert_patch",
+      "tags": [
+        "Sensors"
+      ],
+      "summary": "Update Sensor Threshold"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/threshold-alert",
+      "method": "DELETE",
+      "operation_id": "delete_sensor_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__threshold_alert_delete",
+      "tags": [
+        "Sensors"
+      ],
+      "summary": "Delete Sensor Threshold"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/sensors/{sensor_id}/telemetry",
+      "method": "GET",
+      "operation_id": "sensor_telemetry_api_v1_aquaponics_systems__system_id__devices__device_id__sensors__sensor_id__telemetry_get",
+      "tags": [
+        "Sensors"
+      ],
+      "summary": "Sensor Telemetry"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/mqtt-config/export",
+      "method": "GET",
+      "operation_id": "export_mqtt_config_api_v1_aquaponics_systems__system_id__mqtt_config_export_get",
+      "tags": [
+        "Aquaponics Systems"
+      ],
+      "summary": "Export Mqtt Config"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/readings",
+      "method": "GET",
+      "operation_id": "actuator_readings_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__readings_get",
+      "tags": [
+        "Actuators"
+      ],
+      "summary": "Actuator Readings"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/commands",
+      "method": "GET",
+      "operation_id": "actuator_commands_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__commands_get",
+      "tags": [
+        "Actuators"
+      ],
+      "summary": "Actuator Commands"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/commands",
+      "method": "POST",
+      "operation_id": "create_actuator_command_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__commands_post",
+      "tags": [
+        "Actuators"
+      ],
+      "summary": "Create Actuator Command"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/threshold-alerts/{metric}",
+      "method": "GET",
+      "operation_id": "get_actuator_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__threshold_alerts__metric__get",
+      "tags": [
+        "Actuators"
+      ],
+      "summary": "Get Actuator Threshold"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/threshold-alerts/{metric}",
+      "method": "POST",
+      "operation_id": "create_actuator_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__threshold_alerts__metric__post",
+      "tags": [
+        "Actuators"
+      ],
+      "summary": "Create Actuator Threshold"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/threshold-alerts/{metric}",
+      "method": "PATCH",
+      "operation_id": "update_actuator_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__threshold_alerts__metric__patch",
+      "tags": [
+        "Actuators"
+      ],
+      "summary": "Update Actuator Threshold"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/devices/{device_id}/actuators/{actuator_id}/threshold-alerts/{metric}",
+      "method": "DELETE",
+      "operation_id": "delete_actuator_threshold_api_v1_aquaponics_systems__system_id__devices__device_id__actuators__actuator_id__threshold_alerts__metric__delete",
+      "tags": [
+        "Actuators"
+      ],
+      "summary": "Delete Actuator Threshold"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts",
+      "method": "GET",
+      "operation_id": "list_system_alerts_api_v1_aquaponics_systems__system_id__alerts_get",
+      "tags": [
+        "Alerts"
+      ],
+      "summary": "List System Alerts"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}",
+      "method": "GET",
+      "operation_id": "get_system_alert_api_v1_aquaponics_systems__system_id__alerts__alert_id__get",
+      "tags": [
+        "Alerts"
+      ],
+      "summary": "Get System Alert"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}/acknowledge",
+      "method": "POST",
+      "operation_id": "acknowledge_system_alert_api_v1_aquaponics_systems__system_id__alerts__alert_id__acknowledge_post",
+      "tags": [
+        "Alerts"
+      ],
+      "summary": "Acknowledge System Alert"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/{alert_id}/resolve",
+      "method": "POST",
+      "operation_id": "resolve_system_alert_api_v1_aquaponics_systems__system_id__alerts__alert_id__resolve_post",
+      "tags": [
+        "Alerts"
+      ],
+      "summary": "Resolve System Alert"
+    },
+    {
+      "path": "/api/v1/sensor-models",
+      "method": "GET",
+      "operation_id": "list_sensor_models_api_v1_sensor_models_get",
+      "tags": [
+        "Sensor Models"
+      ],
+      "summary": "List Sensor Models"
+    },
+    {
+      "path": "/api/v1/sensor-models",
+      "method": "POST",
+      "operation_id": "create_sensor_model_api_v1_sensor_models_post",
+      "tags": [
+        "Sensor Models"
+      ],
+      "summary": "Create Sensor Model"
+    },
+    {
+      "path": "/api/v1/sensor-models/{model_id}",
+      "method": "GET",
+      "operation_id": "get_sensor_model_api_v1_sensor_models__model_id__get",
+      "tags": [
+        "Sensor Models"
+      ],
+      "summary": "Get Sensor Model"
+    },
+    {
+      "path": "/api/v1/sensor-models/{model_id}",
+      "method": "PATCH",
+      "operation_id": "update_sensor_model_api_v1_sensor_models__model_id__patch",
+      "tags": [
+        "Sensor Models"
+      ],
+      "summary": "Update Sensor Model"
+    },
+    {
+      "path": "/api/v1/sensor-models/{model_id}",
+      "method": "DELETE",
+      "operation_id": "delete_sensor_model_api_v1_sensor_models__model_id__delete",
+      "tags": [
+        "Sensor Models"
+      ],
+      "summary": "Delete Sensor Model"
+    },
+    {
+      "path": "/api/v1/users",
+      "method": "GET",
+      "operation_id": "list_users_api_v1_users_get",
+      "tags": [
+        "Users"
+      ],
+      "summary": "List Users"
+    },
+    {
+      "path": "/api/v1/users/{user_id}",
+      "method": "GET",
+      "operation_id": "get_user_api_v1_users__user_id__get",
+      "tags": [
+        "Users"
+      ],
+      "summary": "Get User"
+    },
+    {
+      "path": "/api/v1/device-templates",
+      "method": "GET",
+      "operation_id": "list_device_templates_api_v1_device_templates_get",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "List Device Templates"
+    },
+    {
+      "path": "/api/v1/device-templates",
+      "method": "POST",
+      "operation_id": "create_device_template_api_v1_device_templates_post",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "Create Device Template"
+    },
+    {
+      "path": "/api/v1/device-templates/{template_id}",
+      "method": "GET",
+      "operation_id": "get_device_template_api_v1_device_templates__template_id__get",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "Get Device Template"
+    },
+    {
+      "path": "/api/v1/device-templates/{template_id}",
+      "method": "PATCH",
+      "operation_id": "update_device_template_api_v1_device_templates__template_id__patch",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "Update Device Template"
+    },
+    {
+      "path": "/api/v1/device-templates/{template_id}",
+      "method": "DELETE",
+      "operation_id": "delete_device_template_api_v1_device_templates__template_id__delete",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "Delete Device Template"
+    },
+    {
+      "path": "/api/v1/device-templates/{template_id}/sensors",
+      "method": "GET",
+      "operation_id": "list_template_sensors_api_v1_device_templates__template_id__sensors_get",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "List Template Sensors"
+    },
+    {
+      "path": "/api/v1/device-templates/{template_id}/sensors",
+      "method": "POST",
+      "operation_id": "add_template_sensor_api_v1_device_templates__template_id__sensors_post",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "Add Template Sensor"
+    },
+    {
+      "path": "/api/v1/device-templates/{template_id}/sensors/{mapping_id}",
+      "method": "GET",
+      "operation_id": "get_template_sensor_api_v1_device_templates__template_id__sensors__mapping_id__get",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "Get Template Sensor"
+    },
+    {
+      "path": "/api/v1/device-templates/{template_id}/sensors/{mapping_id}",
+      "method": "PATCH",
+      "operation_id": "update_template_sensor_api_v1_device_templates__template_id__sensors__mapping_id__patch",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "Update Template Sensor"
+    },
+    {
+      "path": "/api/v1/device-templates/{template_id}/sensors/{mapping_id}",
+      "method": "DELETE",
+      "operation_id": "delete_template_sensor_api_v1_device_templates__template_id__sensors__mapping_id__delete",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "Delete Template Sensor"
+    },
+    {
+      "path": "/api/v1/device-templates/{template_id}/actuators",
+      "method": "GET",
+      "operation_id": "list_template_actuators_api_v1_device_templates__template_id__actuators_get",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "List Template Actuators"
+    },
+    {
+      "path": "/api/v1/device-templates/{template_id}/actuators",
+      "method": "POST",
+      "operation_id": "add_template_actuator_api_v1_device_templates__template_id__actuators_post",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "Add Template Actuator"
+    },
+    {
+      "path": "/api/v1/device-templates/{template_id}/actuators/{mapping_id}",
+      "method": "GET",
+      "operation_id": "get_template_actuator_api_v1_device_templates__template_id__actuators__mapping_id__get",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "Get Template Actuator"
+    },
+    {
+      "path": "/api/v1/device-templates/{template_id}/actuators/{mapping_id}",
+      "method": "PATCH",
+      "operation_id": "update_template_actuator_api_v1_device_templates__template_id__actuators__mapping_id__patch",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "Update Template Actuator"
+    },
+    {
+      "path": "/api/v1/device-templates/{template_id}/actuators/{mapping_id}",
+      "method": "DELETE",
+      "operation_id": "delete_template_actuator_api_v1_device_templates__template_id__actuators__mapping_id__delete",
+      "tags": [
+        "Device Templates"
+      ],
+      "summary": "Delete Template Actuator"
+    },
+    {
+      "path": "/api/v1/actuator-models",
+      "method": "GET",
+      "operation_id": "list_actuator_models_api_v1_actuator_models_get",
+      "tags": [
+        "Actuator Models"
+      ],
+      "summary": "List Actuator Models"
+    },
+    {
+      "path": "/api/v1/actuator-models",
+      "method": "POST",
+      "operation_id": "create_actuator_model_api_v1_actuator_models_post",
+      "tags": [
+        "Actuator Models"
+      ],
+      "summary": "Create Actuator Model"
+    },
+    {
+      "path": "/api/v1/actuator-models/{model_id}",
+      "method": "GET",
+      "operation_id": "get_actuator_model_api_v1_actuator_models__model_id__get",
+      "tags": [
+        "Actuator Models"
+      ],
+      "summary": "Get Actuator Model"
+    },
+    {
+      "path": "/api/v1/actuator-models/{model_id}",
+      "method": "PATCH",
+      "operation_id": "update_actuator_model_api_v1_actuator_models__model_id__patch",
+      "tags": [
+        "Actuator Models"
+      ],
+      "summary": "Update Actuator Model"
+    },
+    {
+      "path": "/api/v1/actuator-models/{model_id}",
+      "method": "DELETE",
+      "operation_id": "delete_actuator_model_api_v1_actuator_models__model_id__delete",
+      "tags": [
+        "Actuator Models"
+      ],
+      "summary": "Delete Actuator Model"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/monitoring/latest",
+      "method": "GET",
+      "operation_id": "monitoring_latest_api_v1_aquaponics_systems__system_id__monitoring_latest_get",
+      "tags": [
+        "Monitoring"
+      ],
+      "summary": "Monitoring Latest"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/monitoring/series",
+      "method": "GET",
+      "operation_id": "monitoring_series_api_v1_aquaponics_systems__system_id__monitoring_series_get",
+      "tags": [
+        "Monitoring"
+      ],
+      "summary": "Monitoring Series"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/members",
+      "method": "GET",
+      "operation_id": "list_members_api_v1_aquaponics_systems__system_id__members_get",
+      "tags": [
+        "Members"
+      ],
+      "summary": "List Members"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/members",
+      "method": "POST",
+      "operation_id": "add_member_api_v1_aquaponics_systems__system_id__members_post",
+      "tags": [
+        "Members"
+      ],
+      "summary": "Add Member"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/members/{user_id}",
+      "method": "PATCH",
+      "operation_id": "update_member_api_v1_aquaponics_systems__system_id__members__user_id__patch",
+      "tags": [
+        "Members"
+      ],
+      "summary": "Update Member"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/members/{user_id}",
+      "method": "DELETE",
+      "operation_id": "remove_member_api_v1_aquaponics_systems__system_id__members__user_id__delete",
+      "tags": [
+        "Members"
+      ],
+      "summary": "Remove Member"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/activities",
+      "method": "GET",
+      "operation_id": "activities_api_v1_aquaponics_systems__system_id__activities_get",
+      "tags": [
+        "Activities"
+      ],
+      "summary": "Activities"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/scada/runtime",
+      "method": "GET",
+      "operation_id": "scada_runtime_api_v1_aquaponics_systems__system_id__scada_runtime_get",
+      "tags": [
+        "SCADA"
+      ],
+      "summary": "Scada Runtime"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/scada/layout/draft",
+      "method": "PUT",
+      "operation_id": "scada_draft_api_v1_aquaponics_systems__system_id__scada_layout_draft_put",
+      "tags": [
+        "SCADA"
+      ],
+      "summary": "Scada Draft"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/scada/layout/publish",
+      "method": "POST",
+      "operation_id": "scada_publish_api_v1_aquaponics_systems__system_id__scada_layout_publish_post",
+      "tags": [
+        "SCADA"
+      ],
+      "summary": "Scada Publish"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/settings",
+      "method": "GET",
+      "operation_id": "get_alert_settings_api_v1_aquaponics_systems__system_id__alerts_settings_get",
+      "tags": [
+        "Alerts"
+      ],
+      "summary": "Get Alert Settings"
+    },
+    {
+      "path": "/api/v1/aquaponics-systems/{system_id}/alerts/settings",
+      "method": "PUT",
+      "operation_id": "put_alert_settings_api_v1_aquaponics_systems__system_id__alerts_settings_put",
+      "tags": [
+        "Alerts"
+      ],
+      "summary": "Put Alert Settings"
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "operation_id": "health_health_get",
+      "tags": [
+        "System"
+      ],
+      "summary": "Health"
+    }
+  ],
+  "operation_count": 82
+}

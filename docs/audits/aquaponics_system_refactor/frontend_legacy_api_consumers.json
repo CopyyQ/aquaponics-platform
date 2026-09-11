@@ -1,0 +1,14 @@
+{
+  "legacy_prefixes": [
+    "/projects",
+    "/admin",
+    "/devices/",
+    "/sensors/",
+    "/telemetry",
+    "notification-",
+    "overview",
+    "device-config"
+  ],
+  "unmigrated_consumers": 15,
+  "status": "remaining UI navigation/API adapters require migration"
+}

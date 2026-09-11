@@ -5,7 +5,7 @@ import type {
   MonitoringActuatorHistoryGap,
   MonitoringActuatorHistoryPoint,
 } from "@/entities/telemetry/model/project-monitoring"
-import { VIETNAM_TIME_ZONE } from "@/shared/lib/date"
+import { parseApiDate, VIETNAM_TIME_ZONE } from "@/shared/lib/date"
 
 const fullTimeFormatter = new Intl.DateTimeFormat("vi-VN", {
   timeZone: VIETNAM_TIME_ZONE,
@@ -70,7 +70,7 @@ function ActuatorStateHistoryChartContent({
   const [dragStart, setDragStart] = useState({ x: 0, offsetX: 0 })
   const svgRef = useRef<SVGSVGElement>(null)
 
-  const timestamps = points.map((point) => Date.parse(point.recorded_at))
+  const timestamps = points.map((point) => parseApiDate(point.recorded_at).getTime())
     const start = Math.min(...timestamps)
     const end = Math.max(...timestamps)
     const timeRange = end - start || 1
@@ -84,7 +84,7 @@ function ActuatorStateHistoryChartContent({
     const clampedOffsetX = Math.max(0, Math.min(maxOffsetX, viewState.offsetX))
 
     const toX = (timestamp: string) => {
-      const ts = Date.parse(timestamp)
+      const ts = parseApiDate(timestamp).getTime()
       if (isNaN(ts)) return chartLeft
       const baseX = chartLeft + ((ts - start) / timeRange) * chartWidth
       const zoomedX = chartLeft + (baseX - chartLeft - clampedOffsetX) * viewState.scale
@@ -255,8 +255,8 @@ function ActuatorStateHistoryChartContent({
           <g clipPath="url(#chart-area)">
             {/* Gap regions */}
             {gaps && gaps.map((gap) => {
-              const gapFrom = Date.parse(gap.from)
-              const gapTo = Date.parse(gap.to)
+              const gapFrom = parseApiDate(gap.from).getTime()
+              const gapTo = parseApiDate(gap.to).getTime()
               if (isNaN(gapFrom) || isNaN(gapTo)) return null
 
               const x1 = toX(gap.from)
@@ -446,7 +446,7 @@ function ActuatorStateHistoryChartContent({
               </span>
             </div>
             <div className="mt-1 text-xs text-muted-foreground">
-              {fullTimeFormatter.format(new Date(tooltip.point.recorded_at))}
+              {fullTimeFormatter.format(parseApiDate(tooltip.point.recorded_at))}
             </div>
             {tooltip.type === "transition" && (
               <div className="mt-1 text-xs font-medium text-primary">

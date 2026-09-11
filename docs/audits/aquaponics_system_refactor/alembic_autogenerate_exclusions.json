@@ -1,0 +1,18 @@
+{
+  "archive_tables": [
+    "legacy_actuator_feedback_bindings",
+    "legacy_actuator_model_feedback_definitions",
+    "legacy_alert_rule_evaluator_classifications",
+    "legacy_device_template_classifications",
+    "legacy_sensor_classifications"
+  ],
+  "archive_indexes": [
+    "ix_actuator_feedback_bindings_actuator_id",
+    "ix_actuator_feedback_bindings_model_feedback_id",
+    "ix_actuator_feedback_bindings_sensor_id",
+    "ix_actuator_model_feedback_definitions_actuator_model_id",
+    "ix_actuator_model_feedback_definitions_sensor_model_id"
+  ],
+  "compatibility_indexes": "Exact index and unique-constraint names are maintained in backend/alembic/env.py::COMPATIBILITY_NAMES.",
+  "reason": "Archive relations are retained for migration evidence. Compatibility names have equivalent index/constraint semantics and must not cause rename-only migrations."
+}

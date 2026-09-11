@@ -1,0 +1,264 @@
+{
+  "audit": {
+    "title": "ONE SENSOR -> TWO TELEGRAM MESSAGES",
+    "as_of": "2026-09-09T08:51:09+07:00",
+    "database_schema_revision": "0053",
+    "code_changed": false,
+    "database_changed": false,
+    "telegram_sent": false,
+    "body_evidence": "reconstructed_from_persisted_snapshots_and_runtime_formatter; Telegram body and provider_message_id are not persisted"
+  },
+  "sensor": {
+    "id": 93,
+    "code": "TB-0015-MT-3022-01-PH-02",
+    "name": "Độ pH",
+    "sensor_model_id": 1,
+    "sensor_model_code": "PH",
+    "sensor_model_name": "Cảm biến pH",
+    "unit": "pH",
+    "device": {
+      "id": 86,
+      "code": "TB-0015-MT-3022-01",
+      "name": "Thiết bị đo nhiệt độ, độ ẩm"
+    },
+    "system": {
+      "id": 81,
+      "code": "TB-0015",
+      "name": "Dự án nuôi cá trê"
+    }
+  },
+  "threshold_config": {
+    "id": 19,
+    "sensor_id": 93,
+    "metric_type": "SENSOR_VALUE",
+    "enabled": true,
+    "lower_threshold": 7.0,
+    "upper_threshold": 9.0,
+    "below_risk_level": "LOW",
+    "above_risk_level": "HIGH",
+    "below_message": "Thấp quá",
+    "above_message": "Cao quá",
+    "delay_seconds": 0,
+    "updated_at": "2026-09-08T09:39:16.738235+00:00",
+    "source_of_truth": true
+  },
+  "reading": {
+    "id": 1634532,
+    "sensor_id": 93,
+    "value": 10.8,
+    "recorded_at": "2026-09-08T10:13:37+00:00",
+    "received_at": "2026-09-08T10:13:37.106623+00:00"
+  },
+  "incidents": [
+    {
+      "id": 125,
+      "sensor_id": 93,
+      "rule_id": null,
+      "rule_revision_id": null,
+      "context_key": "sensor:93:threshold:ABOVE",
+      "status": "RESOLVED",
+      "technical_severity": "WARNING",
+      "risk": "HIGH",
+      "started_at": "2026-09-08T10:13:37.106623+00:00",
+      "opened_at": "2026-09-08T10:13:37.106623+00:00",
+      "last_triggered_at": "2026-09-08T10:13:37.106623+00:00",
+      "normalized_at": "2026-09-08T10:13:52.108505+00:00",
+      "resolved_at": "2026-09-08T10:13:52.108505+00:00",
+      "occurrence_count": 1,
+      "snapshot": {
+        "resource_type": "SENSOR",
+        "metric_type": "SENSOR_VALUE",
+        "threshold_direction": "ABOVE",
+        "value": 10.8,
+        "threshold": 9.0,
+        "message": "Cao quá",
+        "business_risk_level": "HIGH"
+      }
+    },
+    {
+      "id": 126,
+      "sensor_id": 93,
+      "rule_id": 8,
+      "rule_revision_id": 8,
+      "rule_code": "WATER_PH_OUT_OF_RANGE",
+      "evaluator_type": "RANGE_BANDS",
+      "context_key": "sensor:93",
+      "status": "RESOLVED",
+      "technical_severity": "CRITICAL",
+      "risk": "VERY_HIGH",
+      "started_at": "2026-09-08T10:13:37.106623+00:00",
+      "opened_at": "2026-09-08T10:13:37.106623+00:00",
+      "last_triggered_at": "2026-09-08T10:13:37.106623+00:00",
+      "normalized_at": "2026-09-08T10:13:52.108505+00:00",
+      "resolved_at": "2026-09-08T10:13:52.108505+00:00",
+      "occurrence_count": 1,
+      "snapshot": {
+        "operator": "OUTSIDE",
+        "lower": 6.0,
+        "upper": 8.0,
+        "value": 10.8,
+        "message": "pH bất thường, hãy kiểm tra môi trường nước",
+        "consequence": "Ảnh hưởng cá + vi khuẩn nitrification + hấp thu dinh dưỡng.",
+        "business_risk_level": "VERY_HIGH"
+      }
+    }
+  ],
+  "outbox_events": [
+    {
+      "id": 720,
+      "incident_id": 125,
+      "event_type": "OPEN",
+      "source_type": "INCIDENT",
+      "target_recipient_id": null,
+      "idempotency_key": "incident:125:OPEN",
+      "status": "SENT",
+      "skip_reason": null,
+      "attempt_count": 1,
+      "created_at": "2026-09-08T10:13:37.109780+00:00",
+      "processed_at": "2026-09-08T11:12:32.223838+00:00"
+    },
+    {
+      "id": 721,
+      "incident_id": 126,
+      "event_type": "OPEN",
+      "source_type": "INCIDENT",
+      "target_recipient_id": null,
+      "idempotency_key": "incident:126:OPEN",
+      "status": "SENT",
+      "skip_reason": null,
+      "attempt_count": 1,
+      "created_at": "2026-09-08T10:13:37.109780+00:00",
+      "processed_at": "2026-09-08T11:12:32.223838+00:00"
+    }
+  ],
+  "deliveries": [
+    {
+      "outbox_id": 720,
+      "incident_id": 125,
+      "channel": "TELEGRAM",
+      "recipient_ids": [1, 3, 4],
+      "status": "SENT",
+      "attempts_per_recipient": 1,
+      "sent_at": "2026-09-08T11:12:32.223838+00:00",
+      "provider_status_code": 200,
+      "provider_message_id": null
+    },
+    {
+      "outbox_id": 721,
+      "incident_id": 126,
+      "channel": "TELEGRAM",
+      "recipient_ids": [1, 3, 4],
+      "status": "SENT",
+      "attempts_per_recipient": 1,
+      "sent_at": "2026-09-08T11:12:32.223838+00:00",
+      "provider_status_code": 200,
+      "provider_message_id": null
+    }
+  ],
+  "message_sources": [
+    {
+      "label": "A",
+      "outbox_id": 720,
+      "source": "ThresholdAlertConfig.above_message",
+      "renderer": "format_canonical_operational_message",
+      "risk": "HIGH",
+      "threshold_expression": "> 9 pH",
+      "message": "Cao quá",
+      "catalog_used_for_this_snapshot": false
+    },
+    {
+      "label": "B",
+      "outbox_id": 721,
+      "source": "AlertRuleRevision.message_template",
+      "renderer": "format_operational_message generic branch",
+      "risk": "VERY_HIGH",
+      "threshold_expression": "outside 6-8 pH",
+      "message": "pH bất thường, hãy kiểm tra môi trường nước",
+      "catalog_used_for_this_snapshot": false
+    }
+  ],
+  "message_precedence_current": {
+    "condition_key": "SensorModel.code plus threshold direction, with generic SENSOR_THRESHOLD_LOW/HIGH fallback",
+    "custom_message_priority": 1,
+    "catalog_title_message_fallback_priority": 2,
+    "catalog_semantic_fields": ["title", "consequence", "recommended_actions", "catalog_version"],
+    "numeric_threshold_source": "threshold_alert_configs only",
+    "delivery_merge_warning": "selected live incident.trigger_snapshot fields override outbox.payload_snapshot"
+  },
+  "telegram_call_sites": [
+    {
+      "file": "backend/app/services/notification_outbox_service.py",
+      "function": "process_notification_outbox",
+      "classification": "canonical active production alert sender"
+    },
+    {
+      "file": "backend/app/api/v1/canonical_extensions.py",
+      "function": "test_recipient",
+      "classification": "explicit production test endpoint; not telemetry path"
+    },
+    {
+      "file": "backend/app/services/telegram_notifier.py",
+      "function": "TelegramNotifier.send_message",
+      "classification": "sole Telegram Bot API HTTP client"
+    }
+  ],
+  "runtime_state": {
+    "mqtt_consumer_created_at": "2026-09-08T11:12:17.985697217Z",
+    "scheduler_created_at": "2026-09-08T11:12:17.986763635Z",
+    "scheduler_process_count": 1,
+    "current_telemetry_calls_rule_profile_evaluator": false,
+    "current_rule_profile_evaluator_has_production_caller": false,
+    "last_rule_based_sensor_incident_started_at": "2026-09-08T10:14:52.135582+00:00",
+    "rule_based_sensor_incidents_after_current_runtime_rollout": 0,
+    "active_sync_outbox_count": 0,
+    "duplicate_outbox_idempotency_key_count": 0,
+    "duplicate_delivery_idempotency_key_count": 0
+  },
+  "root_causes": [
+    {
+      "code": "RC-A",
+      "title": "Two active notification pipelines",
+      "status": "proven_at_event_time_removed_from_current_telemetry_caller",
+      "severity": "P1"
+    },
+    {
+      "code": "RC-C",
+      "title": "Two formatter branches",
+      "status": "proven",
+      "severity": "P1"
+    },
+    {
+      "code": "RC-D",
+      "title": "Custom threshold message versus rule message",
+      "status": "proven_contributor",
+      "severity": "P1"
+    },
+    {
+      "code": "RC-E",
+      "title": "Duplicate semantic condition keys",
+      "status": "proven",
+      "severity": "P1"
+    },
+    {
+      "code": "RC-H",
+      "title": "Live Incident snapshot can override historical Outbox snapshot",
+      "status": "design_risk_not_required_for_forensic_pair",
+      "severity": "P2"
+    }
+  ],
+  "rejected_causes_for_forensic_pair": [
+    "RC-B: both messages are OPEN, not ACTIVE_SYNC/REMINDER/RECOVERY/RESOLVED",
+    "RC-F: no duplicate outbox or delivery idempotency key",
+    "RC-G: one scheduler, row locks, one send attempt per delivery"
+  ],
+  "recommended_fix_order": [
+    "Lock a single canonical Sensor threshold Incident path",
+    "Lock a single message resolution strategy",
+    "Make every lifecycle event semantic visible in the rendered message",
+    "Add semantic-condition idempotency assertions across pipelines",
+    "Remove or disable any duplicate runtime caller after auditing advanced consumers",
+    "Add backend regression tests",
+    "Validate threshold and notification APIs",
+    "Adjust frontend only if event/reason visibility requires it"
+  ]
+}
